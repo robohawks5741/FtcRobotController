@@ -21,8 +21,10 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
@@ -51,7 +53,17 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
  * Simple mecanum drive hardware implementation for REV hardware.
  */
 @Config
-public class SampleMecanumDrive extends MecanumDrive {
+public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDrive2testJames {
+    public int ctr = 0;
+    public double Lpos = 0;
+//todo: fix values to reflect real numbers
+    public int bottomStop = -50;
+    public int lowStop = -1500;
+    public int midStop = -2300;
+    public int tallStop = -3584;
+    public int tooTall = 3700;
+    public int target = 0;
+
     public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0, 0, 0);
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(0, 0, 0);
 
@@ -68,8 +80,9 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     private TrajectoryFollower follower;
 
-    private DcMotorEx leftFront, leftRear, rightRear, rightFront;
+    private DcMotorEx leftFront, leftRear, rightRear, rightFront, linearSlide;
     private List<DcMotorEx> motors;
+    private Servo clawServo, penetrationServo;
 
     private BNO055IMU imu;
     private VoltageSensor batteryVoltageSensor;
@@ -83,6 +96,7 @@ public class SampleMecanumDrive extends MecanumDrive {
         LynxModuleUtil.ensureMinimumFirmwareVersion(hardwareMap);
 
         batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
+
 
         for (LynxModule module : hardwareMap.getAll(LynxModule.class)) {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
@@ -121,8 +135,14 @@ public class SampleMecanumDrive extends MecanumDrive {
         rightRear = hardwareMap.get(DcMotorEx.class, "rightRear");
         rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
 
-        motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
+        linearSlide = hardwareMap.get(DcMotorEx.class, "linearSlide");
 
+        clawServo = hardwareMap.get(Servo.class, "clawServo");
+        penetrationServo = hardwareMap.get(Servo.class,"penetrationServo");
+
+        //added, testing
+        motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront, linearSlide);
+        //added linear slide to these.
         for (DcMotorEx motor : motors) {
             MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
             motorConfigurationType.setAchieveableMaxRPMFraction(1.0);
@@ -132,14 +152,16 @@ public class SampleMecanumDrive extends MecanumDrive {
         if (RUN_USING_ENCODER) {
             setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
-
-        setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
+        for (DcMotorEx motor :motors) {
+            setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        }
         if (RUN_USING_ENCODER && MOTOR_VELO_PID != null) {
             setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, MOTOR_VELO_PID);
         }
 
         // TODO: reverse any motors using DcMotor.setDirection()
+        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // TODO: if desired, use setLocalizer() to change the localization method
         // for instance, setLocalizer(new ThreeTrackingWheelLocalizer(...));
@@ -291,6 +313,105 @@ public class SampleMecanumDrive extends MecanumDrive {
         rightFront.setPower(v3);
     }
 
+
+    @Override
+    public void setLinearSlide(double linearPower)  {
+        //double LSstartPosition = linearSlide.getCurrentPosition();
+        linearSlide.setPower(linearPower);
+
+    }
+    @Override
+    public void LinearSlideToStop(int stop, int power,int tolerance){ //TODO: Add recursion with a tolerance var to make this as accurate as possible, requires good rope tension for up and down.
+        linearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        linearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        if(stop == 1){
+            target = lowStop;
+        }
+        else if(stop == 2){
+            target = midStop;
+        }
+        else if(stop == 3){
+            target = tallStop;
+        }
+        else{
+            target = bottomStop;
+        }
+        //above sets the target encoder position specified by the user input "stop"
+        //----------------------------------------------------------------------------------------
+        if(LinearSlidePos()>=target){
+            while(LinearSlidePos()>=target){
+                linearSlide.setPower(-power);    //TODO: see if this needs reversing
+            }
+//TODO: Check out the go to position mode to eliminate this code
+        }
+        else{
+            while (LinearSlidePos()<=target){
+                linearSlide.setPower(power);  //TODO: this might also need reversing
+            }
+        }
+        //--------------------------------------------------------------------------------------------
+     //   if (LinearSlidePos()+tolerance<target||LinearSlidePos()-tolerance>target){
+     //       LinearSlideToStop(stop, power/2,tolerance-2);
+     //   }
+
+    }
+
+    @Override
+    public void LinearSlideToStop2(int stop, int tolerance){
+
+        linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        if(stop == 1){
+            target = lowStop;
+        }
+        else if(stop == 2){
+            target = midStop;
+        }
+        else if(stop == 3){
+            target = tallStop;
+        }
+        else{
+            target = bottomStop;
+        }
+
+        linearSlide.setTargetPositionTolerance(tolerance);
+        linearSlide.setTargetPosition(target);
+
+    }
+
+
+    @Override
+    public void penetrate(double pos){
+        penetrationServo.setPosition(pos);
+    }
+
+    @Override
+    public int LinearSlidePos(){
+        //Lpos = linearSlide.getCurrentPosition();
+        //ctr = ctr+4;
+        //return linearSlide.getCurrentPosition();  This does not return an accurate reading but rather seemingly arbitrary numbers.
+        //I believe the physical encoder is not working or the connection is messed up.
+
+        return linearSlide.getCurrentPosition();
+        //testing this to see if a different encoder will work in place of the the LinearSlide Motor.
+
+        //couldn't get telemetry to work in this file, must be OpMode only.
+        //ctr = ctr +2;
+
+    }
+    @Override
+    public void LinearSlideResetEnc(){
+        linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+
+    @Override
+    public void moveTestServo(double pos){
+
+        clawServo.setPosition(pos);
+    }
+
+
     @Override
     public double getRawExternalHeading() {
         return imu.getAngularOrientation().firstAngle;
@@ -298,7 +419,12 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     @Override
     public Double getExternalHeadingVelocity() {
-        return (double) imu.getAngularVelocity().zRotationRate;
+        // To work around an SDK bug, use -zRotationRate in place of xRotationRate
+        // and -xRotationRate in place of zRotationRate (yRotationRate behaves as 
+        // expected). This bug does NOT affect orientation. 
+        //
+        // See https://github.com/FIRST-Tech-Challenge/FtcRobotController/issues/251 for details.
+        return (double) -imu.getAngularVelocity().xRotationRate;
     }
 
     public static TrajectoryVelocityConstraint getVelocityConstraint(double maxVel, double maxAngularVel, double trackWidth) {
