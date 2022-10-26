@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.LSD;
 
-public class LSD {
+//import
 
+public class LSD {
+    LSD() {
+
+    }
 }
