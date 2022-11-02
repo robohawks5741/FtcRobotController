@@ -53,7 +53,7 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
  * Simple mecanum drive hardware implementation for REV hardware.
  */
 @Config
-public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDrive2testJames {
+public class SampleMecanumDrive extends MecanumDrive {
     public int ctr = 0;
     public double Lpos = 0;
 //todo: fix values to reflect real numbers

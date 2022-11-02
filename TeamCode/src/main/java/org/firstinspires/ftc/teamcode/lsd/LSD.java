@@ -23,10 +23,10 @@ public class LSD {
     public int currentHeightPrecise() { return _currentMotorHeight; }
 
     // TODO: should this be void?
-    public Ace<Void> moveSlide(SlideHeight target) throws Exception {
+    public Thread moveSlide(SlideHeight target) throws Exception {
         if (_isMoving) { }
 
-        return new Ace<Void>(() -> {
+        Thread t = new Thread(() -> {
             switch (target) {
                 case TOP:
                     break;
@@ -36,11 +36,13 @@ public class LSD {
                     break;
                 case UNKNOWN:
                 default:
-                    throw new Exception("Invalid LSD Slide Position!");
+//                    TODO: use notifiers to properly throw an exception
+                    System.out.println("Invalid LSD Slide Position!");
+//                    throw new Exception("Invalid LSD Slide Position!");
                     // break;
             }
-            return null;
         });
+        t.notifyAll();
     }
 
 //

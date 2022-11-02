@@ -1,3 +1,3 @@
-# What's LSD?
+# LSD
 
-It's the Linear Slide Driver of course
+It's the Linear Slide Driver!
