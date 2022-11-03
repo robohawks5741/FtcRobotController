@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.drive.opmode;
 
+import static java.lang.Math.abs;
+
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -33,12 +35,13 @@ public class LocalizationTest extends LinearOpMode{
         waitForStart();
 
 
-        while (!isStopRequested()) {
+        while (opModeIsActive()) {
             drive.setWeightedDrivePower(
                     new Pose2d(
-                            -gamepad1.left_stick_y,
-                            -gamepad1.left_stick_x,
-                            -gamepad1.right_stick_x
+
+                            -(gamepad1.right_stick_y>=0 ? 1 : -1) * Math.pow(abs((double)gamepad1.right_stick_y),1.7)+.05, // These lines translate the raw code from the sticks into
+                            -(gamepad1.right_stick_x>=0 ? 1 : -1) * Math.pow(abs((double)gamepad1.right_stick_x),1.7)+.05,   //  a curved +/- input for the motors. It sends the values to a
+                            -(gamepad1.left_stick_x>=0 ? 1 : -1) * Math.pow(abs((double)gamepad1.left_stick_x),1.7)+.05       // function in roadrunner.
                     )
             );
 
@@ -60,15 +63,28 @@ public class LocalizationTest extends LinearOpMode{
             if(gamepad1.right_bumper) {
                 drive.penetrate(.525);
             }//drive.LinearSlideToStop(2,25,10); //mid pole
-            if(gamepad1.b){
+            if(gamepad1.dpad_up){
                 drive.moveTestServo(.65);
                 //drive.LinearSlideToStop(0,25,50);
             }
             //drive.LinearSlideToStop(3,25,10); //high pole
-            if(gamepad1.y) {
+            if(gamepad1.dpad_down) {
                 drive.moveTestServo(0);
                 //drive.LinearSlideToStop(3,25,50);        //drive.LinearSlideToStop(4,25,10); //bottom
             }
+            if(gamepad1.y){
+                drive.LinearSlideToStop(3,.50,25);
+            }
+            if(gamepad2.b){
+                drive.LinearSlideToStop(0,.5,25);
+            }
+            if(gamepad1.x){
+                drive.LinearSlideToStop(1,.5,25);
+            }
+            if(gamepad1.a){
+                drive.LinearSlideToStop(2,.5,25);
+            }
+
 
 
 
@@ -81,6 +97,10 @@ public class LocalizationTest extends LinearOpMode{
             telemetry.addData("x", poseEstimate.getX());
             telemetry.addData("y", poseEstimate.getY());
             telemetry.addData("heading", poseEstimate.getHeading());
+
+            telemetry.addData("leftX",gamepad1.left_stick_x);
+            telemetry.addData("leftY",gamepad1.left_stick_y);
+            telemetry.addData("rightX",gamepad1.right_stick_x);
 
             telemetry.addData("RawLsPos",drive.LinearSlidePos());
 

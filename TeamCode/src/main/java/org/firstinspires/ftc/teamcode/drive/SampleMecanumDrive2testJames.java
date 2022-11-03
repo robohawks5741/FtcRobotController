@@ -7,7 +7,9 @@ public interface SampleMecanumDrive2testJames {
 
     //void LinearSlideToStop(int stop);
 
-    void LinearSlideToStop(int stop, int power, int tolerance);
+  //  void LinearSlideToStop(int stop, int power, int tolerance);
+
+    void LinearSlideToStop(int stop, double power, int tolerance);
 
     void LinearSlideToStop2(int stop, int tolerance);
 

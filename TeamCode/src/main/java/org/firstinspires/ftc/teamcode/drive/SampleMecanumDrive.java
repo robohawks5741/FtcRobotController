@@ -57,11 +57,11 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
     public int ctr = 0;
     public double Lpos = 0;
 //todo: fix values to reflect real numbers
-    public int bottomStop = -50;
-    public int lowStop = -1500;
-    public int midStop = -2300;
-    public int tallStop = -3584;
-    public int tooTall = 3700;
+    public int bottomStop = -100;//bottom, stop here
+    public int lowStop = -1350;
+    public int midStop = -2133;
+    public int tallStop =-2133;//placeholder value because slide isn't currently tall enough to reach the "tallStop"
+    public int tooTall = -2375;
     public int target = 0;
 
     public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0, 0, 0);
@@ -321,7 +321,7 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
 
     }
     @Override
-    public void LinearSlideToStop(int stop, int power,int tolerance){ //TODO: Add recursion with a tolerance var to make this as accurate as possible, requires good rope tension for up and down.
+    public void LinearSlideToStop(int stop, double power,int tolerance){ //TODO: Add recursion with a tolerance var to make this as accurate as possible, requires good rope tension for up and down.
         linearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         linearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -334,7 +334,7 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
         else if(stop == 3){
             target = tallStop;
         }
-        else{
+        if(stop == 0){
             target = bottomStop;
         }
         //above sets the target encoder position specified by the user input "stop"
@@ -410,6 +410,9 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
 
         clawServo.setPosition(pos);
     }
+
+
+
 
 
     @Override
