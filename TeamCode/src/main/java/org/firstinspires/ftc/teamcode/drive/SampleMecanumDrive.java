@@ -48,6 +48,7 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.encoderTicksTo
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kA;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kStatic;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
+import static java.lang.Math.abs;
 
 /*
  * Simple mecanum drive hardware implementation for REV hardware.
@@ -269,12 +270,12 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
     public void setWeightedDrivePower(Pose2d drivePower) {
         Pose2d vel = drivePower;
 
-        if (Math.abs(drivePower.getX()) + Math.abs(drivePower.getY())
-                + Math.abs(drivePower.getHeading()) > 1) {
+        if (abs(drivePower.getX()) + abs(drivePower.getY())
+                + abs(drivePower.getHeading()) > 1) {
             // re-normalize the powers according to the weights
-            double denom = VX_WEIGHT * Math.abs(drivePower.getX())
-                    + VY_WEIGHT * Math.abs(drivePower.getY())
-                    + OMEGA_WEIGHT * Math.abs(drivePower.getHeading());
+            double denom = VX_WEIGHT * abs(drivePower.getX())
+                    + VY_WEIGHT * abs(drivePower.getY())
+                    + OMEGA_WEIGHT * abs(drivePower.getHeading());
 
             vel = new Pose2d(
                     VX_WEIGHT * drivePower.getX(),
@@ -325,6 +326,13 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
         linearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         linearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        double rawProximity = 0;
+        double proximityMultiplier1 = 0;
+        double proximityMultiplierCorrector = 0;
+        double velo = 0;
+        double calculatedPower =0;
+        double correctedVelocity = 0;
+
         if(stop == 1){
             target = lowStop;
         }
@@ -341,15 +349,29 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
         //----------------------------------------------------------------------------------------
         if(LinearSlidePos()>=target){
             while(LinearSlidePos()>=target){
-                linearSlide.setPower(-power);    //TODO: see if this needs reversing
+                rawProximity = abs(abs(LinearSlidePos())-abs(target));
+                proximityMultiplier1 = (rawProximity < 500 ? 350 : 1 );
+                calculatedPower = rawProximity/proximityMultiplier1;
+                proximityMultiplierCorrector = (calculatedPower > 1 ? calculatedPower : 1);
+                velo = calculatedPower/proximityMultiplierCorrector;
+                correctedVelocity = (velo < .3 ? .3 : velo);
+                //velo = (proximityMultiplier1/proximityMultiplierCorrector)*power;
+                linearSlide.setPower(-correctedVelocity);
             }
-//TODO: Check out the go to position mode to eliminate this code
         }
         else{
             while (LinearSlidePos()<=target){
-                linearSlide.setPower(power);  //TODO: this might also need reversing
+                rawProximity = abs(abs(LinearSlidePos())-abs(target));
+                proximityMultiplier1 = (rawProximity < 500 ? 350 : 1 );
+                calculatedPower = rawProximity/proximityMultiplier1;
+                proximityMultiplierCorrector = (calculatedPower > 1 ? calculatedPower : 1);
+                velo = calculatedPower/proximityMultiplierCorrector;
+                correctedVelocity = (velo < .1 ? .1 : velo);
+                //velo = (proximityMultiplier1/proximityMultiplierCorrector)*power;
+                linearSlide.setPower(correctedVelocity);
             }
         }
+
         //--------------------------------------------------------------------------------------------
      //   if (LinearSlidePos()+tolerance<target||LinearSlidePos()-tolerance>target){
      //       LinearSlideToStop(stop, power/2,tolerance-2);
