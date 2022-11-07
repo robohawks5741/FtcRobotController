@@ -48,20 +48,21 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.encoderTicksTo
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kA;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kStatic;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
+import static java.lang.Math.abs;
 
 /*
  * Simple mecanum drive hardware implementation for REV hardware.
  */
 @Config
-public class SampleMecanumDrive extends MecanumDrive {
+public class RobohawksMecanumDrive extends MecanumDrive {
     public int ctr = 0;
     public double Lpos = 0;
-//todo: fix values to reflect real numbers
-    public int bottomStop = -50;
-    public int lowStop = -1500;
-    public int midStop = -2300;
-    public int tallStop = -3584;
-    public int tooTall = 3700;
+    //todo: fix values to reflect real numbers
+    public int bottomStop = -100;//bottom, stop here
+    public int lowStop = -1350;
+    public int midStop = -2133;
+    public int tallStop =-2133;//placeholder value because slide isn't currently tall enough to reach the "tallStop"
+    public int tooTall = -2375;
     public int target = 0;
 
     public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0, 0, 0);
@@ -87,7 +88,7 @@ public class SampleMecanumDrive extends MecanumDrive {
     private BNO055IMU imu;
     private VoltageSensor batteryVoltageSensor;
 
-    public SampleMecanumDrive(HardwareMap hardwareMap) {
+    public RobohawksMecanumDrive(HardwareMap hardwareMap) {
         super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
 
         follower = new HolonomicPIDVAFollower(TRANSLATIONAL_PID, TRANSLATIONAL_PID, HEADING_PID,
@@ -269,12 +270,12 @@ public class SampleMecanumDrive extends MecanumDrive {
     public void setWeightedDrivePower(Pose2d drivePower) {
         Pose2d vel = drivePower;
 
-        if (Math.abs(drivePower.getX()) + Math.abs(drivePower.getY())
-                + Math.abs(drivePower.getHeading()) > 1) {
+        if (abs(drivePower.getX()) + abs(drivePower.getY())
+                + abs(drivePower.getHeading()) > 1) {
             // re-normalize the powers according to the weights
-            double denom = VX_WEIGHT * Math.abs(drivePower.getX())
-                    + VY_WEIGHT * Math.abs(drivePower.getY())
-                    + OMEGA_WEIGHT * Math.abs(drivePower.getHeading());
+            double denom = VX_WEIGHT * abs(drivePower.getX())
+                    + VY_WEIGHT * abs(drivePower.getY())
+                    + OMEGA_WEIGHT * abs(drivePower.getHeading());
 
             vel = new Pose2d(
                     VX_WEIGHT * drivePower.getX(),
@@ -314,14 +315,12 @@ public class SampleMecanumDrive extends MecanumDrive {
     }
 
 
-    @Override
     public void setLinearSlide(double linearPower)  {
         //double LSstartPosition = linearSlide.getCurrentPosition();
         linearSlide.setPower(linearPower);
-
     }
-    @Override
-    public void LinearSlideToStop(int stop, double power,int tolerance){ //TODO: Add recursion with a tolerance var to make this as accurate as possible, requires good rope tension for up and down.
+
+    public void LinearSlideToStop(int stop, double power, int tolerance){ //TODO: Add recursion with a tolerance var to make this as accurate as possible, requires good rope tension for up and down.
         linearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         linearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -375,13 +374,12 @@ public class SampleMecanumDrive extends MecanumDrive {
         }
 
         //--------------------------------------------------------------------------------------------
-     //   if (LinearSlidePos()+tolerance<target||LinearSlidePos()-tolerance>target){
-     //       LinearSlideToStop(stop, power/2,tolerance-2);
-     //   }
+        //   if (LinearSlidePos()+tolerance<target||LinearSlidePos()-tolerance>target){
+        //       LinearSlideToStop(stop, power/2,tolerance-2);
+        //   }
 
     }
 
-    @Override
     public void LinearSlideToStop2(int stop, int tolerance){
 
         linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -405,12 +403,10 @@ public class SampleMecanumDrive extends MecanumDrive {
     }
 
 
-    @Override
     public void penetrate(double pos){
         penetrationServo.setPosition(pos);
     }
 
-    @Override
     public int LinearSlidePos(){
         //Lpos = linearSlide.getCurrentPosition();
         //ctr = ctr+4;
@@ -424,17 +420,15 @@ public class SampleMecanumDrive extends MecanumDrive {
         //ctr = ctr +2;
 
     }
-    @Override
+
     public void LinearSlideResetEnc(){
         linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
-    @Override
     public void moveTestServo(double pos){
 
         clawServo.setPosition(pos);
     }
-
 
     @Override
     public double getRawExternalHeading() {
