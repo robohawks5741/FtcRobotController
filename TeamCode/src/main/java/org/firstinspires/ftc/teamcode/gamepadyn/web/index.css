@@ -34,6 +34,18 @@ body {
     background-color: var(--gpad-button-bg);
     color: var(--gpad-button-fg);
     fill: var(--gpad-button-fg);
+    user-select: none;
+    -ms-user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+    cursor: pointer;
+    opacity: 75%;    
+}
+
+#gpadview .b:hover {
+    opacity: 100%;
 }
 
 #gpadview .b>span>img {
