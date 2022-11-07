@@ -332,6 +332,7 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
         double velo = 0;
         double calculatedPower =0;
         double correctedVelocity = 0;
+        double LSspeed = 0;
 
         if(stop == 1){
             target = lowStop;
@@ -349,14 +350,15 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
         //----------------------------------------------------------------------------------------
         if(LinearSlidePos()>=target){
             while(LinearSlidePos()>=target){
-                rawProximity = abs(abs(LinearSlidePos())-abs(target));
-                proximityMultiplier1 = (rawProximity < 500 ? 350 : 1 );
-                calculatedPower = rawProximity/proximityMultiplier1;
-                proximityMultiplierCorrector = (calculatedPower > 1 ? calculatedPower : 1);
-                velo = calculatedPower/proximityMultiplierCorrector;
-                correctedVelocity = (velo < .3 ? .3 : velo);
+                rawProximity = abs(abs(LinearSlidePos())-abs(target)); //finds how close slide is to target (unit is encoder ticks)
+                proximityMultiplier1 = (rawProximity < 500 ? 350 : 1 ); //if within 500 ticks of target, output 350, if not, output one.
+                calculatedPower = rawProximity/proximityMultiplier1; // If the slide is under 500 ticks to its destination, the variable calculatedPower is set to: the distance to the destination divided by 350. If the slide is not within 500 ticks, The value is just 1.
+                proximityMultiplierCorrector = (calculatedPower > 1 ? calculatedPower : 1); // This lets the next line know if the multiplier value is over 1, and sends the correct value to change it to exactly one if it is over one.
+                velo = calculatedPower/proximityMultiplierCorrector; // This turns multiplier values over 1 to one using the value provided by the above line.
+                correctedVelocity = (velo < .3 ? .3 : velo); // this makes sure that the multiplier value doesn't go below .3.
                 //velo = (proximityMultiplier1/proximityMultiplierCorrector)*power;
-                linearSlide.setPower(-correctedVelocity);
+                LSspeed = power*correctedVelocity;
+                linearSlide.setPower(-LSspeed);
             }
         }
         else{
@@ -368,7 +370,8 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
                 velo = calculatedPower/proximityMultiplierCorrector;
                 correctedVelocity = (velo < .1 ? .1 : velo);
                 //velo = (proximityMultiplier1/proximityMultiplierCorrector)*power;
-                linearSlide.setPower(correctedVelocity);
+                LSspeed = power*correctedVelocity;
+                linearSlide.setPower(LSspeed);
             }
         }
 
