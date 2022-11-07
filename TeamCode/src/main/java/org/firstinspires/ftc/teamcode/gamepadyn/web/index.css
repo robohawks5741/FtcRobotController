@@ -1,0 +1,120 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Helvetica, Arial, sans-serif;
+}
+
+#gpadview {
+    display: grid;
+    grid-template-areas:
+        "d d s f f"
+        ". l . r ."
+    ;
+    --gpad-button-bg: #f0f;
+    --gpad-button-fg: #000;
+}
+
+#gpadview .b {
+    display: flex;
+    flex: 0 1 max-content;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    padding: 4pt;
+    width: 48pt;
+    height: 48pt;
+    min-width: fit-content;
+    height: fit-content;
+    font-size: 24pt;
+    border-radius: 8pt;
+    background-color: var(--gpad-button-bg);
+    color: var(--gpad-button-fg);
+    fill: var(--gpad-button-fg);
+}
+
+#gpadview .b>span>img {
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+}
+
+#gpadview .b>span {
+    display: inline-block;
+    width: fit-content;
+    height: fit-content;
+    text-align: center;
+}
+
+.p4d {
+    display: grid;
+    box-sizing: content-box;
+    width: 192pt;
+    height: 192pt;
+    padding: 0;
+    border: solid 2pt #000;
+    border-radius: 37.5%;
+    grid-template-columns: repeat(3, calc(100%/3));
+    grid-template-rows: repeat(3, calc(100%/3));
+}
+
+#gpadview .p4d>.b {
+    width: 100%;
+    height: 100%;
+}
+
+#dpad {
+    grid-area: d;
+}
+
+#dpad>.b {
+    --gpad-button-bg: #404048;
+    --gpad-button-fg: #fff;
+}
+
+#dpad>#dd {
+    grid-area: 3 / 2;
+}
+
+#dpad>#dr {
+    grid-area: 2 / 3;
+}
+
+#dpad>#dl {
+    grid-area: 2 / 1;
+}
+
+#dpad>#du {
+    grid-area: 1 / 2;
+}
+
+#facebtns {
+    grid-area: f;
+}
+
+#facebtns>.b {
+    border-radius: 50%;
+}
+
+#facebtns>#fa {
+    grid-area: 3 / 2;
+    --gpad-button-bg: #00f020;
+}
+
+#facebtns>#fb {
+    grid-area: 2 / 3;
+    --gpad-button-bg: #f02400;
+}
+
+#facebtns>#fx {
+    grid-area: 2 / 1;
+    --gpad-button-bg: #3060f0;
+}
+
+#facebtns>#fy {
+    grid-area: 1 / 2;
+    --gpad-button-bg: #f0d020;
+}
