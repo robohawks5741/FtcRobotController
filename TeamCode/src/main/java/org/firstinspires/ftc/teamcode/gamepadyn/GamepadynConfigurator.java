@@ -17,7 +17,9 @@ import org.firstinspires.ftc.robotserver.internal.webserver.MimeTypesUtil;
 import org.firstinspires.ftc.robotserver.internal.webserver.AppThemeColors;
 import org.firstinspires.ftc.robotserver.internal.webserver.CoreRobotWebServer;
 
-@TeleOp(name = "Gamepad Configuration")
+// TODO: fix this
+
+//@TeleOp(name = "Gamepad Configuration")
 public class GamepadynConfigurator {
 
     private static GamepadynConfigurator instance;

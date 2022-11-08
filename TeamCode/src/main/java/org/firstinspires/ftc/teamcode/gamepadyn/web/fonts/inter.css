@@ -1,0 +1,25 @@
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 100 900;
+    font-stretch: 100%;
+    src: url('Inter/Inter-VariableFont_slnt,wght.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Inter';
+    font-style: italic;
+    font-variation-settings: 'slnt' -10;
+    font-weight: 100 900;
+    font-stretch: 100%;
+    src: url('Inter/Inter-VariableFont_slnt,wght.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Inter';
+    font-style: oblique;
+    font-variation-settings: 'slnt' -10;
+    font-weight: 100 900;
+    font-stretch: 100%;
+    src: url('Inter/Inter-VariableFont_slnt,wght.ttf') format('truetype');
+}
