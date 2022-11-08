@@ -2,6 +2,9 @@ const clarifierElement = document.getElementById('clarifier');
 
 const gamepads = {};
 
+// SEE THIS !!!
+// https://w3c.github.io/gamepad/#remapping
+
 /**
  * @param {GamepadEvent} event 
  * @param {boolean} connecting 
