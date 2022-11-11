@@ -1,0 +1,190 @@
+@import url('reusables.css');
+
+:root {
+    --gpad-bg: #f0f;
+    --gpad-bg-hover: #0f0;
+    --gpad-fg: #000;
+    --gpad-border: #202040;
+    width: fit-content;
+    height: fit-content;
+    margin: 16pt;
+    padding: 16pt;
+    text-align: center;
+    border-radius: 8pt;
+}
+
+#gpadgrid {
+    display: grid;
+    grid-template-areas:
+        "d d s f f"
+        ". l . r ."
+    ;
+    grid-auto-flow: dense;
+    align-items: center;
+    justify-content: center;
+}
+
+h1 {
+    margin: 0;
+    margin-bottom: 16pt;
+}
+
+.b {
+    display: flex;
+    flex: 0 1 max-content;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    padding: 4pt;
+    min-width: fit-content;
+    min-height: fit-content;
+    width: 64pt;
+    height: 64pt;
+    font-size: 24pt;
+    border-radius: 8pt;
+    font-weight: 700;
+    background-color: var(--gpad-bg);
+    color: var(--gpad-fg);
+    fill: var(--gpad-fg);
+    transition-property: background-color, border-color;
+    transition-timing-function: cubic-bezier(.08, .82, .17, 1);
+    transition-duration: 0.5s;
+    cursor: pointer;
+}
+
+.b:hover,
+.b.gpsl {
+    background-color: var(--gpad-bg-hover);
+}
+
+.b>span>img {
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+}
+
+.b>span {
+    display: inline-block;
+    width: fit-content;
+    height: fit-content;
+    text-align: center;
+}
+
+.b>span,
+.b>label,
+.b>img,
+.b>svg {
+    pointer-events: none
+}
+
+.p4d {
+    display: grid;
+    box-sizing: content-box;
+    width: 192pt;
+    height: 192pt;
+    padding: 4pt;
+    border-radius: 37.5%;
+    grid-template-columns: repeat(3, calc(100%/3));
+    grid-template-rows: repeat(3, calc(100%/3));
+}
+
+.p4d>.b {
+    width: 100%;
+    height: 100%;
+}
+
+/* ---------- DPad ---------- */
+
+#dpad {
+    grid-area: d;
+}
+
+#dpad>.b {
+    --gpad-bg-hover: #404048;
+    --gpad-bg: #40404880;
+    --gpad-fg: #fff;
+}
+
+#dpad>#dd {
+    grid-area: 3 / 2;
+}
+
+#dpad>#dr {
+    grid-area: 2 / 3;
+}
+
+#dpad>#dl {
+    grid-area: 2 / 1;
+}
+
+#dpad>#du {
+    grid-area: 1 / 2;
+}
+
+/* ---------- Face Buttons ---------- */
+
+#facebtns {
+    grid-area: f;
+}
+
+#facebtns>.b {
+    border-radius: 50%;
+}
+
+#facebtns>#fa {
+    grid-area: 3 / 2;
+    --gpad-bg-hover: #00f020;
+    --gpad-bg: #00f02080;
+}
+
+#facebtns>#fb {
+    grid-area: 2 / 3;
+    --gpad-bg-hover: #f02400;
+    --gpad-bg: #f0240080;
+}
+
+#facebtns>#fx {
+    grid-area: 2 / 1;
+    --gpad-bg-hover: #3060f0;
+    --gpad-bg: #3060f080;
+}
+
+#facebtns>#fy {
+    grid-area: 1 / 2;
+    --gpad-bg-hover: #f0d020;
+    --gpad-bg: #f0d02080;
+}
+
+/* ---------- Sticks ---------- */
+
+.stick {
+    --gpad-bg-hover: #000;
+    --gpad-border: #404040;
+    --gpad-bg: #202020;
+    --gpad-fg: #fff;
+    transition-property: background-color, border-color, border-width;
+    border: solid 8pt var(--gpad-border);
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.stick.gpsl,
+.stick:hover {
+    background-color: var(--gpad-bg-hover);
+    border-width: 4pt;
+}
+
+#rstick {
+    grid-area: r;
+}
+
+#lstick {
+    grid-area: l;
+}
+
+/* ---------- Special Buttons ---------- */
+
+#sbtns {
+    text-align: center;
+    width: 128pt;
+}

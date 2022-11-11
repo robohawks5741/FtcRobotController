@@ -1,0 +1,9 @@
+@import url('reusables.css');
+
+.altli>* {
+    background-color: #fff;
+}
+
+.altli>*:nth-child(even) {
+    background-color: #e0e0e0;
+}
