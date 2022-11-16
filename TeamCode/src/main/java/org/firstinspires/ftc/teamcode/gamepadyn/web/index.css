@@ -6,6 +6,9 @@ gamepad-visualizer {
     height: fit-content !important;
     padding: 8pt !important;
     text-align: center !important;
+}
+
+#bigvis {
     border: 2pt solid #000;
     border-radius: 8pt;
 }

@@ -1,3 +1,5 @@
+/** @type {GamepadVisualizerElement} */
+const bigVisualizer = document.getElementById('bigvis');
 const clarifierElement = document.getElementById('clarifier');
 const gpadStatsElement = document.getElementById('agpstatus');
 
@@ -5,11 +7,6 @@ const gpadStatsElement = document.getElementById('agpstatus');
 const gamepads = {};
 /** @type {number | null} */
 var activeGamepadIndex = null;
-/** @type {boolean} */
-var isGamepadEnabled = false;
-
-// SEE THIS !!!
-// https://w3c.github.io/gamepad/#remapping
 
 /** @function */
 const requestFrame = window?.requestAnimationFrame || window?.mozRequestAnimationFrame || window?.webkitRequestAnimationFrame || window?.msRequestAnimationFrame;
@@ -17,15 +14,45 @@ if (!requestFrame) {
     throw new Error("What browser are you using?! This site needs window.requestAnimationFrame to function!");
 }
 
+function norm(x) {
+    return Math.max(-1, Math.min(1, x));
+}
+
+/** @typedef {{x: number, y: number}} Vec2d A 2-dimensional vector. */
+
+/**
+ * @template {any} [TButton=boolean] The data type of buttons (defaults to `boolean`)
+ * @template {any} [TStick=Vec2d] The data type of the two sticks (defaults to {@linkcode Vec2d})
+ * @typedef {object} StandardGamepadMap
+ * @property {object} dpad
+ * @property {TButton} dpad.up
+ * @property {TButton} dpad.down
+ * @property {TButton} dpad.left
+ * @property {TButton} dpad.right
+ * @property {object} face
+ * @property {TButton} face.up
+ * @property {TButton} face.down
+ * @property {TButton} face.left
+ * @property {TButton} face.right
+ * @property {object} stick
+ * @property {TStick} stick.l
+ * @property {TStick} stick.r
+ */
+
+/**
+ * @classdesc An HTML element with a shadow DOM that relates to a gamepad. Use {@linkcode setGamepad()} to assign a gamepad.
+ * @see {@link https://w3c.github.io/gamepad/#remapping W3C standard gamepad mapping}
+ */
 class GamepadBindingElement extends HTMLElement {
-    /** @protected @type {Gamepad | undefined} */
+    /** @protected  @type {Gamepad | undefined} */
     _gamepad;
 
     /** @readonly @type {Gamepad | undefined} */
     get gamepad() { return this._gamepad; }
+
     /**
-     * @param {Gamepad | number | string} gid
-     * @returns {void}
+     * @param {Gamepad | number | string} gid The gamepad.
+     * @todo Allowing setting gamepad via a Gamepad object
     */
     setGamepad(gid) {
         let t = typeof gid;
@@ -41,7 +68,6 @@ class GamepadBindingElement extends HTMLElement {
             }
             case 'object': {
                 // Object.getPrototypeOf(t)?.constructor?.name
-                // TODO: set gamepad via object
                 console.warn("Cannot set gamepad via Gamepad object yet! Implement me later. Returning.");
                 return;
             }
@@ -52,8 +78,32 @@ class GamepadBindingElement extends HTMLElement {
         this.setAttribute('gamepad-index', this.gamepad.id);
     }
 
-    /** @public @ */
-    update() { }
+    /** @readonly @type {StandardGamepadMap<boolean, Vec2d>} */
+    get standard() {
+        if (this._gamepad == null) return null;
+        let gp = this._gamepad;
+        return {
+            dpad: {
+                up: gp.buttons[12].pressed,
+                down: gp.buttons[13].pressed,
+                left: gp.buttons[14].pressed,
+                right: gp.buttons[15].pressed
+            },
+            face: {
+                up: gp.buttons[3].pressed,
+                down: gp.buttons[0].pressed,
+                left: gp.buttons[2].pressed,
+                right: gp.buttons[1].pressed
+            },
+            stick: {
+                l: { x: gp.axes[0], y: gp.axes[1] },
+                r: { x: gp.axes[2], y: gp.axes[3] }
+            }
+        };
+    }
+
+    /** @public */
+    update() { return };
 
     constructor() {
         super();
@@ -63,7 +113,7 @@ class GamepadBindingElement extends HTMLElement {
     }
 }
 
-class GamepadVisualizerElement extends HTMLDivElement {
+class GamepadVisualizerElement extends GamepadBindingElement {
     static htmlContent = `<link rel="stylesheet" href="visualizer.css">
 <h1>Gamepad Input Mapper</h1>
 <div id="gpadgrid">
@@ -102,13 +152,15 @@ class GamepadVisualizerElement extends HTMLDivElement {
         </div>
     </div>
     <!-- <label>DPAD</label> -->
-    <div class="b stick nosel" id="lstick">
+    <div class="b stick nosel" id="sl">
+        <canvas class="stickrend" width="128" height="128"></canvas>
         <label>LS</label>
     </div>
     <div id="sbtns">
-        <h1>hi I am the special buttons</h1>
+        <h1>&lt;temp&gt; Special Buttons</h1>
     </div>
-    <div class="b stick nosel" id="rstick">
+    <div class="b stick nosel" id="sr">
+        <canvas class="stickrend" width="128" height="128"></canvas>
         <label>RS</label>
     </div>
     <div class="p4d nosel" id="facebtns">
@@ -120,6 +172,63 @@ class GamepadVisualizerElement extends HTMLDivElement {
 </div>`;
     get tagName() { return 'GAMEPAD-VISUALIZER'; };
     get nodeName() { return this.tagName; };
+
+    /** @private @type {{canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D}} */
+    _slRenderer = { canvas: null, ctx: null }
+    /** @private @type {{canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D}} */
+    _srRenderer = { canvas: null, ctx: null }
+    /** @private @constant @readonly @type {CanvasRenderingContext2DSettings} */
+    _rendererOptions = { alpha: true, desynchronized: true };
+
+    /** @readonly @type {StandardGamepadMap<HTMLDivElement, HTMLDivElement>} */
+    elementMap = {
+        dpad: {
+            up: undefined,
+            down: undefined,
+            left: undefined,
+            right: undefined,
+        },
+        face: {
+            up: undefined,
+            down: undefined,
+            left: undefined,
+            right: undefined,
+        },
+        stick: {
+            l: undefined,
+            r: undefined
+        }
+    }
+
+    /** @override */
+    update() {
+        const capt = this.standard;
+        for (let i = 0; i < 2; i++) {
+            let r = (i == 0 ? this._slRenderer : this._srRenderer);
+            let s = capt.stick[(i == 0 ? 'l' : 'r')];
+            r.ctx.clearRect(0, 0, 128, 128);
+            if (Math.abs(s.x) >= 0.0625 || Math.abs(s.y) >= 0.0625) {
+                r.ctx.strokeStyle = '#ff0000';
+                r.ctx.lineCap = 'round';
+                r.ctx.lineJoin = 'round';
+                r.ctx.lineWidth = 8;
+                r.ctx.fillStyle = '#0000'
+                r.ctx.beginPath();
+                r.ctx.moveTo(64, 64);
+                // thx pythagoras
+                let len = Math.max(0, Math.min(1, Math.sqrt(Math.pow(s.x, 2) + Math.pow(s.y, 2))));
+                let a = Math.atan2(norm(s.y), norm(s.x));// * 180 / Math.PI;
+                let x = Math.cos(a);
+                let y = Math.sin(a);
+                r.ctx.lineTo((x * len * 52) + 64, (y * len * 52) + 64);
+                r.ctx.stroke();
+                this.elementMap.stick[(i == 0 ? 'l' : 'r')].setAttribute('gpsl', 'true')
+            } else {
+                this.elementMap.stick[(i == 0 ? 'l' : 'r')].removeAttribute('gpsl');
+            }
+        }
+    }
+
     constructor() {
         super();
         // this.appendChild();
@@ -128,6 +237,24 @@ class GamepadVisualizerElement extends HTMLDivElement {
             mode: 'closed'
         });
         shadow.innerHTML += GamepadVisualizerElement.htmlContent;
+        
+        this.elementMap.dpad.up = shadow.querySelector('#du');
+        this.elementMap.dpad.down = shadow.querySelector('#dd');
+        this.elementMap.dpad.left = shadow.querySelector('#dl');
+        this.elementMap.dpad.right = shadow.querySelector('#dr');
+        this.elementMap.face.up = shadow.querySelector('#fu');
+        this.elementMap.face.down = shadow.querySelector('#fd');
+        this.elementMap.face.left = shadow.querySelector('#fl');
+        this.elementMap.face.right = shadow.querySelector('#fr');
+        this.elementMap.stick.l = shadow.querySelector('#sl');
+        this.elementMap.stick.r = shadow.querySelector('#sr');
+        
+        this._slRenderer.canvas = shadow.querySelector('#sl>.stickrend');
+        this._srRenderer.canvas = shadow.querySelector('#sr>.stickrend');
+        
+        this._slRenderer.ctx = this._slRenderer.canvas.getContext('2d', this._rendererOptions);
+        this._srRenderer.ctx = this._srRenderer.canvas.getContext('2d', this._rendererOptions);
+        return;
     }
 };
 
@@ -140,41 +267,19 @@ class GamepadStatusElement extends GamepadBindingElement {
 
     /** @override */
     update() {
-        if (!this.gamepad.connected) {
+        if (typeof this.gamepad !== 'object') { this._container.innerHTML = `Gamepad Unavailable`; return; }
+        if (!(this.gamepad?.connected)) {
             this.remove();
             return;
         }
         this._container.innerHTML = '';
         this._container.innerHTML = `&lt;PLACEHOLDER&gt; ID: "${this.gamepad?.id}"`;
         if (this.gamepad.mapping == 'standard') {
-            /*
-        buttons[0] 	Bottom button in right cluster
-        buttons[1] 	Right button in right cluster
-        buttons[2] 	Left button in right cluster
-        buttons[3] 	Top button in right cluster
-        buttons[4] 	Top left front button
-        buttons[5] 	Top right front button
-        buttons[6] 	Bottom left front button
-        buttons[7] 	Bottom right front button
-        buttons[8] 	Left button in center cluster
-        buttons[9] 	Right button in center cluster
-        buttons[10] 	Left stick pressed button
-        buttons[11] 	Right stick pressed button
-        buttons[12] 	Top button in left cluster
-        buttons[13] 	Bottom button in left cluster
-        buttons[14] 	Left button in left cluster
-        buttons[15] 	Right button in left cluster
-        buttons[16] 	Center button in center cluster
-        axes[0] 	Horizontal axis for left stick (negative left/positive right)
-        axes[1] 	Vertical axis for left stick (negative up/positive down)
-        axes[2] 	Horizontal axis for right stick (negative left/positive right)
-        axes[3] 	Vertical axis for right stick (negative up/positive down) 
-            */
             for (let i = 0; i < this.gamepad.buttons.length; i++) {
-                this._container.innerHTML += `<br>Button #${i} ${this.gamepad.buttons[i].pressed ? "pressed" : "unpressed"}`;
+                this._container.innerHTML += `<br>Button #${i} ${this.gamepad.buttons[i].value/*pressed ? "pressed" : "unpressed"*/}`;
             }
-            for (let i = 0; i < this.gamepad.axes.length; i +=2 ) {
-                this._container.innerHTML += `<br>Stick #${i} (${(i >= 2) ? 'right' : 'left'}) at ${this.gamepad.axes[i]}x${this.gamepad.axes[i+1]}y`;
+            for (let i = 0; i < this.gamepad.axes.length; i += 2) {
+                this._container.innerHTML += `<br>Stick #${i} (${(i >= 2) ? 'right' : 'left'}) at ${this.gamepad.axes[i]}X ${this.gamepad.axes[i + 1]}Y`;
             }
         } else {
             console.warn("Using non-standard control mapping! This will be fine when we allow user-defined mapping but that\'s a stretch goal. Lots of code may not work.");
@@ -185,7 +290,7 @@ class GamepadStatusElement extends GamepadBindingElement {
         super();
         // TODO: listen to attribute changes
         let gid = this.getAttribute('gamepad-index');
-        if (gid) this.setGamepad(gid);
+        if (gid && gid?.length > 0) this.setGamepad(gid);
         // this.appendChild();
         // this.shadowRoot
 
@@ -200,7 +305,7 @@ class GamepadStatusElement extends GamepadBindingElement {
 };
 
 customElements.define(GamepadStatusElement.prototype.tagName.toLowerCase(), GamepadStatusElement);//, { extends: 'div' });
-customElements.define(GamepadVisualizerElement.prototype.tagName.toLowerCase(), GamepadVisualizerElement, { extends: 'div' });
+customElements.define(GamepadVisualizerElement.prototype.tagName.toLowerCase(), GamepadVisualizerElement);//, { extends: 'div' });
 
 /**
  * @param {GamepadEvent} event 
@@ -213,42 +318,47 @@ function gamepadEventHandler(event) {
     const gamepad = event.gamepad;
 
     if (connecting) {
+        console.log(`Connecting gamepad at index ${gamepad.index}`)
         /** @type {GamepadStatusElement} */
         let gs = document.createElement('gamepad-status');
-        gs.gamepad = event.gamepad.index;
+        bigVisualizer.setGamepad(event.gamepad.index);
+        gs.setGamepad(event.gamepad.index);
+        console.log(gs);
         gpadStatsElement.appendChild(gs);
         gamepads[gamepad.index] = gamepad;
-        if (isGamepadEnabled) {
-            activeGamepadIndex = gamepad;
+        if (activeGamepadIndex == null) {
+            console.log(`Gamepad index now ${gamepad.index} (controller connected)`);
+        } else {
+            console.log(`Overriding gamepad index to ${gamepad.index} as it just connected`)
         }
+        activeGamepadIndex = gamepad.index;
     } else {
         // disconnected
+        console.log(`Disconnecting gamepad at index ${gamepad.index}`)
         delete gamepads[gamepad.index];
     }
 
     let hasGamepad = (Object.keys(gamepads).length > 0);
 
-    if (connecting) {
-        gamepads[gamepad.index] = gamepad;
-        if (isGamepadEnabled) {
-            console.log(`Updating gamepad index to ${gamepad.index} as it just connected`)
-            activeGamepadIndex = gamepad.index;
-        }
-    } else {
+    if (!connecting) {
         // disconnected
-        if (event.gamepad.index === activeGamepadIndex) {
-            if (hasGamepad) {
-                let k = Object.keys(gamepads);
-                // Lots of redundancy here, k will always be an array, i will always be a number.
-                // If they aren't, this will never be called.
-                // But, JavaScript has no such thing as redundancy, so I'm not getting rid of it.
-                let i = k?.[k.length - 1];
-                if (typeof i == 'number') activeGamepadIndex = i;
+        if (event.gamepad.index === activeGamepadIndex && hasGamepad) {
+            let k = Object.keys(gamepads);
+            // Lots of redundancy here, k will always be an array, i will always be a number.
+            // If they aren't, this will never be called.
+            // But, JavaScript has no such thing as redundancy, so I'm not getting rid of it.
+
+            // Get the last controller
+            let i = k?.[k.length - 1];
+            if (typeof i == 'number') {
+                console.log(`Gamepad index now ${i} (last available controller index)`);
+                activeGamepadIndex = i;
             }
-        } else if (!hasGamepad) {
+        }
+        if (!hasGamepad) {
             // Gamepad disconnected, no alternatives, we sad now
+            console.log(`Gamepad index now null (no gamepads?)`);
             activeGamepadIndex = null;
-            isGamepadEnabled = false;
         }
     }
 
@@ -256,18 +366,17 @@ function gamepadEventHandler(event) {
     return;
 }
 
-function updateGamepads() {
+async function updateGamepads() {
+    // console.debug('updateGamepads()');
     /** @type {NodeListOf<GamepadStatusElement>} */
     let sElems = gpadStatsElement.querySelectorAll('gamepad-status');
-    // this sounds super weird but it's not
     for (let i = 0; i < sElems.length; i++) {
-        console.log(sElems.item(i));
         sElems.item(i).update();
     }
-
-    if (isGamepadEnabled && activeGamepadIndex !== null) requestFrame(updateGamepads);
+    bigVisualizer.update();
+    if (activeGamepadIndex !== null) requestFrame(updateGamepads);
     return;
 }
 
-window.addEventListener("gamepadconnected", ev => { gamepadEventHandler(ev, true); });
-window.addEventListener("gamepaddisconnected", ev => { gamepadEventHandler(ev, false); });
+window.addEventListener('gamepadconnected', ev => { gamepadEventHandler(ev, true); });
+window.addEventListener('gamepaddisconnected', ev => { gamepadEventHandler(ev, false); });

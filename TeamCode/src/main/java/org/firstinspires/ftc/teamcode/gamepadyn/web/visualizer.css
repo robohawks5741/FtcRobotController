@@ -53,7 +53,7 @@ h1 {
 }
 
 .b:hover,
-.b.gpsl {
+.b[gpsl] {
     background-color: var(--gpad-bg-hover);
 }
 
@@ -64,7 +64,7 @@ h1 {
 }
 
 .b>span {
-    display: inline-block;
+    display: block;
     width: fit-content;
     height: fit-content;
     text-align: center;
@@ -168,17 +168,30 @@ h1 {
     cursor: pointer;
 }
 
-.stick.gpsl,
+.stick[gpsl],
 .stick:hover {
-    background-color: var(--gpad-bg-hover);
+    --gpad-fg: #ffffff80;
     border-width: 4pt;
 }
 
-#rstick {
+.stick>.stickrend {
+    margin: 0;
+    padding: 0;
+    width: 64pt;
+    height: 64pt;
+    position: absolute;
+    user-select: none;
+    -ms-user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    pointer-events: none;
+}
+
+#sr {
     grid-area: r;
 }
 
-#lstick {
+#sl {
     grid-area: l;
 }
 
