@@ -55,15 +55,15 @@ import static java.lang.Math.abs;
  */
 @Config
 public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDrive2testJames {
-    public int ctr = 0;
-    public double Lpos = 0;
+    //public int ctr = 0;
+    //public double Lpos = 0;
 //todo: fix values to reflect real numbers
-    public int bottomStop = -100;//bottom, stop here
+    public int bottomStop = -25;//bottom, stop here
     public int lowStop = -1350;
     public int midStop = -2133;
     public int tallStop =-2133;//placeholder value because slide isn't currently tall enough to reach the "tallStop"
-    public int tooTall = -2375;
-    public int target = 0;
+    //public int tooTall = -2375;//max height
+    public int target = 0;//placeholder here, gets used in function LinearSlideToStop()
 
     public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0, 0, 0);
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(0, 0, 0);
@@ -355,7 +355,7 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
                 calculatedPower = rawProximity/proximityMultiplier1; // If the slide is under 500 ticks to its destination, the variable calculatedPower is set to: the distance to the destination divided by 350. If the slide is not within 500 ticks, The value is just 1.
                 proximityMultiplierCorrector = (calculatedPower > 1 ? calculatedPower : 1); // This lets the next line know if the multiplier value is over 1, and sends the correct value to change it to exactly one if it is over one.
                 velo = calculatedPower/proximityMultiplierCorrector; // This turns multiplier values over 1 to one using the value provided by the above line.
-                correctedVelocity = (velo < .3 ? .3 : velo); // this makes sure that the multiplier value doesn't go below .3.
+                correctedVelocity = (velo < .4 ? .4 : velo); // this makes sure that the multiplier value doesn't go below .3.
                 //velo = (proximityMultiplier1/proximityMultiplierCorrector)*power;
                 LSspeed = power*correctedVelocity;
                 linearSlide.setPower(-LSspeed);
@@ -368,7 +368,7 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
                 calculatedPower = rawProximity/proximityMultiplier1;
                 proximityMultiplierCorrector = (calculatedPower > 1 ? calculatedPower : 1);
                 velo = calculatedPower/proximityMultiplierCorrector;
-                correctedVelocity = (velo < .1 ? .1 : velo);
+                correctedVelocity = (velo < .4 ? .4 : velo);
                 //velo = (proximityMultiplier1/proximityMultiplierCorrector)*power;
                 LSspeed = power*correctedVelocity;
                 linearSlide.setPower(LSspeed);

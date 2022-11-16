@@ -46,11 +46,11 @@ public class LocalizationTest extends LinearOpMode{
             );
 
             if (gamepad1.left_trigger >= .05 || gamepad1.right_trigger >=.05){
-                drive.setLinearSlide(gamepad1.left_trigger);
-                if (gamepad1.left_trigger >= .05){
-                    drive.setLinearSlide(gamepad1.left_trigger);
+                //drive.setLinearSlide(gamepad1.left_trigger);
+                if (gamepad1.right_trigger >= .05){
+                    drive.setLinearSlide(gamepad1.right_trigger);
                 }
-                else drive.setLinearSlide(-gamepad1.right_trigger);
+                else drive.setLinearSlide(-gamepad1.left_trigger);
             }
             else drive.setLinearSlide(0);
 
