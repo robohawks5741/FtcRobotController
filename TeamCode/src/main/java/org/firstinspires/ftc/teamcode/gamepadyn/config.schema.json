@@ -1,0 +1,81 @@
+{
+    "$schema": "http://json-schema.org/schema",
+    "$id": "gamepadyn-config",
+    "title": "Gamepadyn Configuration Schema",
+    "description": "A product from Acme's catalog",
+    "type": "object",
+    "properties": {
+        "mapName": {
+            "description": "The name of the configuration",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20
+        },
+        "maps": {
+            "description": "The per-input action mappings",
+            "type": "object",
+            "properties": {
+                "fd": {
+                    "description": "Face Button Down (`A` using XBox layout)"
+                },
+                "fr": {
+                    "description": "Face Button Right (`B` using XBox layout)"
+                },
+                "fl": {
+                    "description": "Face Button Left (`X` using XBox layout)"
+                },
+                "fu": {
+                    "description": "Face Button Up (`Y` using XBox layout)"
+                },
+                "du": {
+                    "description": "D-Pad Up"
+                },
+                "dd": {
+                    "description": "D-Pad Down"
+                },
+                "dl": {
+                    "description": "D-Pad Left"
+                },
+                "dr": {
+                    "description": "D-Pad Right"
+                },
+                "tr": {
+                    "description": "Trigger Right"
+                },
+                "tl": {
+                    "description": "Trigger Left"
+                },
+                "br": {
+                    "description": "Bumper Right"
+                },
+                "bl": {
+                    "description": "Bumper Left"
+                },
+                "sr": {
+                    "description": "Right Stick "
+                },
+                "sbr": {
+                    "description": "Right Stick Button"
+                },
+                "sl": {
+                    "description": "Left Stick"
+                },
+                "sbl": {
+                    "description": "Left Stick Button"
+                }
+            }
+        }
+    },
+    "definitions": {
+        "DigitalButton": {
+            "title": "Digital Button Title!!!",
+            "type": "array"
+        },
+        "AnalogButton": {},
+        "AnalogStick": {}
+    },
+    "required": [
+        "mapName",
+        "maps"
+    ]
+}

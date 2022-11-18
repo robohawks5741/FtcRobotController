@@ -14,8 +14,16 @@ if (!requestFrame) {
     throw new Error("What browser are you using?! This site needs window.requestAnimationFrame to function!");
 }
 
+/** Clamps a value between -1 and 1. */
 function norm(x) {
     return Math.max(-1, Math.min(1, x));
+}
+
+/**
+ * Not a typo.
+ */
+function cerealizer() {
+
 }
 
 /** @typedef {{x: number, y: number}} Vec2d A 2-dimensional vector. */
@@ -37,6 +45,14 @@ function norm(x) {
  * @property {object} stick
  * @property {TStick} stick.l
  * @property {TStick} stick.r
+ * @property {TButton} stick.lbutton
+ * @property {TButton} stick.rbutton
+ * @property {object} trigger
+ * @property {TButton} trigger.l
+ * @property {TButton} trigger.r
+ * @property {object} bumper
+ * @property {TButton} bumper.l
+ * @property {TButton} bumper.r
  */
 
 /**
@@ -165,7 +181,7 @@ class GamepadVisualizerElement extends GamepadBindingElement {
     </div>
     <div class="p4d nosel" id="facebtns">
         <div class="b" id="fa"><span>A</span></div>
-        <div class="b" id="fb"><span>B</span></div>
+        <div class="b" id="fd"><span>B</span></div>
         <div class="b" id="fx"><span>X</span></div>
         <div class="b" id="fy"><span>Y</span></div>
     </div>
@@ -237,7 +253,7 @@ class GamepadVisualizerElement extends GamepadBindingElement {
             mode: 'closed'
         });
         shadow.innerHTML += GamepadVisualizerElement.htmlContent;
-        
+
         this.elementMap.dpad.up = shadow.querySelector('#du');
         this.elementMap.dpad.down = shadow.querySelector('#dd');
         this.elementMap.dpad.left = shadow.querySelector('#dl');
@@ -248,15 +264,16 @@ class GamepadVisualizerElement extends GamepadBindingElement {
         this.elementMap.face.right = shadow.querySelector('#fr');
         this.elementMap.stick.l = shadow.querySelector('#sl');
         this.elementMap.stick.r = shadow.querySelector('#sr');
-        
+
         this._slRenderer.canvas = shadow.querySelector('#sl>.stickrend');
         this._srRenderer.canvas = shadow.querySelector('#sr>.stickrend');
-        
+
         this._slRenderer.ctx = this._slRenderer.canvas.getContext('2d', this._rendererOptions);
         this._srRenderer.ctx = this._srRenderer.canvas.getContext('2d', this._rendererOptions);
         return;
     }
 };
+customElements.define(GamepadVisualizerElement.prototype.tagName.toLowerCase(), GamepadVisualizerElement);
 
 class GamepadStatusElement extends GamepadBindingElement {
     get tagName() { return 'GAMEPAD-STATUS'; };
@@ -303,9 +320,7 @@ class GamepadStatusElement extends GamepadBindingElement {
         shadow.appendChild(this._container);
     }
 };
-
-customElements.define(GamepadStatusElement.prototype.tagName.toLowerCase(), GamepadStatusElement);//, { extends: 'div' });
-customElements.define(GamepadVisualizerElement.prototype.tagName.toLowerCase(), GamepadVisualizerElement);//, { extends: 'div' });
+customElements.define(GamepadStatusElement.prototype.tagName.toLowerCase(), GamepadStatusElement);
 
 /**
  * @param {GamepadEvent} event 
@@ -366,14 +381,17 @@ function gamepadEventHandler(event) {
     return;
 }
 
+/**
+ * Updates the Gamepad Status elements
+ */
 async function updateGamepads() {
     // console.debug('updateGamepads()');
     /** @type {NodeListOf<GamepadStatusElement>} */
-    let sElems = gpadStatsElement.querySelectorAll('gamepad-status');
+    let sElems = document.querySelectorAll('gamepad-status');
     for (let i = 0; i < sElems.length; i++) {
-        sElems.item(i).update();
+        sElems.item(i)?.update?.();
     }
-    bigVisualizer.update();
+    bigVisualizer?.update?.();
     if (activeGamepadIndex !== null) requestFrame(updateGamepads);
     return;
 }
