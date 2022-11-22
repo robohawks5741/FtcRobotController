@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 /*
- * Op mode for preliminary tuning of the follower PID coefficients (located in the drive base
+ * Op mode for preliminary tuning of the follower PID  coefficients (located in the drive base
  * classes). The robot drives back and forth in a straight line indefinitely. Utilization of the
  * dashboard is recommended for this tuning routine. To access the dashboard, connect your computer
  * to the RC's WiFi network. In your browser, navigate to https://192.168.49.1:8080/dash if you're
