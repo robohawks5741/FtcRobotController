@@ -1,26 +1,15 @@
 package org.firstinspires.ftc.teamcode.gamepadyn;
 
-public class AnalogXD<T> {
-    final X;
-    final T[] axes;
-    private AnalogXD(int n) {
-        X = n;
-        axes = T[n];
-    }
-}
-
-public class Digital {
-    final boolean value;
-    private Digital() {
-    }
-}
+import androidx.annotation.NonNull;
 
 public class GamepadynEvent<T> {
-    final String type;
-
-
-    private GamepadynEvent(String t,) {
-        type = t;
-        return;
+    public final String action;
+    public final T data;
+    public final Class<T> type;
+    @SuppressWarnings("unchecked")
+    protected GamepadynEvent(String a, T d) {
+        action = a;
+        data = d;
+        type = ((Class<T>) d.getClass());
     }
 }

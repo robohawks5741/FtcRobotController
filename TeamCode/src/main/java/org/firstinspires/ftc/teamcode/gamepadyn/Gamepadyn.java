@@ -1,8 +1,8 @@
 package org.firstinspires.ftc.teamcode.gamepadyn;
 
 import android.util.Log;
-
 import com.qualcomm.robotcore.hardware.Gamepad;
+import org.firstinspires.ftc.teamcode.Opticon.*;
 
 // Singleton class, private constructor
 public final class Gamepadyn {
@@ -29,10 +29,8 @@ public final class Gamepadyn {
 
     private static Thread inputThread = null;
 
-    private static
-
     private static void inputThreadLoop() {
-        Gamepadyn
+//        TODO: fill this in
     }
 
     static {
