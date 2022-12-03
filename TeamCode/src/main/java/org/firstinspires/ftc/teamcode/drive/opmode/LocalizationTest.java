@@ -21,6 +21,7 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 public class LocalizationTest extends LinearOpMode{
     @Override
     public void runOpMode() throws InterruptedException {
+        double speed = 1;
 
 
 
@@ -36,43 +37,47 @@ public class LocalizationTest extends LinearOpMode{
 
 
         while (opModeIsActive()) {
+            if(gamepad1.right_bumper)
+                 speed = .5;
+            if(gamepad1.left_bumper)
+                speed = 1;
             drive.setWeightedDrivePower(
                     new Pose2d(
 
-                            -(gamepad1.right_stick_y>=0 ? 1 : -1) * Math.pow(abs((double)gamepad1.right_stick_y),1.7)+(abs(gamepad1.right_stick_y) > .05 ? (gamepad1.right_stick_y >= 0 ? .05 : -.05) : 0), // These lines translate the raw code from the sticks into
-                            -(gamepad1.right_stick_x>=0 ? 1 : -1) * Math.pow(abs((double)gamepad1.right_stick_x),1.7)+(abs(gamepad1.right_stick_x) > .05 ? (gamepad1.right_stick_x >= 0 ? .05 : -.05) : 0),   //  a curved +/- input for the motors. It sends the values to a
-                            -(gamepad1.left_stick_x>=0 ? 1 : -1) * Math.pow(abs((double)gamepad1.left_stick_x),1.7)+(abs(gamepad1.left_stick_x) > .05 ? (gamepad1.left_stick_x >= 0 ? .05 : -.05) : 0)       // function in roadrunner.
+                            -(gamepad1.right_stick_y>=0 ? 1 : -1) * Math.pow(abs((double)gamepad1.right_stick_y),1.7)*(speed)+(abs(gamepad1.right_stick_y) > .05 ? (gamepad1.right_stick_y >= 0 ? .05 : -.05) : 0), // These lines translate the raw code from the sticks into
+                            -(gamepad1.right_stick_x>=0 ? 1 : -1) * Math.pow(abs((double)gamepad1.right_stick_x),1.7)*(speed)+(abs(gamepad1.right_stick_x) > .05 ? (gamepad1.right_stick_x >= 0 ? .05 : -.05) : 0),   //  a curved +/- input for the motors. It sends the values to a
+                            -(gamepad1.left_stick_x>=0 ? -1 : 1) * Math.pow(abs((double)gamepad1.left_stick_x),1.7)*(speed)+(abs(gamepad1.left_stick_x) > .05 ? (gamepad1.left_stick_x >= 0 ? .05 : -.05) : 0)       // function in roadrunner.
                     )
             );
 
-            if (gamepad1.left_trigger >= .05 || gamepad1.right_trigger >=.05){
+            if (gamepad2.left_trigger >= .05 || gamepad2.right_trigger >=.05){
                 //drive.setLinearSlide(gamepad1.left_trigger);
-                if (gamepad1.right_trigger >= .05){
-                    drive.setLinearSlide(gamepad1.right_trigger);
+                if (gamepad2.right_trigger >= .05){
+                    drive.setLinearSlide(gamepad2.right_trigger);
                 }
-                else drive.setLinearSlide(-gamepad1.left_trigger);
+                else drive.setLinearSlide(-gamepad2.left_trigger);
             }
             else drive.setLinearSlide(0);
 
 
             //drive.moveTestServo(.5);
 
-            if(gamepad1.left_bumper) {
+            if(gamepad2.left_bumper) {
                 drive.penetrate(0);
             }//drive.LinearSlideToStop(1,25,10); //low pole
-            if(gamepad1.right_bumper) {
+            if(gamepad2.right_bumper) {
                 drive.penetrate(.525);
             }//drive.LinearSlideToStop(2,25,10); //mid pole
-            if(gamepad1.dpad_up){
-                drive.moveTestServo(.65);
+            if(gamepad2.dpad_up){
+                drive.moveTestServo(.5);
                 //drive.LinearSlideToStop(0,25,50);
             }
             //drive.LinearSlideToStop(3,25,10); //high pole
-            if(gamepad1.dpad_down) {
-                drive.moveTestServo(0);
+            if(gamepad2.dpad_down) {
+                drive.moveTestServo(1);
                 //drive.LinearSlideToStop(3,25,50);        //drive.LinearSlideToStop(4,25,10); //bottom
             }
-            if(gamepad1.y){
+            /*if(gamepad1.y){
                 drive.LinearSlideToStop(3,.50,25);
             }
             if(gamepad2.b){
@@ -83,7 +88,8 @@ public class LocalizationTest extends LinearOpMode{
             }
             if(gamepad1.a){
                 drive.LinearSlideToStop(2,.5,25);
-            }
+            }*/
+
 
 
 
