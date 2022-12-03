@@ -50,11 +50,20 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.AprilTagDetectionPipeline;
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvInternalCamera;
+
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import java.util.ArrayList;
 
@@ -63,6 +72,10 @@ public class AprilTagAutonomousInitDetectionExample extends LinearOpMode
 {
     OpenCvCamera camera;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
+
+    SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+
+    int ctr = 0;
 
     static final double FEET_PER_METER = 3.28084;
 
@@ -80,7 +93,33 @@ public class AprilTagAutonomousInitDetectionExample extends LinearOpMode
 
     int ID_TAG_OF_INTEREST = 18; // Tag ID 18 from the 36h11 family
 
+    int TAG2 = 2;
+    int TAG3 = 10;
+
+    public int NumberOfTag = 0;
+
     AprilTagDetection tagOfInterest = null;
+
+    Trajectory one = drive.trajectoryBuilder(new Pose2d())
+            .strafeRight(24)
+            .build();
+    Trajectory four = drive.trajectoryBuilder(new Pose2d())
+            .forward(30)
+            .build();
+
+
+    Trajectory two = drive.trajectoryBuilder(new Pose2d())
+            .forward(30)
+            .build();
+
+
+    Trajectory three = drive.trajectoryBuilder(new Pose2d())
+            .strafeRight(24)
+            .build();
+    Trajectory five = drive.trajectoryBuilder(new Pose2d())
+            .forward(30)
+            .build();
+
 
     @Override
     public void runOpMode()
@@ -125,7 +164,33 @@ public class AprilTagAutonomousInitDetectionExample extends LinearOpMode
                     {
                         tagOfInterest = tag;
                         tagFound = true;
+
+                        NumberOfTag = 1;
+
                         break;
+
+
+
+                    }
+                    if(tag.id == TAG2){
+                        tagOfInterest = tag;
+                        tagFound = true;
+
+                        NumberOfTag = 2;
+
+                        break;
+
+
+                    }
+                    if(tag.id == TAG3){
+                        tagOfInterest = tag;
+                        tagFound = true;
+
+                        NumberOfTag = 3;
+
+                        break;
+
+
                     }
                 }
 
@@ -203,7 +268,7 @@ public class AprilTagAutonomousInitDetectionExample extends LinearOpMode
              */
 
             // e.g.
-            if(tagOfInterest.pose.x <= 20)
+            /*if(tagOfInterest.pose.x <= 20)
             {
                 // do something
             }
@@ -214,7 +279,29 @@ public class AprilTagAutonomousInitDetectionExample extends LinearOpMode
             else if(tagOfInterest.pose.x >= 50)
             {
                 // do something else
+            }  */
+
+            if(NumberOfTag ==1 ){
+                while(opModeIsActive() && !isStopRequested() && ctr == 1) {
+                    drive.followTrajectory(one);
+                    drive.followTrajectory(four);
+                    ctr++;
+                }
             }
+            if(NumberOfTag == 2){
+                while(opModeIsActive() && !isStopRequested() && ctr == 1) {
+                    drive.followTrajectory(two);
+                    ctr++;
+                }
+            }
+            if(NumberOfTag == 3){
+                    while(opModeIsActive() && !isStopRequested() && ctr == 1) {
+                        drive.followTrajectory(three);
+                        drive.followTrajectory(five);
+                        ctr++;
+                    }
+            }
+
         }
 
 
