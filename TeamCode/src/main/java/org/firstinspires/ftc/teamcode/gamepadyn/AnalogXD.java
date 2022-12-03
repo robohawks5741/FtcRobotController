@@ -2,11 +2,12 @@ package org.firstinspires.ftc.teamcode.gamepadyn;
 
 import androidx.annotation.NonNull;
 
-public class AnalogXD<T extends Number> {
+// Used to be a template class, now is hardcoded to float
+public class AnalogXD/*<T extends Number>*/ {
     public final int axes;
-    public final T[] values;
-    @SafeVarargs
-    protected AnalogXD(@NonNull T... v) {
+    public final float[] values;
+//    @SafeVarargs
+    protected AnalogXD(@NonNull float... v) {
         values = v;
         axes = v.length;
     }

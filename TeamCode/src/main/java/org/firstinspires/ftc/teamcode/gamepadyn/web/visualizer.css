@@ -131,25 +131,25 @@ h1 {
     border-radius: 50%;
 }
 
-#facebtns>#fa {
+#facebtns>#fb {
     grid-area: 3 / 2;
     --gpad-bg-hover: #00f020;
     --gpad-bg: #00f02080;
 }
 
-#facebtns>#fb {
+#facebtns>#fr {
     grid-area: 2 / 3;
     --gpad-bg-hover: #f02400;
     --gpad-bg: #f0240080;
 }
 
-#facebtns>#fx {
+#facebtns>#fl {
     grid-area: 2 / 1;
     --gpad-bg-hover: #3060f0;
     --gpad-bg: #3060f080;
 }
 
-#facebtns>#fy {
+#facebtns>#fu {
     grid-area: 1 / 2;
     --gpad-bg-hover: #f0d020;
     --gpad-bg: #f0d02080;

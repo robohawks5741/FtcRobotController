@@ -37,6 +37,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.firstinspires.ftc.teamcode.lsd.LSD;
+
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ACCEL;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_ACCEL;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_VEL;
@@ -55,6 +57,13 @@ import static java.lang.Math.abs;
  */
 @Config
 public class RobohawksMecanumDrive extends MecanumDrive {
+
+    public HardwareMap hardwareMap;
+    LSD linearSlide;
+
+
+
+
     public int ctr = 0;
     public double Lpos = 0;
     //todo: fix values to reflect real numbers
@@ -81,7 +90,7 @@ public class RobohawksMecanumDrive extends MecanumDrive {
 
     private TrajectoryFollower follower;
 
-    private DcMotorEx leftFront, leftRear, rightRear, rightFront, linearSlide;
+    private DcMotorEx leftFront, leftRear, rightRear, rightFront;
     private List<DcMotorEx> motors;
     private Servo clawServo, penetrationServo;
 
@@ -91,13 +100,16 @@ public class RobohawksMecanumDrive extends MecanumDrive {
     public RobohawksMecanumDrive(HardwareMap hardwareMap) {
         super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
 
+        this.hardwareMap = hardwareMap;
+
+        LSD.init(hardwareMap);
+
         follower = new HolonomicPIDVAFollower(TRANSLATIONAL_PID, TRANSLATIONAL_PID, HEADING_PID,
                 new Pose2d(0.5, 0.5, Math.toRadians(5.0)), 0.5);
 
         LynxModuleUtil.ensureMinimumFirmwareVersion(hardwareMap);
 
         batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
-
 
         for (LynxModule module : hardwareMap.getAll(LynxModule.class)) {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
@@ -136,13 +148,11 @@ public class RobohawksMecanumDrive extends MecanumDrive {
         rightRear = hardwareMap.get(DcMotorEx.class, "rightRear");
         rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
 
-        linearSlide = hardwareMap.get(DcMotorEx.class, "linearSlide");
-
         clawServo = hardwareMap.get(Servo.class, "clawServo");
         penetrationServo = hardwareMap.get(Servo.class,"penetrationServo");
 
         //added, testing
-        motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront, linearSlide);
+        motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
         //added linear slide to these.
         for (DcMotorEx motor : motors) {
             MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
@@ -313,95 +323,6 @@ public class RobohawksMecanumDrive extends MecanumDrive {
         rightRear.setPower(v2);
         rightFront.setPower(v3);
     }
-
-
-    public void setLinearSlide(double linearPower)  {
-        //double LSstartPosition = linearSlide.getCurrentPosition();
-        linearSlide.setPower(linearPower);
-    }
-
-    public void LinearSlideToStop(int stop, double power, int tolerance){ //TODO: Add recursion with a tolerance var to make this as accurate as possible, requires good rope tension for up and down.
-        linearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        linearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        double rawProximity = 0;
-        double proximityMultiplier1 = 0;
-        double proximityMultiplierCorrector = 0;
-        double velo = 0;
-        double calculatedPower =0;
-        double correctedVelocity = 0;
-        double LSspeed = 0;
-
-        if(stop == 1){
-            target = lowStop;
-        }
-        else if(stop == 2){
-            target = midStop;
-        }
-        else if(stop == 3){
-            target = tallStop;
-        }
-        if(stop == 0){
-            target = bottomStop;
-        }
-        //above sets the target encoder position specified by the user input "stop"
-        //----------------------------------------------------------------------------------------
-        if(LinearSlidePos()>=target){
-            while(LinearSlidePos()>=target){
-                rawProximity = abs(abs(LinearSlidePos())-abs(target)); //finds how close slide is to target (unit is encoder ticks)
-                proximityMultiplier1 = (rawProximity < 500 ? 350 : 1 ); //if within 500 ticks of target, output 350, if not, output one.
-                calculatedPower = rawProximity/proximityMultiplier1; // If the slide is under 500 ticks to its destination, the variable calculatedPower is set to: the distance to the destination divided by 350. If the slide is not within 500 ticks, The value is just 1.
-                proximityMultiplierCorrector = (calculatedPower > 1 ? calculatedPower : 1); // This lets the next line know if the multiplier value is over 1, and sends the correct value to change it to exactly one if it is over one.
-                velo = calculatedPower/proximityMultiplierCorrector; // This turns multiplier values over 1 to one using the value provided by the above line.
-                correctedVelocity = (velo < .3 ? .3 : velo); // this makes sure that the multiplier value doesn't go below .3.
-                //velo = (proximityMultiplier1/proximityMultiplierCorrector)*power;
-                LSspeed = power*correctedVelocity;
-                linearSlide.setPower(-LSspeed);
-            }
-        }
-        else{
-            while (LinearSlidePos()<=target){
-                rawProximity = abs(abs(LinearSlidePos())-abs(target));
-                proximityMultiplier1 = (rawProximity < 500 ? 350 : 1 );
-                calculatedPower = rawProximity/proximityMultiplier1;
-                proximityMultiplierCorrector = (calculatedPower > 1 ? calculatedPower : 1);
-                velo = calculatedPower/proximityMultiplierCorrector;
-                correctedVelocity = (velo < .1 ? .1 : velo);
-                //velo = (proximityMultiplier1/proximityMultiplierCorrector)*power;
-                LSspeed = power*correctedVelocity;
-                linearSlide.setPower(LSspeed);
-            }
-        }
-
-        //--------------------------------------------------------------------------------------------
-        //   if (LinearSlidePos()+tolerance<target||LinearSlidePos()-tolerance>target){
-        //       LinearSlideToStop(stop, power/2,tolerance-2);
-        //   }
-
-    }
-
-    public void LinearSlideToStop2(int stop, int tolerance){
-
-        linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        if(stop == 1){
-            target = lowStop;
-        }
-        else if(stop == 2){
-            target = midStop;
-        }
-        else if(stop == 3){
-            target = tallStop;
-        }
-        else{
-            target = bottomStop;
-        }
-
-        linearSlide.setTargetPositionTolerance(tolerance);
-        linearSlide.setTargetPosition(target);
-
-    }
-
 
     public void penetrate(double pos){
         penetrationServo.setPosition(pos);

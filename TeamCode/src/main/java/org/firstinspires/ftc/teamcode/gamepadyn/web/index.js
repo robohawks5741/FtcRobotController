@@ -180,10 +180,10 @@ class GamepadVisualizerElement extends GamepadBindingElement {
         <label>RS</label>
     </div>
     <div class="p4d nosel" id="facebtns">
-        <div class="b" id="fa"><span>A</span></div>
-        <div class="b" id="fd"><span>B</span></div>
-        <div class="b" id="fx"><span>X</span></div>
-        <div class="b" id="fy"><span>Y</span></div>
+        <div class="b" id="fb"><span>A</span></div>
+        <div class="b" id="fr"><span>B</span></div>
+        <div class="b" id="fl"><span>X</span></div>
+        <div class="b" id="fu"><span>Y</span></div>
     </div>
 </div>`;
     get tagName() { return 'GAMEPAD-VISUALIZER'; };

@@ -1,20 +1,25 @@
 package org.firstinspires.ftc.teamcode.Opticon;
 
-import java.util.Set;
-
-public class Event<T> {
+import android.util.Log;
+import java.util.ArrayList;
+public final class Event<T> {
     @FunctionalInterface
-    public interface Listener {
+    public interface Listener<T> {
+        default void run() { run(); }
         void run(T data);
     }
 
-    final void on(Listener f) {
-
+    void on(Listener<T> f) {
+        _listeners.add(f);
     }
 
-    private Set<Listener> _listeners;
-    private final Event() {}
-    public final Event() {
-
+    public void emit(T data) {
+        Log.d("Opticon", "Emit event, remove me later");
+        for (Listener<T> listener : _listeners) {
+            listener.run(data);
+        }
     }
+
+    private ArrayList<Listener<T>> _listeners = new ArrayList<>();
+    private Event() { }
 }

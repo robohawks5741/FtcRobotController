@@ -1,15 +1,13 @@
 package org.firstinspires.ftc.teamcode.gamepadyn;
 
 import androidx.annotation.NonNull;
+import org.firstinspires.ftc.teamcode.Opticon.Event;
 
-public class GamepadynEvent<T> {
+public final class GamepadynEvent<T> {
     public final String action;
     public final T data;
-    public final Class<T> type;
-    @SuppressWarnings("unchecked")
-    protected GamepadynEvent(String a, T d) {
+    private GamepadynEvent(String a, @NonNull T d) {
         action = a;
         data = d;
-        type = ((Class<T>) d.getClass());
     }
 }

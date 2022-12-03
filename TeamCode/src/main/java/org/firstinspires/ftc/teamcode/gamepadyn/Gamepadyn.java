@@ -1,13 +1,15 @@
 package org.firstinspires.ftc.teamcode.gamepadyn;
 
 import android.util.Log;
+
+import com.google.gson.GsonBuilder;
 import com.qualcomm.robotcore.hardware.Gamepad;
+import com.google.gson.Gson;
+import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 import org.firstinspires.ftc.teamcode.Opticon.*;
 
 // Singleton class, private constructor
 public final class Gamepadyn {
-
-
 
     /* Remnants of old singleton code, might change later (but probably not) */
 
