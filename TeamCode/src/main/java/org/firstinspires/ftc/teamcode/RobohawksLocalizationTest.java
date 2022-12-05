@@ -7,8 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.teamcode.lsd.LSD;
-import org.firstinspires.ftc.teamcode.gamepadyn.Gamepadyn;
+import org.firstinspires.ftc.teamcode.LSD.LSD;
 
 /**
  * This is a simple teleop routine for testing localization. Drive the robot around like a normal
@@ -26,7 +25,7 @@ public class RobohawksLocalizationTest extends LinearOpMode {
 
         RobohawksMecanumDrive LinearPosition = new RobohawksMecanumDrive(hardwareMap);
 
-        LinearPosition.LinearSlideResetEnc();
+        LSD.resetEncoder();
 
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
@@ -49,46 +48,43 @@ public class RobohawksLocalizationTest extends LinearOpMode {
                     drive.setLinearSlide(gamepad1.left_trigger);
                 }
                 else drive.setLinearSlide(-gamepad1.right_trigger);
-            }
-            else drive.setLinearSlide(0);
+            } else drive.setLinearSlide(0);
 
 
             //drive.moveTestServo(.5);
 
-            if(gamepad1.left_bumper) {
+            if (gamepad1.left_bumper) {
                 drive.penetrate(0);
-            }//drive.LinearSlideToStop(1,25,10); //low pole
-            if(gamepad1.right_bumper) {
+            }
+            //drive.LinearSlideToStop(1,25,10); //low pole
+            if (gamepad1.right_bumper) {
                 drive.penetrate(.525);
-            }//drive.LinearSlideToStop(2,25,10); //mid pole
-            if(gamepad1.dpad_up){
+            }
+            // drive.LinearSlideToStop(2,25,10); //mid pole
+            if (gamepad1.dpad_up) {
                 drive.moveTestServo(.65);
                 //drive.LinearSlideToStop(0,25,50);
             }
-            //drive.LinearSlideToStop(3,25,10); //high pole
-            if(gamepad1.dpad_down) {
+            // drive.LinearSlideToStop(3,25,10); //high pole
+            if (gamepad1.dpad_down) {
                 drive.moveTestServo(0);
                 //drive.LinearSlideToStop(3,25,50);        //drive.LinearSlideToStop(4,25,10); //bottom
             }
-            if(gamepad1.y){
-//                3
-                drive.linearSlide.moveSlide(LSD.SlideHeight.TOP);
+
+            if (gamepad1.y) {
+                LSD.moveSlide(LSD.SlideHeight.TOP);
             }
-            if(gamepad2.b){
-//                0
-                drive.linearSlide.moveSlide(LSD.SlideHeight.BOTTOM);
+            if (gamepad2.b) {
+                LSD.moveSlide(LSD.SlideHeight.BOTTOM);
             }
-            if(gamepad1.x){
-//                1
-                drive.linearSlide.moveSlide(LSD.SlideHeight.BOTTOM);
+            if (gamepad1.x) {
+                LSD.moveSlide(LSD.SlideHeight.BOTTOM);
             }
-            if(gamepad1.a){
-//                2
-                drive.linearSlide.moveSlide(LSD.SlideHeight.MIDDLE);
+            if (gamepad1.a) {
+                LSD.moveSlide(LSD.SlideHeight.MIDDLE);
             }
 
             drive.update();
-
 
             telemetry.update();
 
@@ -96,12 +92,10 @@ public class RobohawksLocalizationTest extends LinearOpMode {
             telemetry.addData("x", poseEstimate.getX());
             telemetry.addData("y", poseEstimate.getY());
             telemetry.addData("heading", poseEstimate.getHeading());
-
-            telemetry.addData("leftX",gamepad1.left_stick_x);
-            telemetry.addData("leftY",gamepad1.left_stick_y);
-            telemetry.addData("rightX",gamepad1.right_stick_x);
-
-            telemetry.addData("RawLsPos",drive.LinearSlidePos());
+            telemetry.addData("leftX", gamepad1.left_stick_x);
+            telemetry.addData("leftY", gamepad1.left_stick_y);
+            telemetry.addData("rightX", gamepad1.right_stick_x);
+            telemetry.addData("RawLsPos", LSD.currentHeightPrecise());
 
             telemetry.update();
 

@@ -23,8 +23,8 @@
 
 # Actions
 
-| Action       | Action Name  | Data Type  | Notes                                     |
-|--------------|--------------|------------|-------------------------------------------|
-| Linear Slide | LINEAR_SLIDE | Analog<1d> | Uses [LSD](../lsd/LSD.md)                 |
-| Movement     | MOVEMENT     | Analog<2d> |                                           |
-| Rotation     | ROTATION     | Analog<1d> | Yaw, measured in degrees (Euler rotation) |
+| Action       | Action Name    | Data Type  | Notes                                     |
+|--------------|----------------|------------|-------------------------------------------|
+| Linear Slide | `LINEAR_SLIDE` | Analog<1d> | Uses [LSD](../LSD/LSD.md)                 |
+| Movement     | `MOVEMENT`     | Analog<2d> |                                           |
+| Rotation     | `ROTATION`     | Analog<1d> | Yaw, measured in degrees (Euler rotation) |

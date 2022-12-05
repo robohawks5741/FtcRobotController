@@ -1,6 +1,7 @@
-package org.firstinspires.ftc.teamcode.lsd;
+package org.firstinspires.ftc.teamcode.LSD;
 
 import static java.lang.Math.abs;
+import static java.lang.Math.max;
 
 import android.util.Log;
 import androidx.annotation.NonNull;
@@ -14,10 +15,15 @@ import org.firstinspires.ftc.teamcode.Opticon.Event;
 
 // Linear Slide Driver
 public class LSD {
-    static Event<Double> TargetReached;
+    public static Event<Double> TargetReached;
+
+    public enum SlideMode {
+        ABSOLUTE,
+        RELATIVE
+    }
 
     // Enum for the position of the slide
-    public static enum SlideHeight {
+    public enum SlideHeight {
         UNKNOWN (0),
         PRECISE (1),
         BOTTOM (-100), // bottom, stop here
@@ -34,12 +40,12 @@ public class LSD {
     }
 
     // (getter) Whether or not the slide is currently moving towards a target.
-    public boolean isMoving() { return _isMoving; }
+    public static boolean isMoving() { return _isMoving; }
     // (getter) The current target
-    public SlideHeight currentHeightTarget() { return _currentHeightTargetEnum; }
+    public static SlideHeight currentHeightTarget() { return _heightTargetEnum; }
 
     // (getter) The current motor height.
-    public double currentHeightPrecise() {
+    public static double currentHeightPrecise() {
         // Lpos = linearSlide.getCurrentPosition();
         // ctr = ctr+4;
         // return linearSlide.getCurrentPosition();  This does not return an accurate reading but rather seemingly arbitrary numbers.
@@ -49,76 +55,97 @@ public class LSD {
 
         // couldn't get telemetry to work in this file, must be OpMode only.
         // ctr = ctr +2;
-        return _currentHeight;
+        return _motor.getCurrentPosition();
     }
 
-    public void moveSlide(@NonNull SlideHeight target) {
-        _currentHeightTargetEnum = target;
-        _moveSlide(target.stopPower);
+    // Moves the slide to a precise height.
+    public static void setSpeed(double speed) {
+        if (_mode != SlideMode.RELATIVE) {
+            Log.wtf("LSD", "Slide mode is not relative!");
+        }
+        if (abs(speed) > 1) {
+            Log.wtf("LSD", "Slide velocity is greater than 1!");
+        }
+        _heightTargetEnum = SlideHeight.UNKNOWN;
     }
 
-    public void moveSlide(double target) {
+    // Moves the slide to an enumerated height.
+    public static void setPosition(@NonNull SlideHeight target) {
+        _heightTargetEnum = target;
+        _setPosition(target.stopPower);
+    }
+
+    // Moves the slide to a precise height.
+    public static void setPosition(double target) {
         if (target >= 0) {
             Log.wtf("LSD", "Error moving slide! Target cannot be greq 0!");
         }
-        _currentHeightTargetEnum = SlideHeight.PRECISE;
-        _moveSlide(target);
+        _heightTargetEnum = SlideHeight.PRECISE;
+        _setPosition(target);
     }
 
-    private void _moveSlide(double power) {
+    private static void _setPosition(double target) {
         _hasEmitMove = false;
         // (this is 90% James' code)
-        double rawProximity,
-                proximityMultiplier1,
-                proximityMultiplierCorrector,
-                velo,
-                calculatedPower,
-                correctedVelocity,
-                LSspeed;
 
-        if (_currentHeight > _currentHeightTarget) {
-            while (_currentHeight > _currentHeightTarget) {
-                rawProximity = abs(abs(_currentHeight)-abs(_currentHeightTarget)); //finds how close slide is to target (unit is encoder ticks)
-                proximityMultiplier1 = (rawProximity < 500 ? 350 : 1 ); //if within 500 ticks of target, output 350, if not, output one.
-                calculatedPower = rawProximity/proximityMultiplier1; // If the slide is under 500 ticks to its destination, the variable calculatedPower is set to: the distance to the destination divided by 350. If the slide is not within 500 ticks, The value is just 1.
-                proximityMultiplierCorrector = (calculatedPower > 1 ? calculatedPower : 1); // This lets the next line know if the multiplier value is over 1, and sends the correct value to change it to exactly one if it is over one.
-                velo = calculatedPower/proximityMultiplierCorrector; // This turns multiplier values over 1 to one using the value provided by the above line.
-                correctedVelocity = (Math.max(velo, .3)); // this makes sure that the multiplier value doesn't go below .3.
-                //velo = (proximityMultiplier1/proximityMultiplierCorrector)*power;
-                LSspeed = power*correctedVelocity;
-                _motor.setPower(-LSspeed);
+        double height = _motor.getCurrentPosition();
+
+        // finds how close slide is to target (unit is encoder ticks)
+        double rawProximity = abs( (abs(height) - abs(_heightTarget)) );
+        // if within 500 ticks of target, output 350, if not, output one.
+        double proximityMultiplier1 = (rawProximity < 500 ? 350 : 1 );
+        // If the slide is under 500 ticks to its destination, the variable calculatedPower is set to: the distance to the destination divided by 350. If the slide is not within 500 ticks, The value is just 1.
+        double calculatedPower = rawProximity / proximityMultiplier1;
+        // This lets the next line know if the multiplier value is over 1, and sends the correct value to change it to exactly one if it is over one.
+        double proximityMultiplierCorrector = max(calculatedPower, 1);
+        // This turns multiplier values over 1 to one using the value provided by the above line.
+        double velo = calculatedPower / proximityMultiplierCorrector;
+
+        // this makes sure that the multiplier value doesn't go below .3.
+        double correctedVelocity = max(velo, (height > _heightTarget ? .3 : .1 ));
+
+        if (height > _heightTarget) {
+            while (height > _heightTarget) {
+                // velo = (proximityMultiplier1/proximityMultiplierCorrector)*power;
+                _motor.setPower(-target * correctedVelocity);
             }
         } else {
-            while (_currentHeight < _currentHeightTarget) {
-                rawProximity = abs(abs(_currentHeight)-abs(_currentHeightTarget));
-                proximityMultiplier1 = (rawProximity < 500 ? 350 : 1 );
-                calculatedPower = rawProximity/proximityMultiplier1;
-                proximityMultiplierCorrector = (calculatedPower > 1 ? calculatedPower : 1);
-                velo = calculatedPower/proximityMultiplierCorrector;
-                correctedVelocity = (Math.max(velo, .1));
-                //velo = (proximityMultiplier1/proximityMultiplierCorrector)*power;
-                LSspeed = power*correctedVelocity;
-                _motor.setPower(LSspeed);
+            while (height < _heightTarget) {
+                _motor.setPower(target * correctedVelocity);
             }
         }
 
-//        if ( (_currentHeight + tolerance) < _currentHeightTarget ||
-//                _currentHeightTarget < (_currentHeight - tolerance)
+//        if ( (_height + tolerance) < _heightTarget ||
+//                _heightTarget < (_height - tolerance)
 //        ) {
 //            moveSlide(target, (power / 2), (tolerance - 2) );
 //        }
 
-        _currentHeightTarget = power;
+        _heightTarget = power;
     }
 
-    // Was LinearSlideToStop2() pre-migration. This seems better than _moveSlide... was this a test implementation?
+    // Was LinearSlideToStop2() pre-migration. This seems better than _setPosition... was this a test implementation?
     // TODO: James, can you say what this does?
-    public void moveSlideAlt(int target) {
+    public static void moveSlideAlt(int target) {
         _motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        _motor.setTargetPositionTolerance(tolerance);
-        _currentHeightTarget = target;
-        _motor.setTargetPosition((int) _currentHeightTarget);
+        _motor.setTargetPositionTolerance(_tolerance);
+        _heightTarget = target;
+        _motor.setTargetPosition((int) _heightTarget);
     }
+
+    // Resets the encoder.
+    public static void resetEncoder(){
+        _motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+
+    public static void setPower(double p) { _power = p; }
+
+    public static double getPower() { return _power; }
+
+    public static void setMode(SlideMode m) { _mode = m; }
+
+    // Getter, gets the current mode.
+    public static SlideMode getMode() { return _mode; }
 
     // Pseudo-constructor for a singleton pattern. Can be called multiple times without throwing (please try to avoid it though!)
     @SuppressWarnings("UnusedReturnValue")
@@ -145,7 +172,7 @@ public class LSD {
     }
 
     // Singleton instance, currently unused (everything is static!)
-    private static final LSD _instance = new LSD();
+    // private static final LSD _instance = new LSD();
 
     /* [ignore this]
      * TO\DO use notifiers to properly throw an exception
@@ -154,17 +181,18 @@ public class LSD {
      */
 
     // Update loop for the MKU Agent
-    private static void mkuAgentLoop() {
-//        boolean usePrecise = (_currentHeightTargetEnum == SlideHeight.PRECISE);
+    private static void mkuAgentUpdate() {
+        // boolean usePrecise = (_currentHeightTargetEnum == SlideHeight.PRECISE);
         // TODO: maybe this should be a bit more detailed?
-        _motor.setPower(_currentHeightTarget);
-        _currentHeight = _motor.getCurrentPosition();
+        _motor.setPower(_power);
+
+        double height = _motor.getCurrentPosition();
         // If nearly equal
-        if (Math.round(_currentHeight / 2) * 2 == Math.round(_currentHeightTarget / 2) * 2) {
+        if (!_motor.isBusy() && (Math.round(height / 2) * 2 == Math.round(_heightTarget / 2) * 2)) {
             _isMoving = false;
             if (!_hasEmitMove) {
                 _hasEmitMove = true;
-                TargetReached.emit(_currentHeight);
+                TargetReached.emit(_heightTarget);
             }
         } else {
             _isMoving = true;
@@ -173,10 +201,10 @@ public class LSD {
 
     // Motor power.
     // TODO: Document me
-    public static double power = 0.5;
+    private static double _power = 0.5;
     // Motor tolerance.
     // TODO: Document me
-    public static int tolerance = 25;
+    private static int _tolerance = 25;
 
     // The motor that the LSD controls.
     private static DcMotorEx _motor;
@@ -188,12 +216,13 @@ public class LSD {
     private static boolean _isMoving = false;
     private static boolean _hasEmitMove = true;
 
-    // The slide's current position as a motor position.
-    private static double _currentHeight = SlideHeight.UNKNOWN.stopPower;
+    private static SlideMode _mode = SlideMode.ABSOLUTE;
+    // The motor's current speed.
+    private static double _speed = -1;
     // The current slide target as a motor position.
-    private static double _currentHeightTarget = SlideHeight.UNKNOWN.stopPower;
+    private static double _heightTarget = SlideHeight.UNKNOWN.stopPower;
     // The current slide target as a height enumerator.
-    private static SlideHeight _currentHeightTargetEnum = SlideHeight.UNKNOWN;
+    private static SlideHeight _heightTargetEnum = SlideHeight.UNKNOWN;
 
     // The Motor Kinematics Unifier (MKU) is the thread/agent that manages the LSD "state machine."
     // The LSD functions can be interrupted (they're asynchronous, not blocking)
@@ -201,5 +230,5 @@ public class LSD {
     // The public methods/setters set the TARGET of the driver, and the agent moves the motor to the
     // target position. If the target position changes while it's moving, no biggie,
     // the agent will just change course and move it to the new target location.
-    private static final Thread mkuAgent = new Thread(LSD::mkuAgentLoop);
+    private static final Thread mkuAgent = new Thread(LSD::mkuAgentUpdate);
 }

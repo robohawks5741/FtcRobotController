@@ -37,8 +37,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.firstinspires.ftc.teamcode.lsd.LSD;
-
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ACCEL;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_ACCEL;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_VEL;
@@ -51,6 +49,9 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kA;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kStatic;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
 import static java.lang.Math.abs;
+
+import org.firstinspires.ftc.teamcode.LSD.LSD;
+import org.firstinspires.ftc.teamcode.pd.pd;
 
 /*
  * Simple mecanum drive hardware implementation for REV hardware.
@@ -92,7 +93,7 @@ public class RobohawksMecanumDrive extends MecanumDrive {
 
     private DcMotorEx leftFront, leftRear, rightRear, rightFront;
     private List<DcMotorEx> motors;
-    private Servo clawServo, penetrationServo;
+    private Servo clawServo;
 
     private BNO055IMU imu;
     private VoltageSensor batteryVoltageSensor;
@@ -103,6 +104,8 @@ public class RobohawksMecanumDrive extends MecanumDrive {
         this.hardwareMap = hardwareMap;
 
         LSD.init(hardwareMap);
+        LSD.resetEncoder();
+        pd.init(hardwareMap);
 
         follower = new HolonomicPIDVAFollower(TRANSLATIONAL_PID, TRANSLATIONAL_PID, HEADING_PID,
                 new Pose2d(0.5, 0.5, Math.toRadians(5.0)), 0.5);
@@ -149,7 +152,6 @@ public class RobohawksMecanumDrive extends MecanumDrive {
         rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
 
         clawServo = hardwareMap.get(Servo.class, "clawServo");
-        penetrationServo = hardwareMap.get(Servo.class,"penetrationServo");
 
         //added, testing
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
@@ -322,28 +324,6 @@ public class RobohawksMecanumDrive extends MecanumDrive {
         leftRear.setPower(v1);
         rightRear.setPower(v2);
         rightFront.setPower(v3);
-    }
-
-    public void penetrate(double pos){
-        penetrationServo.setPosition(pos);
-    }
-
-    public int LinearSlidePos(){
-        //Lpos = linearSlide.getCurrentPosition();
-        //ctr = ctr+4;
-        //return linearSlide.getCurrentPosition();  This does not return an accurate reading but rather seemingly arbitrary numbers.
-        //I believe the physical encoder is not working or the connection is messed up.
-
-        return linearSlide.getCurrentPosition();
-        //testing this to see if a different encoder will work in place of the the LinearSlide Motor.
-
-        //couldn't get telemetry to work in this file, must be OpMode only.
-        //ctr = ctr +2;
-
-    }
-
-    public void LinearSlideResetEnc(){
-        linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     public void moveTestServo(double pos){
