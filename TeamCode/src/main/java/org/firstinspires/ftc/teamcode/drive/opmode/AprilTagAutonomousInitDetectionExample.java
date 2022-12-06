@@ -67,15 +67,14 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import java.util.ArrayList;
 
-@TeleOp
-public class AprilTagAutonomousInitDetectionExample extends LinearOpMode
-{
+@Autonomous
+public class AprilTagAutonomousInitDetectionExample extends LinearOpMode {
     OpenCvCamera camera;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
 
-    SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+    SampleMecanumDrive drive = null;
 
-    int ctr = 0;
+    int ctr = 1;
 
     static final double FEET_PER_METER = 3.28084;
 
@@ -100,30 +99,43 @@ public class AprilTagAutonomousInitDetectionExample extends LinearOpMode
 
     AprilTagDetection tagOfInterest = null;
 
-    Trajectory one = drive.trajectoryBuilder(new Pose2d())
-            .strafeRight(24)
-            .build();
-    Trajectory four = drive.trajectoryBuilder(new Pose2d())
-            .forward(30)
-            .build();
+    Trajectory one = null;
+    Trajectory four = null;
 
 
-    Trajectory two = drive.trajectoryBuilder(new Pose2d())
-            .forward(30)
-            .build();
+    Trajectory two = null;
 
 
-    Trajectory three = drive.trajectoryBuilder(new Pose2d())
-            .strafeRight(24)
-            .build();
-    Trajectory five = drive.trajectoryBuilder(new Pose2d())
-            .forward(30)
-            .build();
+    Trajectory three = null;
+    Trajectory five = null;
 
 
     @Override
-    public void runOpMode()
-    {
+    public void runOpMode() {
+        drive = new SampleMecanumDrive(hardwareMap);
+
+
+        Trajectory one = drive.trajectoryBuilder(new Pose2d())
+                .strafeRight(24)
+                .build();
+        Trajectory four = drive.trajectoryBuilder(new Pose2d())
+                .forward(30)
+                .build();
+
+
+        Trajectory two = drive.trajectoryBuilder(new Pose2d())
+                .forward(30)
+                .build();
+
+
+        Trajectory three = drive.trajectoryBuilder(new Pose2d())
+                .strafeRight(24)
+                .build();
+        Trajectory five = drive.trajectoryBuilder(new Pose2d())
+                .forward(30)
+                .build();
+
+
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
         aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);

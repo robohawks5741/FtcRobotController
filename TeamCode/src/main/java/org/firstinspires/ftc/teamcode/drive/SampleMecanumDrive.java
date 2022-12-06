@@ -81,7 +81,7 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
 
     private TrajectoryFollower follower;
 
-    private DcMotorEx leftFront, leftRear, rightRear, rightFront, linearSlide;
+    private DcMotorEx leftFront, leftRear, rightRear, rightFront, linearSlide, leftEncoder;
     private List<DcMotorEx> motors;
     private Servo clawServo, penetrationServo;
 
@@ -137,12 +137,13 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
         rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
 
         linearSlide = hardwareMap.get(DcMotorEx.class, "linearSlide");
+        leftEncoder =  hardwareMap.get(DcMotorEx.class, "leftEncoder");
 
         clawServo = hardwareMap.get(Servo.class, "clawServo");
         penetrationServo = hardwareMap.get(Servo.class,"penetrationServo");
 
         //added, testing
-        motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront, linearSlide);
+        motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront, linearSlide, leftEncoder);
         //added linear slide to these.
         for (DcMotorEx motor : motors) {
             MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
@@ -319,6 +320,7 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
     public void setLinearSlide(double linearPower)  {
         //double LSstartPosition = linearSlide.getCurrentPosition();
         linearSlide.setPower(linearPower);
+        leftEncoder.setPower(-linearPower);
 
     }
     @Override
