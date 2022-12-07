@@ -124,7 +124,7 @@ public class AprilTagAutonomousInitDetectionExample extends LinearOpMode {
 
 
         Trajectory two = drive.trajectoryBuilder(new Pose2d())
-                .forward(30)
+                .forward(24)
                 .build();
 
 
@@ -165,6 +165,8 @@ public class AprilTagAutonomousInitDetectionExample extends LinearOpMode {
         while (!isStarted() && !isStopRequested())
         {
             ArrayList<AprilTagDetection> currentDetections = aprilTagDetectionPipeline.getLatestDetections();
+
+            camera.startStreaming(800,448); //TODO does this work?
 
             if(currentDetections.size() != 0)
             {
