@@ -1,15 +1,3 @@
-// 2D Digital (digitalPlanar)
-// 1D Digital (digital)
-// 1D Analog
-// Map gamepad angles to digital buttons
-// Map digital buttons to digital actions
-/*
-
-Properties for each 
-
-
-
-*/
 {
     "$schema": "./config.schema.json",
     "mapName": "Empty Configuration",

@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.LSD.LSD;
+import org.firstinspires.ftc.teamcode.pd.pd;
 
 /**
  * This is a simple teleop routine for testing localization. Drive the robot around like a normal
@@ -35,30 +36,29 @@ public class RobohawksLocalizationTest extends LinearOpMode {
         while (opModeIsActive()) {
             drive.setWeightedDrivePower(
                     new Pose2d(
-
-                            -(gamepad1.right_stick_y>=0 ? 1 : -1) * Math.pow(abs((double)gamepad1.right_stick_y),1.7)+(abs(gamepad1.right_stick_y) > .05 ? (gamepad1.right_stick_y >= 0 ? .05 : -.05) : 0), // These lines translate the raw code from the sticks into
-                            -(gamepad1.right_stick_x>=0 ? 1 : -1) * Math.pow(abs((double)gamepad1.right_stick_x),1.7)+(abs(gamepad1.right_stick_x) > .05 ? (gamepad1.right_stick_x >= 0 ? .05 : -.05) : 0),   //  a curved +/- input for the motors. It sends the values to a
-                            -(gamepad1.left_stick_x>=0 ? 1 : -1) * Math.pow(abs((double)gamepad1.left_stick_x),1.7)+(abs(gamepad1.left_stick_x) > .05 ? (gamepad1.left_stick_x >= 0 ? .05 : -.05) : 0)       // function in roadrunner.
+                            -(gamepad1.right_stick_y >= 0 ? 1 : -1) * Math.pow(abs((double)gamepad1.right_stick_y),1.7)+(abs(gamepad1.right_stick_y) > .05 ? (gamepad1.right_stick_y >= 0 ? .05 : -.05) : 0), // These lines translate the raw code from the sticks into
+                            -(gamepad1.right_stick_x >= 0 ? 1 : -1) * Math.pow(abs((double)gamepad1.right_stick_x),1.7)+(abs(gamepad1.right_stick_x) > .05 ? (gamepad1.right_stick_x >= 0 ? .05 : -.05) : 0),   //  a curved +/- input for the motors. It sends the values to a
+                            -(gamepad1.left_stick_x >= 0 ? 1 : -1) * Math.pow(abs((double)gamepad1.left_stick_x),1.7)+(abs(gamepad1.left_stick_x) > .05 ? (gamepad1.left_stick_x >= 0 ? .05 : -.05) : 0)       // function in roadrunner.
                     )
             );
 
-            if (gamepad1.left_trigger >= .05 || gamepad1.right_trigger >=.05){
-                drive.setLinearSlide(gamepad1.left_trigger);
-                if (gamepad1.left_trigger >= .05){
-                    drive.setLinearSlide(gamepad1.left_trigger);
-                }
-                else drive.setLinearSlide(-gamepad1.right_trigger);
-            } else drive.setLinearSlide(0);
+//            if (gamepad1.left_trigger >= .05 || gamepad1.right_trigger >=.05){
+//                drive.setLinearSlide(gamepad1.left_trigger);
+//                if (gamepad1.left_trigger >= .05){
+//                    drive.setLinearSlide(gamepad1.left_trigger);
+//                }
+//                else drive.setLinearSlide(-gamepad1.right_trigger);
+//            } else drive.setLinearSlide(0);
 
 
             //drive.moveTestServo(.5);
 
             if (gamepad1.left_bumper) {
-                drive.penetrate(0);
+                pd.penetrate(0);
             }
             //drive.LinearSlideToStop(1,25,10); //low pole
             if (gamepad1.right_bumper) {
-                drive.penetrate(.525);
+                pd.penetrate(.525);
             }
             // drive.LinearSlideToStop(2,25,10); //mid pole
             if (gamepad1.dpad_up) {
@@ -72,16 +72,16 @@ public class RobohawksLocalizationTest extends LinearOpMode {
             }
 
             if (gamepad1.y) {
-                LSD.moveSlide(LSD.SlideHeight.TOP);
+                LSD.setPosition(LSD.SlideHeight.TOP);
             }
             if (gamepad2.b) {
-                LSD.moveSlide(LSD.SlideHeight.BOTTOM);
+                LSD.setPosition(LSD.SlideHeight.HIGH);
             }
             if (gamepad1.x) {
-                LSD.moveSlide(LSD.SlideHeight.BOTTOM);
+                LSD.setPosition(LSD.SlideHeight.BOTTOM);
             }
             if (gamepad1.a) {
-                LSD.moveSlide(LSD.SlideHeight.MIDDLE);
+                LSD.setPosition(LSD.SlideHeight.BOTTOM);
             }
 
             drive.update();

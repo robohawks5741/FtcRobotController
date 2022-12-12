@@ -18,7 +18,9 @@ public class LSD {
     public static Event<Double> TargetReached;
 
     public enum SlideMode {
+        // Absolute control, using stops and encoder positions.
         ABSOLUTE,
+        // Manual control, using offsets.
         RELATIVE
     }
 
@@ -121,7 +123,7 @@ public class LSD {
 //            moveSlide(target, (power / 2), (tolerance - 2) );
 //        }
 
-        _heightTarget = power;
+        _heightTarget = target;
     }
 
     // Was LinearSlideToStop2() pre-migration. This seems better than _setPosition... was this a test implementation?
@@ -139,11 +141,13 @@ public class LSD {
     }
 
     public static void setPower(double p) { _power = p; }
-
     public static double getPower() { return _power; }
 
-    public static void setMode(SlideMode m) { _mode = m; }
+    public static void setTolerance(int t) { _tolerance = t; }
+    public static double getTolerance() { return _tolerance; }
 
+
+    public static void setMode(SlideMode m) { _mode = m; }
     // Getter, gets the current mode.
     public static SlideMode getMode() { return _mode; }
 
@@ -167,8 +171,9 @@ public class LSD {
     }
 
     // SINGLETON constructor, NEVER call this!
-    private LSD() {
-        Log.i("LSD", "LSD singleton initialized");
+    private LSD() throws IllegalAccessException {
+        Log.wtf("LSD", "Singleton constructor called!");
+        throw new IllegalAccessException("Singleton constructor called!");
     }
 
     // Singleton instance, currently unused (everything is static!)
