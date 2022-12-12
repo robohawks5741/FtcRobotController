@@ -6,6 +6,7 @@ import static java.lang.Math.max;
 import android.util.Log;
 import androidx.annotation.NonNull;
 
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -58,6 +59,10 @@ public class LSD {
         // couldn't get telemetry to work in this file, must be OpMode only.
         // ctr = ctr +2;
         return _motor.getCurrentPosition();
+    }
+
+    public static void cleanup() {
+        mkuAgent.interrupt();
     }
 
     // Moves the slide to a precise height.
@@ -146,28 +151,25 @@ public class LSD {
     public static void setTolerance(int t) { _tolerance = t; }
     public static double getTolerance() { return _tolerance; }
 
-
     public static void setMode(SlideMode m) { _mode = m; }
     // Getter, gets the current mode.
     public static SlideMode getMode() { return _mode; }
 
     // Pseudo-constructor for a singleton pattern. Can be called multiple times without throwing (please try to avoid it though!)
     @SuppressWarnings("UnusedReturnValue")
-    public static boolean init(@NonNull HardwareMap hmap) {
-        if (_hardwareMap == null) {
-            _hardwareMap = hmap;
-            _motor = _hardwareMap.get(DcMotorEx.class, "linearSlide");
+    public static boolean init(@NonNull HardwareMap hmap, @NonNull OpMode op) {
+        _hardwareMap = hmap;
+        _currentOpmode = op;
+        _motor = _hardwareMap.get(DcMotorEx.class, "linearSlide");
 
-            MotorConfigurationType motorConfigurationType = _motor.getMotorType().clone();
-            motorConfigurationType.setAchieveableMaxRPMFraction(1.0);
-            _motor.setMotorType(motorConfigurationType);
-            //TODO: Add recursion with a tolerance var to make this as accurate as possible, requires good rope tension for up and down.
-            _motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            _motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            return true;
-        } else {
-            return false;
-        }
+        mkuAgent = new Thread(LSD::mkuAgentUpdate);
+
+        MotorConfigurationType motorConfigurationType = _motor.getMotorType().clone();
+        motorConfigurationType.setAchieveableMaxRPMFraction(1.0);
+        _motor.setMotorType(motorConfigurationType);
+        //TODO: Add recursion with a tolerance var to make this as accurate as possible, requires good rope tension for up and down.
+        _motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        _motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     // SINGLETON constructor, NEVER call this!
@@ -186,7 +188,7 @@ public class LSD {
      */
 
     // Update loop for the MKU Agent
-    private static void mkuAgentUpdate() {
+    private static void mkuAgentUpdate() throws InterruptedException {
         // boolean usePrecise = (_currentHeightTargetEnum == SlideHeight.PRECISE);
         // TODO: maybe this should be a bit more detailed?
         _motor.setPower(_power);
@@ -215,7 +217,8 @@ public class LSD {
     private static DcMotorEx _motor;
     // The hardware map of the opmode.
     @SuppressWarnings("FieldMayBeFinal") // Would be final, but we wouldn't be able to guarantee that it would be valid forever.
-    private static HardwareMap _hardwareMap;
+    private static HardwareMap _hardwareMap = null;
+    private static OpMode _currentOpmode = null;
 
     // Whether or not we're currently moving the slide.
     private static boolean _isMoving = false;
@@ -235,5 +238,5 @@ public class LSD {
     // The public methods/setters set the TARGET of the driver, and the agent moves the motor to the
     // target position. If the target position changes while it's moving, no biggie,
     // the agent will just change course and move it to the new target location.
-    private static final Thread mkuAgent = new Thread(LSD::mkuAgentUpdate);
+    private static Thread mkuAgent = null;
 }
