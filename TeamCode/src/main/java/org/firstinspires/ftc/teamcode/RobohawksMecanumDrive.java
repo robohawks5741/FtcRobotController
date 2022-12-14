@@ -99,10 +99,6 @@ public class RobohawksMecanumDrive extends MecanumDrive {
 
         this.hardwareMap = hardwareMap;
 
-        LSD.init(hardwareMap);
-        pd.init(hardwareMap);
-        LSD.resetEncoder();
-
         follower = new HolonomicPIDVAFollower(TRANSLATIONAL_PID, TRANSLATIONAL_PID, HEADING_PID,
                 new Pose2d(0.5, 0.5, Math.toRadians(5.0)), 0.5);
 

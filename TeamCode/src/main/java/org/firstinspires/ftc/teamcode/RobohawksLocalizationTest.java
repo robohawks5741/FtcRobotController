@@ -8,6 +8,9 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.LSD.LSD;
+import org.firstinspires.ftc.teamcode.gamepadyn.ActionSource;
+import org.firstinspires.ftc.teamcode.gamepadyn.Gamepadyn;
+import org.firstinspires.ftc.teamcode.gamepadyn.user.UserActions;
 import org.firstinspires.ftc.teamcode.pd.pd;
 
 /**
@@ -26,12 +29,28 @@ public class RobohawksLocalizationTest extends LinearOpMode {
 
         RobohawksMecanumDrive LinearPosition = new RobohawksMecanumDrive(hardwareMap);
 
-        LSD.resetEncoder();
+        LSD.opmodeInit(hardwareMap, this);
+        pd.opmodeInit(hardwareMap, this);
+        Gamepadyn.opmodeInit(hardwareMap, this);
 
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         waitForStart();
 
+        Gamepadyn.getGamepad(0).actions[UserActions.]
+
+        if (gamepad1.y) {
+            LSD.setPosition(LSD.SlideHeight.TOP);
+        }
+        if (gamepad2.b) {
+            LSD.setPosition(LSD.SlideHeight.HIGH);
+        }
+        if (gamepad1.x) {
+            LSD.setPosition(LSD.SlideHeight.BOTTOM);
+        }
+        if (gamepad1.a) {
+            LSD.setPosition(LSD.SlideHeight.BOTTOM);
+        }
 
         while (opModeIsActive()) {
             drive.setWeightedDrivePower(
@@ -69,19 +88,6 @@ public class RobohawksLocalizationTest extends LinearOpMode {
             if (gamepad1.dpad_down) {
                 drive.moveTestServo(0);
                 //drive.LinearSlideToStop(3,25,50);        //drive.LinearSlideToStop(4,25,10); //bottom
-            }
-
-            if (gamepad1.y) {
-                LSD.setPosition(LSD.SlideHeight.TOP);
-            }
-            if (gamepad2.b) {
-                LSD.setPosition(LSD.SlideHeight.HIGH);
-            }
-            if (gamepad1.x) {
-                LSD.setPosition(LSD.SlideHeight.BOTTOM);
-            }
-            if (gamepad1.a) {
-                LSD.setPosition(LSD.SlideHeight.BOTTOM);
             }
 
             drive.update();

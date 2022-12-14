@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.gamepadyn.user;
 
+import org.firstinspires.ftc.teamcode.gamepadyn.ActionSource;
 import org.firstinspires.ftc.teamcode.gamepadyn.InputType;
 import static org.firstinspires.ftc.teamcode.gamepadyn.InputType.*;
 
@@ -22,16 +23,21 @@ import static org.firstinspires.ftc.teamcode.gamepadyn.InputType.*;
  *     <tr>
  *         <td>Rotation</td> <td><code>ROTATION</code></td> <td><code>ANALOG_1D</code></td> <td>Yaw, measured in degrees (Euler rotation)</td>
  *     </tr>
+ *     <tr>
+ *          <td>Claw</td> <td><code>CLAW</code></td> <td><code>ANALOG_1D</code></td> <td>Yaw, measured in degrees (Euler rotation)</td>
+ *     </tr>
  * </table>
  */
 public enum UserActions {
-    LINEAR_SLIDE (ANALOG_1D),
-    MOVEMENT     (ANALOG_2D),
-    ROTATION     (ANALOG_1D);
+    LINEAR_SLIDE    (ANALOG_1D),
+    CLAW            (ANALOG_1D),
+    MOVEMENT        (ANALOG_2D),
+    ROTATION        (ANALOG_1D);
 
     public final InputType type;
+    public final ActionSource source;
 
-    UserActions(InputType t) { type = t; }
+    UserActions(InputType t, ActionSource s) { type = t; source = s; }
 }
 
 

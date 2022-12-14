@@ -157,12 +157,12 @@ public class LSD {
 
     // Pseudo-constructor for a singleton pattern. Can be called multiple times without throwing (please try to avoid it though!)
     @SuppressWarnings("UnusedReturnValue")
-    public static boolean init(@NonNull HardwareMap hmap, @NonNull OpMode op) {
+    public static boolean opmodeInit(@NonNull HardwareMap hmap, @NonNull OpMode op) {
         _hardwareMap = hmap;
         _currentOpmode = op;
         _motor = _hardwareMap.get(DcMotorEx.class, "linearSlide");
 
-        mkuAgent = new Thread(LSD::mkuAgentUpdate);
+        mkuAgent = new Thread(LSD::_mkuAgentUpdate);
 
         MotorConfigurationType motorConfigurationType = _motor.getMotorType().clone();
         motorConfigurationType.setAchieveableMaxRPMFraction(1.0);
@@ -170,6 +170,7 @@ public class LSD {
         //TODO: Add recursion with a tolerance var to make this as accurate as possible, requires good rope tension for up and down.
         _motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         _motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        return true;
     }
 
     // SINGLETON constructor, NEVER call this!
@@ -188,7 +189,7 @@ public class LSD {
      */
 
     // Update loop for the MKU Agent
-    private static void mkuAgentUpdate() throws InterruptedException {
+    private static void _mkuAgentUpdate() {
         // boolean usePrecise = (_currentHeightTargetEnum == SlideHeight.PRECISE);
         // TODO: maybe this should be a bit more detailed?
         _motor.setPower(_power);
@@ -216,8 +217,10 @@ public class LSD {
     // The motor that the LSD controls.
     private static DcMotorEx _motor;
     // The hardware map of the opmode.
-    @SuppressWarnings("FieldMayBeFinal") // Would be final, but we wouldn't be able to guarantee that it would be valid forever.
+    @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
+    // Would be final, but we wouldn't be able to guarantee that it would be valid forever.
     private static HardwareMap _hardwareMap = null;
+    @SuppressWarnings("FieldCanBeLocal")
     private static OpMode _currentOpmode = null;
 
     // Whether or not we're currently moving the slide.

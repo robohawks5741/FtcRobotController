@@ -1,12 +1,11 @@
 package org.firstinspires.ftc.teamcode.gamepadyn;
 
 import androidx.annotation.NonNull;
-import org.firstinspires.ftc.teamcode.Opticon.Event;
 
-public final class GamepadynEvent<T> {
+public final class Event<T> {
     public final String action;
     public final T data;
-    private GamepadynEvent(String a, @NonNull T d) {
+    private Event(String a, @NonNull T d) {
         action = a;
         data = d;
     }

@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.gamepadyn;
 
 import static org.firstinspires.ftc.teamcode.gamepadyn.InputType.*;
 
-public enum Gamepad {
+public enum RawGamepad {
     /// A (Face Button Down)
     FD  (DIGITAL),
     /// B (Face Button Right)
@@ -38,5 +38,5 @@ public enum Gamepad {
 
     public final InputType inputType;
 
-    Gamepad(InputType t) { this.inputType = t; }
+    RawGamepad(InputType t) { this.inputType = t; }
 }

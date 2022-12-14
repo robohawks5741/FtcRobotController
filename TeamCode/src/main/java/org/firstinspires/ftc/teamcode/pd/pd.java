@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.pd;
 
 import androidx.annotation.NonNull;
 
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -15,7 +16,7 @@ public class pd {
     }
 
     // Pseudo-constructor for a singleton pattern. Can be called multiple times without throwing (please try to avoid it though!)
-    public static boolean init(@NonNull HardwareMap hmap) {
+    public static boolean opmodeInit(@NonNull HardwareMap hmap, @NonNull OpMode op) {
         if (_hardwareMap == null) {
             _hardwareMap = hmap;
             _servo = _hardwareMap.get(Servo.class, "penetrationServo");
