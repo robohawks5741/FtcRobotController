@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.teamcode.gamepadyn.user.UserActions.*;
 import static java.lang.Math.abs;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
@@ -9,6 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.LSD.LSD;
 import org.firstinspires.ftc.teamcode.gamepadyn.ActionSource;
+import org.firstinspires.ftc.teamcode.gamepadyn.Gamepad;
 import org.firstinspires.ftc.teamcode.gamepadyn.Gamepadyn;
 import org.firstinspires.ftc.teamcode.gamepadyn.user.UserActions;
 import org.firstinspires.ftc.teamcode.pd.pd;
@@ -37,20 +39,13 @@ public class RobohawksLocalizationTest extends LinearOpMode {
 
         waitForStart();
 
-        Gamepadyn.getGamepad(0).actions[UserActions.]
-
-        if (gamepad1.y) {
-            LSD.setPosition(LSD.SlideHeight.TOP);
-        }
-        if (gamepad2.b) {
-            LSD.setPosition(LSD.SlideHeight.HIGH);
-        }
-        if (gamepad1.x) {
-            LSD.setPosition(LSD.SlideHeight.BOTTOM);
-        }
-        if (gamepad1.a) {
-            LSD.setPosition(LSD.SlideHeight.BOTTOM);
-        }
+        Gamepad gamepad0 = Gamepadyn.getGamepad(0);
+        // callbacks
+        gamepad0.action(LINEAR_SLIDE_TOP    ).event.on(d -> LSD.setPosition(LSD.SlideHeight.TOP));
+        gamepad0.action(LINEAR_SLIDE_HIGH   ).event.on(d -> LSD.setPosition(LSD.SlideHeight.HIGH));
+        gamepad0.action(LINEAR_SLIDE_MIDDLE ).event.on(d -> LSD.setPosition(LSD.SlideHeight.MIDDLE));
+        gamepad0.action(LINEAR_SLIDE_LOW    ).event.on(d -> LSD.setPosition(LSD.SlideHeight.LOW));
+        gamepad0.action(LINEAR_SLIDE_BOTTOM ).event.on(d -> LSD.setPosition(LSD.SlideHeight.BOTTOM));
 
         while (opModeIsActive()) {
             drive.setWeightedDrivePower(

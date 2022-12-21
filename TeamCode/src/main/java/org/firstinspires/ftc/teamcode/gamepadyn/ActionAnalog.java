@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.gamepadyn;
 
-public final class AnalogAction {
+public final class ActionAnalog {
     public enum Mode {
 //        Maps directly onto an X-dimensional action.
         ONE_TO_ONE_AXES,
@@ -14,9 +14,9 @@ public final class AnalogAction {
     }
 
     public final int axes;
-    public final AnalogAction.Mode mode;
+    public final ActionAnalog.Mode mode;
 
-    AnalogAction(int a, AnalogAction.Mode m) {
+    ActionAnalog(int a, ActionAnalog.Mode m) {
         axes = a;
         mode = m;
     }

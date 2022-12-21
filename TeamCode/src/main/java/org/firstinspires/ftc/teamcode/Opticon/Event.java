@@ -9,10 +9,10 @@ public final class Event<T> {
         void run(T data);
     }
 
-    void on(Listener<T> f) {
+    public void on(Listener<T> f) {
         _listeners.add(f);
     }
-    void off(Listener<T> f) { _listeners.remove(f); }
+    public void off(Listener<T> f) { _listeners.remove(f); }
 
     public void emit(T data) {
         Log.d("Opticon", "Emit event, remove me later");
@@ -22,5 +22,5 @@ public final class Event<T> {
     }
 
     private final ArrayList<Listener<T>> _listeners = new ArrayList<>();
-    private Event() { }
+    public Event() { }
 }

@@ -1,0 +1,18 @@
+{
+    "$schema": "config.schema.json",
+    "mapName": "Empty Configuration",
+    "maps": {
+        "br": {
+            "$comment": "Set speed to half"
+        },
+        "bl": {
+            "$comment": "set speed to max"
+        },
+        "sr": {
+            "$comment": "x/y = lateral movement"
+        },
+        "sl": {
+            "$comment": "x axis = yaw rotation"
+        }
+    }
+}

@@ -2,16 +2,19 @@ package org.firstinspires.ftc.teamcode.gamepadyn;
 import org.firstinspires.ftc.teamcode.Opticon.Event;
 import org.firstinspires.ftc.teamcode.gamepadyn.user.UserActions;
 
-public class ActionSource<T> {
+// ""emitter""
+public final class ActionSource {
 
-    public final Event<T> event;
+    public final Event<Object> event = new Event<>();
 
-    public T getValue() { return _value; }
+    public Object getValue() { return _value; }
 
-    private T _value = null;
+    @SuppressWarnings("FieldMayBeFinal")
+    private Object _value = null;
+    public final InputType type;
 
-    public ActionSource(Event<T> ev) {
-        event = ev;
+    public ActionSource(InputType t) {
+        type = t;
 //        Map<UserActions, ActionSource>
 
 //        UserActions.values();

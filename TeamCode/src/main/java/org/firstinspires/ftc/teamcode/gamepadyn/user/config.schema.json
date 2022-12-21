@@ -16,16 +16,16 @@
             "type": "object",
             "properties": {
                 "fd": {
-                    "description": "Face Button Down (`A` using XBox layout)"
+                    "description": "Face Button Down (`A` w/ XBox layout)"
                 },
                 "fr": {
-                    "description": "Face Button Right (`B` using XBox layout)"
+                    "description": "Face Button Right (`B` w/ XBox layout)"
                 },
                 "fl": {
-                    "description": "Face Button Left (`X` using XBox layout)"
+                    "description": "Face Button Left (`X` w/ XBox layout)"
                 },
                 "fu": {
-                    "description": "Face Button Up (`Y` using XBox layout)"
+                    "description": "Face Button Up (`Y` w/ XBox layout)"
                 },
                 "du": {
                     "description": "D-Pad Up"

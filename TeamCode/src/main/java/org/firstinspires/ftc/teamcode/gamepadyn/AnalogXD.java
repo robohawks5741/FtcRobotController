@@ -3,8 +3,7 @@ package org.firstinspires.ftc.teamcode.gamepadyn;
 import androidx.annotation.NonNull;
 
 // Analog input value.
-// Used to be a template class, now is hardcoded to float.
-public class AnalogXD/*<T extends Number>*/ {
+public class AnalogXD {
     public final int axes;
     public final float[] values;
 //    @SafeVarargs
