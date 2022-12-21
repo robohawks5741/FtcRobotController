@@ -37,10 +37,6 @@ public final class Gamepadyn {
         _currentOpmode = null;
     }
 
-    public static void loadConfiguration(int gamepadIndex, String cfgName) {
-
-    }
-
     @NonNull
     @Contract(pure = true)
     public static ActionSource getGamepadAction(int index, @NonNull UserActions ua) {
@@ -63,7 +59,7 @@ public final class Gamepadyn {
 
     private static Thread _inputThread;
 
-    private static OpMode _currentOpmode;
+    static OpMode _currentOpmode;
 
     private static Gamepad _gamepads[];
 

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.gamepadyn;
 
-public final class ActionAnalog {
+// Configuration "Parameter"
+public final class MappingActionAnalog extends MappingAction {
     public enum Mode {
 //        Maps directly onto an X-dimensional action.
         ONE_TO_ONE_AXES,
@@ -14,9 +15,9 @@ public final class ActionAnalog {
     }
 
     public final int axes;
-    public final ActionAnalog.Mode mode;
+    public final MappingActionAnalog.Mode mode;
 
-    ActionAnalog(int a, ActionAnalog.Mode m) {
+    MappingActionAnalog(int a, MappingActionAnalog.Mode m) {
         axes = a;
         mode = m;
     }

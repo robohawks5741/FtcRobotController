@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.gamepadyn;
 
-public final class ActionDigital {
+// Configuration "Parameter"
+public final class MappingActionDigital extends MappingAction {
     public enum Mode {
 //        Trigger a digital action.
         TRIGGER,
@@ -12,9 +13,9 @@ public final class ActionDigital {
     }
 
     public final int axes;
-    public final ActionDigital.Mode mode;
+    public final MappingActionDigital.Mode mode;
 
-    ActionDigital(int a, ActionDigital.Mode m) {
+    MappingActionDigital(int a, MappingActionDigital.Mode m) {
         axes = a;
         mode = m;
     }

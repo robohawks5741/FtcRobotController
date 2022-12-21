@@ -1,6 +1,6 @@
 {
     "$schema": "config.schema.json",
-    "mapName": "Empty Configuration",
+    "description": "Configuration for controller 1",
     "maps": {
         "br": {
             "$comment": "Set speed to half"

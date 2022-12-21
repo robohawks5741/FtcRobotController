@@ -5,11 +5,9 @@
     "description": "A product from Acme's catalog",
     "type": "object",
     "properties": {
-        "mapName": {
-            "description": "The name of the configuration",
+        "description": {
+            "description": "A summary of the configuration",
             "type": "string",
-            "minLength": 1,
-            "maxLength": 20
         },
         "maps": {
             "description": "The per-input action mappings",
@@ -75,7 +73,6 @@
         "AnalogStick": {}
     },
     "required": [
-        "mapName",
         "maps"
     ]
 }

@@ -12,10 +12,25 @@ import static org.firstinspires.ftc.teamcode.gamepadyn.InputType.*;
  *
  * <table>
  *     <tr>
- *         <th>Action</th> <th><pre>Action Name  </pre></th> <th><pre>Data Type </pre></th> <th>Notes</th>
+ *         <th>Action</th> <th><pre>Action Name</pre></th> <th><pre>Data Type </pre></th> <th>Notes</th>
  *     </tr>
  *     <tr>
  *         <td>Linear Slide</td> <td><code>LINEAR_SLIDE</code></td> <td><code>ANALOG_1D</code></td> <td>Uses LSD (see the LSD documentation)</td>
+ *     </tr>
+ *     <tr>
+ *         <td>Linear Slide Bottom</td> <td><code>LINEAR_SLIDE_BOTTOM</code></td> <td><code>DIGITAL</code></td> <td></td>
+ *     </tr>
+ *     <tr>
+ *         <td>Linear Slide Low</td> <td><code>LINEAR_SLIDE_LOW</code></td> <td><code>DIGITAL</code></td> <td></td>
+ *     </tr>
+ *     <tr>
+ *         <td>Linear Slide Middle</td> <td><code>LINEAR_SLIDE_MIDDLE</code></td> <td><code>DIGITAL</code></td> <td></td>
+ *     </tr>
+ *     <tr>
+ *         <td>Linear Slide High</td> <td><code>LINEAR_SLIDE_HIGH</code></td> <td><code>DIGITAL</code></td> <td></td>
+ *     </tr>
+ *     <tr>
+ *         <td>Linear Slide Top</td> <td><code>LINEAR_SLIDE_TOP</code></td> <td><code>DIGITAL</code></td> <td></td>
  *     </tr>
  *     <tr>
  *         <td>Movement</td> <td><code>MOVEMENT</code></td> <td><code>ANALOG_2D</code></td> <td>X and Y aren't different actions, they're combined as a 2D analog action.</td>
@@ -44,12 +59,6 @@ public enum UserActions {
     UserActions(InputType t) { type = t; }
 }
 
-
-// Controller 1:
-//      left stick x = Yaw
-//      right stick x/y = lateral
-//      left bumper = set speed to max
-//      right bumper = set speed to half
 
 // Controller 2:
 //      dpad-u = open claw
