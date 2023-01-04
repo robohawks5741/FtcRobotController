@@ -3,7 +3,8 @@
     "description": "Configuration for controller 1",
     "maps": {
         "br": {
-            "$comment": "Set speed to half"
+            "$comment": "Set speed to half",
+            "": ""
         },
         "bl": {
             "$comment": "set speed to max"

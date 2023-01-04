@@ -2,8 +2,8 @@ package org.firstinspires.ftc.teamcode.gamepadyn;
 
 import java.util.EnumMap;
 
-class InterConfig {
+class MappingObject {
     String description;
-    EnumMap<RawGamepadInput, > maps;
-    InterConfig() {}
+    EnumMap<RawGamepadInput, MappingAction> maps;
+    // MappingObject() {}
 }

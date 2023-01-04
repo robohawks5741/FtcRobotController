@@ -6,18 +6,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.qualcomm.ftccommon.FtcRobotControllerSettingsActivity;
 
-import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
-import org.firstinspires.ftc.robotcontroller.internal.PermissionValidatorWrapper;
-import org.firstinspires.ftc.teamcode.Opticon.Event;
 import org.firstinspires.ftc.teamcode.gamepadyn.user.UserActions;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.lang.reflect.Type;
 import java.util.EnumMap;
 import java.util.Objects;
 
@@ -42,7 +36,7 @@ public final class Gamepad {
             File file = new File(ctx.getFilesDir(), cfgName);
             FileReader fr = new FileReader(file);
             Gson gs = new Gson();
-            InterConfig ic = gs.fromJson(fr, InterConfig.class);
+            MappingObject ic = gs.fromJson(fr, MappingObject.class);
         }
 
 
@@ -51,13 +45,13 @@ public final class Gamepad {
 
     /**
      * Where {@link #loadFileConfiguration(String) loadFileConfiguration()} loads a configuration with a file,
-     * {@link #loadJsonConfiguration(Gson) loadJsonConfiguration()} loads a configuration from a GSON object.
-     * You probably won't find much use for this, {@link #loadJsonConfiguration(Gson)  loadJsonConfiguration()} uses it internally but that's about it.
-     * @param gs The configuration JSON.
+     * {@link #loadJsonConfiguration(MappingObject)  loadJsonConfiguration()} loads a configuration from a pre-parsed object.
+     * You probably won't find much use for this, {@link #loadJsonConfiguration(MappingObject)   loadJsonConfiguration()} uses it internally but that's about it.
+     * @param mo The mapping object.
      */
     @SuppressWarnings("JavaDoc")
-    public void loadJsonConfiguration(InterConfig gs) throws Exception{
-        return;
+    public void loadJsonConfiguration(MappingObject mo) throws Exception {
+
     }
 
     /**
