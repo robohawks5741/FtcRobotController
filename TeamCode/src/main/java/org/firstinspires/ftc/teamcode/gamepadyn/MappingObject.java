@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode.gamepadyn;
 
-import java.util.EnumMap;
+// import java.util.EnumMap;
+import java.util.Map;
 
+// RawGamepadInput MappingAction
 class MappingObject {
     String description;
-    EnumMap<RawGamepadInput, MappingAction> maps;
+    Map<String, String> maps;
     // MappingObject() {}
 }
