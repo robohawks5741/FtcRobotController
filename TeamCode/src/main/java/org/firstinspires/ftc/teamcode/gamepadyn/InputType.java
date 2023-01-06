@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.gamepadyn;
 
 @SuppressWarnings("rawtypes")
 public enum InputType {
+//        Try not to add any more.
         DIGITAL   (boolean.class),
         ANALOG_1D (AnalogXD.class, 1),
         ANALOG_2D (AnalogXD.class, 2),

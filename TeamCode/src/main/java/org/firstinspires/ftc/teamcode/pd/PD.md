@@ -1,3 +1,0 @@
-# PD
-
-Penetration Device

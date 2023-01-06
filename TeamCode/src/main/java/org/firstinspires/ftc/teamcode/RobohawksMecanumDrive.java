@@ -50,9 +50,6 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kStatic;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
 import static java.lang.Math.abs;
 
-import org.firstinspires.ftc.teamcode.LSD.LSD;
-import org.firstinspires.ftc.teamcode.pd.pd;
-
 /*
  * Simple mecanum drive hardware implementation for REV hardware.
  */

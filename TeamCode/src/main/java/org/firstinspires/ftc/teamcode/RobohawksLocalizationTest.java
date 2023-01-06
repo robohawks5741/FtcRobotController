@@ -13,7 +13,6 @@ import org.firstinspires.ftc.teamcode.gamepadyn.ActionSource;
 import org.firstinspires.ftc.teamcode.gamepadyn.Gamepad;
 import org.firstinspires.ftc.teamcode.gamepadyn.Gamepadyn;
 import org.firstinspires.ftc.teamcode.gamepadyn.user.UserActions;
-import org.firstinspires.ftc.teamcode.pd.pd;
 
 /**
  * This is a simple teleop routine for testing localization. Drive the robot around like a normal
@@ -32,7 +31,6 @@ public class RobohawksLocalizationTest extends LinearOpMode {
         RobohawksMecanumDrive LinearPosition = new RobohawksMecanumDrive(hardwareMap);
 
         LSD.opmodeInit(hardwareMap, this);
-        pd.opmodeInit(hardwareMap, this);
         Gamepadyn.opmodeInit(hardwareMap, this);
 
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -67,13 +65,7 @@ public class RobohawksLocalizationTest extends LinearOpMode {
 
             //drive.moveTestServo(.5);
 
-            if (gamepad1.left_bumper) {
-                pd.penetrate(0);
-            }
             //drive.LinearSlideToStop(1,25,10); //low pole
-            if (gamepad1.right_bumper) {
-                pd.penetrate(.525);
-            }
             // drive.LinearSlideToStop(2,25,10); //mid pole
             if (gamepad1.dpad_up) {
                 drive.moveTestServo(.65);
