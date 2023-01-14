@@ -58,12 +58,12 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
     //public int ctr = 0;
     //public double Lpos = 0;
 //todo: fix values to reflect real numbers
-    public int bottomStop = -25;//bottom, stop here
-    public int lowStop = -1350;
-    public int midStop = -2133;
-    public int tallStop =-2133;//placeholder value because slide isn't currently tall enough to reach the "tallStop"
-    //public int tooTall = -2375;//max height
-    public int target = 0;//placeholder here, gets used in function LinearSlideToStop()
+    public int bottomStop = 0;//bottom, stop here
+    public int lowStop = 1000;
+    public int midStop = 1800;
+    public int tallStop= 2550;//placeholder value because slide isn't currently tall enough to reach the "tallStop"
+    public int tooTall = 2970;//max height
+    public int target =     0;//placeholder here, gets used in function LinearSlideToStop()
 
     public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0, 0, 0);
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(0, 0, 0);
@@ -81,7 +81,7 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
 
     private TrajectoryFollower follower;
 
-    private DcMotorEx leftFront, leftRear, rightRear, rightFront, linearSlide, leftEncoder;
+    private DcMotorEx leftFront, leftRear, rightRear, rightFront, linearSlide, leftEncoder, rightEncoder;
     private List<DcMotorEx> motors;
     private Servo clawServo, penetrationServo;
 
@@ -138,12 +138,13 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
 
         linearSlide = hardwareMap.get(DcMotorEx.class, "linearSlide");
         leftEncoder =  hardwareMap.get(DcMotorEx.class, "leftEncoder");
+        rightEncoder = hardwareMap.get(DcMotorEx.class, "rightEncoder");
 
         clawServo = hardwareMap.get(Servo.class, "clawServo");
         penetrationServo = hardwareMap.get(Servo.class,"penetrationServo");
 
         //added, testing
-        motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront, linearSlide, leftEncoder);
+        motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront, linearSlide, leftEncoder, rightEncoder);
         //added linear slide to these.
         for (DcMotorEx motor : motors) {
             MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
@@ -324,9 +325,11 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
 
     }
     @Override
-    public void LinearSlideToStop(int stop, double power,int tolerance){ //TODO: Add recursion with a tolerance var to make this as accurate as possible, requires good rope tension for up and down.
+    public void LinearSlideToStop(int stop, int conesUp, double power,int tolerance){ //TODO: Add recursion with a tolerance var to make this as accurate as possible, requires good rope tension for up and down.
         linearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftEncoder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         linearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftEncoder.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         double rawProximity = 0;
         double proximityMultiplier1 = 0;
@@ -336,44 +339,56 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
         double correctedVelocity = 0;
         double LSspeed = 0;
 
-        if(stop == 1){
-            target = lowStop;
+        if (conesUp == 0 || stop !=0) {
+
+
+            if (stop == 1) {
+                target = lowStop;
+            }
+            else if (stop == 2) {
+                target = midStop;
+            }
+            else if (stop == 3) {
+                target = tallStop;
+            }
+            else if (stop == 0) {
+                target = bottomStop;
+            }
         }
-        else if(stop == 2){
-            target = midStop;
-        }
-        else if(stop == 3){
-            target = tallStop;
-        }
-        if(stop == 0){
-            target = bottomStop;
+        else if (conesUp != 0 && stop == 0){
+            target = lowStop-(25*conesUp);
         }
         //above sets the target encoder position specified by the user input "stop"
         //----------------------------------------------------------------------------------------
-        if(LinearSlidePos()>=target){
-            while(LinearSlidePos()>=target){
+        if(LinearSlidePos()<=target){
+            while(LinearSlidePos()<=target){
                 rawProximity = abs(abs(LinearSlidePos())-abs(target)); //finds how close slide is to target (unit is encoder ticks)
-                proximityMultiplier1 = (rawProximity < 500 ? 350 : 1 ); //if within 500 ticks of target, output 350, if not, output one.
+                proximityMultiplier1 = (rawProximity < 350 ? 350 : 1 ); //if within 500 ticks of target, output 350, if not, output one.
                 calculatedPower = rawProximity/proximityMultiplier1; // If the slide is under 500 ticks to its destination, the variable calculatedPower is set to: the distance to the destination divided by 350. If the slide is not within 500 ticks, The value is just 1.
                 proximityMultiplierCorrector = (calculatedPower > 1 ? calculatedPower : 1); // This lets the next line know if the multiplier value is over 1, and sends the correct value to change it to exactly one if it is over one.
                 velo = calculatedPower/proximityMultiplierCorrector; // This turns multiplier values over 1 to one using the value provided by the above line.
-                correctedVelocity = (velo < .4 ? .4 : velo); // this makes sure that the multiplier value doesn't go below .3.
+                correctedVelocity = (velo < .4 ? .4 : velo); // this makes sure that the multiplier value doesn't go below .4.
                 //velo = (proximityMultiplier1/proximityMultiplierCorrector)*power;
                 LSspeed = power*correctedVelocity;
-                linearSlide.setPower(-LSspeed);
+                //LSspeed = 1;
+                linearSlide.setPower(LSspeed);
+                leftEncoder.setPower(-LSspeed);
             }
         }
         else{
-            while (LinearSlidePos()<=target){
+            while (LinearSlidePos()>=target){
                 rawProximity = abs(abs(LinearSlidePos())-abs(target));
                 proximityMultiplier1 = (rawProximity < 500 ? 350 : 1 );
                 calculatedPower = rawProximity/proximityMultiplier1;
                 proximityMultiplierCorrector = (calculatedPower > 1 ? calculatedPower : 1);
                 velo = calculatedPower/proximityMultiplierCorrector;
                 correctedVelocity = (velo < .4 ? .4 : velo);
-                //velo = (proximityMultiplier1/proximityMultiplierCorrector)*power;
+                velo = (proximityMultiplier1/proximityMultiplierCorrector)*power;
                 LSspeed = power*correctedVelocity;
-                linearSlide.setPower(LSspeed);
+                //LSspeed = 1;
+                linearSlide.setPower(-LSspeed);
+                leftEncoder.setPower(LSspeed);
+
             }
         }
 
@@ -387,7 +402,7 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
     @Override
     public void LinearSlideToStop2(int stop, int tolerance){
 
-        linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        //linearSlide.setMode(DcMotor.1.RUN_TO_POSITION);
 
         if(stop == 1){
             target = lowStop;
@@ -436,6 +451,10 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
     public void moveTestServo(double pos){
 
         clawServo.setPosition(pos);
+    }
+    @Override
+    public void MoveSusan(double speed){
+        rightEncoder.setPower(speed);
     }
 
 

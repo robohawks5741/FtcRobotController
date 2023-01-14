@@ -9,7 +9,9 @@ public interface SampleMecanumDrive2testJames {
 
   //  void LinearSlideToStop(int stop, int power, int tolerance);
 
-    void LinearSlideToStop(int stop, double power, int tolerance);
+    //void LinearSlideToStop(int stop, double power, int tolerance);
+
+    void LinearSlideToStop(int stop, int conesUp, double power, int tolerance);
 
     void LinearSlideToStop2(int stop, int tolerance);
 
@@ -22,4 +24,6 @@ public interface SampleMecanumDrive2testJames {
    // void moveTestServo(float pos);
 
     void moveTestServo(double pos);
+
+    void MoveSusan(double speed);
 }

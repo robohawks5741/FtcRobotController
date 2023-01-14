@@ -31,7 +31,7 @@ public class LocalizationTest extends LinearOpMode{
 
         LinearPosition.LinearSlideResetEnc();
 
-        drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        //drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         waitForStart();
 
@@ -77,18 +77,27 @@ public class LocalizationTest extends LinearOpMode{
                 drive.moveTestServo(1);
                 //drive.LinearSlideToStop(3,25,50);        //drive.LinearSlideToStop(4,25,10); //bottom
             }
-            /*if(gamepad1.y){
-                drive.LinearSlideToStop(3,.50,25);
+            if(gamepad2.y){
+                drive.LinearSlideToStop(3,0,25, 35);
             }
-            if(gamepad2.b){
-                drive.LinearSlideToStop(0,.5,25);
+            //if(gamepad2.b){
+                //drive.LinearSlideToStop(0,1,25);
+            //}
+            if(gamepad2.x){
+                drive.LinearSlideToStop(1,0,25,35);
             }
-            if(gamepad1.x){
-                drive.LinearSlideToStop(1,.5,25);
+            if(gamepad2.a){
+                drive.LinearSlideToStop(2,0,25,35);
             }
-            if(gamepad1.a){
-                drive.LinearSlideToStop(2,.5,25);
-            }*/
+            if(gamepad2.dpad_left){
+                drive.MoveSusan(.2);
+            }
+            if(gamepad2.dpad_right){
+                drive.MoveSusan(-.2);
+            }
+            if(!gamepad2.dpad_left  && !gamepad2.dpad_right){
+                drive.MoveSusan(0);
+            }
 
 
 
