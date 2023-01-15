@@ -57,7 +57,7 @@ import static java.lang.Math.abs;
 public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDrive2testJames {
     //public int ctr = 0;
     //public double Lpos = 0;
-//todo: fix values to reflect real numbers
+//done: fix values to reflect real numbers
     public int bottomStop = 0;//bottom, stop here
     public int lowStop = 1000;
     public int midStop = 1800;
@@ -103,13 +103,13 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
 
-        // TODO: adjust the names of the following hardware devices to match your configuration
+        // done: adjust the names of the following hardware devices to match your configuration
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
         imu.initialize(parameters);
 
-        // TODO: If the hub containing the IMU you are using is mounted so that the "REV" logo does
+        // not needed: If the hub containing the IMU you are using is mounted so that the "REV" logo does
         // not face up, remap the IMU axes so that the z-axis points upward (normal to the floor.)
         //
         //             | +Z axis
@@ -162,7 +162,7 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
             setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, MOTOR_VELO_PID);
         }
 
-        // TODO: reverse any motors using DcMotor.setDirection()
+        // done: reverse any motors using DcMotor.setDirection()
         rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
         rightRear.setDirection(DcMotorSimple.Direction.REVERSE);
 
