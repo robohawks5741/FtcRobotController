@@ -3,11 +3,11 @@ package org.firstinspires.ftc.teamcode.gamepadyn;
 import androidx.annotation.NonNull;
 
 // Analog input value.
-public class AnalogXD {
+public class AnalogValue {
     public final int axes;
     public final float[] values;
 //    @SafeVarargs
-    protected AnalogXD(@NonNull float... v) {
+    protected AnalogValue(@NonNull float... v) {
         values = v;
         axes = v.length;
     }

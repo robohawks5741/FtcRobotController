@@ -12,11 +12,11 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
-import org.firstinspires.ftc.teamcode.Opticon.Event;
+import org.firstinspires.ftc.teamcode.Opticon.EventEmitter;
 
 // Linear Slide Driver
 public class LSD {
-    public static Event<Double> TargetReached;
+    public static EventEmitter<Double> TargetReached;
 
     public enum SlideMode {
         // Absolute control, using stops and encoder positions.

@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.Opticon;
 
 import android.util.Log;
 import java.util.ArrayList;
-public final class Event<T> {
+public final class EventEmitter<T> {
     @FunctionalInterface
     public interface Listener<T> {
         default void run() { }
@@ -22,5 +22,5 @@ public final class Event<T> {
     }
 
     private final ArrayList<Listener<T>> _listeners = new ArrayList<>();
-    public Event() { }
+    public EventEmitter() { }
 }

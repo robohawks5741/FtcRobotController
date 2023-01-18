@@ -3,8 +3,7 @@
     "description": "Configuration for controller 1",
     "maps": {
         "br": {
-            "$comment": "Set speed to half",
-            "": ""
+            "$comment": "Set speed to half"
         },
         "bl": {
             "$comment": "set speed to max"
@@ -17,3 +16,13 @@
         }
     }
 }
+
+// Controller 2:
+//      dpad-u = open claw
+//      dpad-d = close claw
+//      lt = slide up
+//      rt = slide down
+//      y = top
+//      b = pickup pos/lowest/0
+//      x = low pole
+//      a = medium pole

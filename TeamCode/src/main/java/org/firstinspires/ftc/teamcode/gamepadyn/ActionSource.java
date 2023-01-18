@@ -1,11 +1,10 @@
 package org.firstinspires.ftc.teamcode.gamepadyn;
-import org.firstinspires.ftc.teamcode.Opticon.Event;
-import org.firstinspires.ftc.teamcode.gamepadyn.user.UserActions;
+import org.firstinspires.ftc.teamcode.Opticon.EventEmitter;
 
 // ""emitter""
 public final class ActionSource {
 
-    public final Event<Object> event = new Event<>();
+    public final EventEmitter<Object> eventEmitter = new EventEmitter<>();
 
     public Object getValue() { return _value; }
 

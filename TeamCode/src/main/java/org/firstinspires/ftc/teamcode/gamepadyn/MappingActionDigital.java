@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.gamepadyn;
 
+import androidx.annotation.Nullable;
+
+import org.firstinspires.ftc.teamcode.gamepadyn.user.UserActions;
+
 // Configuration "Parameter"
 public final class MappingActionDigital extends MappingAction {
     public enum Mode {
@@ -12,11 +16,37 @@ public final class MappingActionDigital extends MappingAction {
         ANALOG_OFFSET
     }
 
-    public final int axes;
     public final MappingActionDigital.Mode mode;
+    public final UserActions action;
 
-    MappingActionDigital(int a, MappingActionDigital.Mode m) {
-        axes = a;
-        mode = m;
+//    Shared settings
+
+    public Integer axis = null;
+
+//    Analog Map settings
+
+    public Float depressedValue = null;
+    public Float releasedValue = null;
+
+//    Analog Offset settings
+
+    public Float offsetRate = null;
+
+    MappingActionDigital(MappingActionDigital.Mode modes, UserActions action, float depressedValue, float releasedValue, int axis) {
+        this(modes, action);
+        this.depressedValue = depressedValue;
+        this.releasedValue = releasedValue;
+        this.axis = axis;
+    }
+
+    MappingActionDigital(MappingActionDigital.Mode modes, UserActions action, float offsetRate, int axis) {
+        this(modes, action);
+        this.offsetRate = offsetRate;
+        this.axis = axis;
+    }
+
+    MappingActionDigital(MappingActionDigital.Mode modes, UserActions action) {
+        this.mode = modes;
+        this.action = action;
     }
 }

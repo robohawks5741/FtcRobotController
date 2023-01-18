@@ -9,10 +9,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.LSD.LSD;
-import org.firstinspires.ftc.teamcode.gamepadyn.ActionSource;
 import org.firstinspires.ftc.teamcode.gamepadyn.Gamepad;
 import org.firstinspires.ftc.teamcode.gamepadyn.Gamepadyn;
-import org.firstinspires.ftc.teamcode.gamepadyn.user.UserActions;
 
 /**
  * This is a simple teleop routine for testing localization. Drive the robot around like a normal
@@ -39,11 +37,11 @@ public class RobohawksLocalizationTest extends LinearOpMode {
 
         Gamepad gamepad0 = Gamepadyn.getGamepad(0);
         // callbacks
-        gamepad0.action(LINEAR_SLIDE_TOP    ).event.on(d -> LSD.setPosition(LSD.SlideHeight.TOP));
-        gamepad0.action(LINEAR_SLIDE_HIGH   ).event.on(d -> LSD.setPosition(LSD.SlideHeight.HIGH));
-        gamepad0.action(LINEAR_SLIDE_MIDDLE ).event.on(d -> LSD.setPosition(LSD.SlideHeight.MIDDLE));
-        gamepad0.action(LINEAR_SLIDE_LOW    ).event.on(d -> LSD.setPosition(LSD.SlideHeight.LOW));
-        gamepad0.action(LINEAR_SLIDE_BOTTOM ).event.on(d -> LSD.setPosition(LSD.SlideHeight.BOTTOM));
+        gamepad0.action(LINEAR_SLIDE_TOP    ).eventEmitter.on(d -> LSD.setPosition(LSD.SlideHeight.TOP));
+        gamepad0.action(LINEAR_SLIDE_HIGH   ).eventEmitter.on(d -> LSD.setPosition(LSD.SlideHeight.HIGH));
+        gamepad0.action(LINEAR_SLIDE_MIDDLE ).eventEmitter.on(d -> LSD.setPosition(LSD.SlideHeight.MIDDLE));
+        gamepad0.action(LINEAR_SLIDE_LOW    ).eventEmitter.on(d -> LSD.setPosition(LSD.SlideHeight.LOW));
+        gamepad0.action(LINEAR_SLIDE_BOTTOM ).eventEmitter.on(d -> LSD.setPosition(LSD.SlideHeight.BOTTOM));
 
         while (opModeIsActive()) {
             drive.setWeightedDrivePower(

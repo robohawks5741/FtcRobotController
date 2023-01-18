@@ -2,75 +2,106 @@
     "$schema": "http://json-schema.org/schema",
     "$id": "gamepadyn-config",
     "title": "Gamepadyn Configuration Schema",
-    "description": "A product from Acme's catalog",
+    "description": "A configuration for an individual controller.",
     "type": "object",
     "properties": {
         "description": {
             "description": "A summary of the configuration",
-            "type": "string",
+            "type": "string"
         },
         "maps": {
             "description": "The per-input action mappings",
             "type": "object",
             "properties": {
                 "fd": {
-                    "description": "Face Button Down (`A` w/ XBox layout)"
+                    "description": "Face Button Down (`A` w/ XBox layout)",
+                    "$ref": "#/definitions/DigitalInput"
                 },
                 "fr": {
-                    "description": "Face Button Right (`B` w/ XBox layout)"
+                    "description": "Face Button Right (`B` w/ XBox layout)",
+                    "$ref": "#/definitions/DigitalInput"
                 },
                 "fl": {
-                    "description": "Face Button Left (`X` w/ XBox layout)"
+                    "description": "Face Button Left (`X` w/ XBox layout)",
+                    "$ref": "#/definitions/DigitalInput"
                 },
                 "fu": {
-                    "description": "Face Button Up (`Y` w/ XBox layout)"
+                    "description": "Face Button Up (`Y` w/ XBox layout)",
+                    "$ref": "#/definitions/DigitalInput"
                 },
                 "du": {
-                    "description": "D-Pad Up"
+                    "description": "D-Pad Up",
+                    "$ref": "#/definitions/DigitalInput"
                 },
                 "dd": {
-                    "description": "D-Pad Down"
+                    "description": "D-Pad Down",
+                    "$ref": "#/definitions/DigitalInput"
                 },
                 "dl": {
-                    "description": "D-Pad Left"
+                    "description": "D-Pad Left",
+                    "$ref": "#/definitions/DigitalInput"
                 },
                 "dr": {
-                    "description": "D-Pad Right"
+                    "description": "D-Pad Right",
+                    "$ref": "#/definitions/DigitalInput"
                 },
                 "tr": {
-                    "description": "Trigger Right"
+                    "description": "Trigger Right",
+                    "$ref": "#/definitions/AnalogInput"
                 },
                 "tl": {
-                    "description": "Trigger Left"
+                    "description": "Trigger Left",
+                    "$ref": "#/definitions/AnalogInput"
                 },
                 "br": {
-                    "description": "Bumper Right"
+                    "description": "Bumper Right",
+                    "$ref": "#/definitions/DigitalInput"
                 },
                 "bl": {
-                    "description": "Bumper Left"
+                    "description": "Bumper Left",
+                    "$ref": "#/definitions/DigitalInput"
                 },
                 "sr": {
-                    "description": "Right Stick "
+                    "description": "Right Stick",
+                    "$ref": "#/definitions/AnalogInput"
                 },
                 "sbr": {
-                    "description": "Right Stick Button"
+                    "description": "Right Stick Button",
+                    "$ref": "#/definitions/DigitalInput"
                 },
                 "sl": {
-                    "description": "Left Stick"
+                    "description": "Left Stick",
+                    "$ref": "#/definitions/AnalogInput"
                 },
                 "sbl": {
-                    "description": "Left Stick Button"
+                    "description": "Left Stick Button",
+                    "$ref": "#/definitions/DigitalInput"
                 }
             }
         }
     },
-    "definitions": {
-        "DigitalButton": {
-            "title": "Digital Button Title!!!",
-            "type": "array"
+    "$defs": {
+        "DigitalInput": {
+            "title": "A digital input.",
+            "type": "object",
+            "properties": {
+            }
         },
-        "AnalogButton": {},
-        "AnalogStick": {}
+        "AnalogInput": {
+            "title": "An analog input.",
+            "type": "object",
+            "properties": {
+                "axes": {
+                    "description": "The number of axes of the input.",
+                    "type": "integer",
+                    "exclusiveMinimum": 0
+                },
+                "mode": {
+                    "type": "string",
+                    "enum": [ "ONE_TO_ONE_AXES", "SPLIT_AXES" ]
+                }
+            }
+        }
     },
     "required": [
         "maps"

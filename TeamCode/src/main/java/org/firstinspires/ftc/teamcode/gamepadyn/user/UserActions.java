@@ -44,28 +44,19 @@ import static org.firstinspires.ftc.teamcode.gamepadyn.InputType.*;
  * </table>
  */
 public enum UserActions {
-    LINEAR_SLIDE        (ANALOG_1D),
+    LINEAR_SLIDE        (ANALOG, 1),
     LINEAR_SLIDE_BOTTOM (DIGITAL),
     LINEAR_SLIDE_LOW    (DIGITAL),
     LINEAR_SLIDE_MIDDLE (DIGITAL),
     LINEAR_SLIDE_HIGH   (DIGITAL),
     LINEAR_SLIDE_TOP    (DIGITAL),
-    CLAW                (ANALOG_1D),
-    MOVEMENT            (ANALOG_2D),
-    ROTATION            (ANALOG_1D);
+    CLAW                (ANALOG, 1),
+    MOVEMENT            (ANALOG, 2),
+    ROTATION            (ANALOG, 2);
 
     public final InputType type;
+    public final int axes;
 
-    UserActions(InputType t) { type = t; }
+    UserActions(InputType type) { this.type = type; this.axes = 0; }
+    UserActions(InputType type, int axes) { this.type = type; this.axes = axes; }
 }
-
-
-// Controller 2:
-//      dpad-u = open claw
-//      dpad-d = close claw
-//      lt = slide up
-//      rt = slide down
-//      y = top
-//      b = pickup pos/lowest/0
-//      x = low pole
-//      a = medium pole

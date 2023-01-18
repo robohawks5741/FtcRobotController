@@ -20,7 +20,7 @@ public final class Gamepad {
 
     @NonNull
     public ActionSource action(UserActions ua) {
-        return Objects.requireNonNull(_actions.get(ua));
+        return Objects.requireNonNull(actions.get(ua));
     }
 
     /**
@@ -29,10 +29,10 @@ public final class Gamepad {
      */
     public void loadFileConfiguration(@Nullable String cfgName) throws FileNotFoundException {
         if (cfgName == null) {
-            _configJson = null;
-            _configName = null;
+            configJson = null;
+            configName = null;
         } else {
-            Context ctx = Gamepadyn._currentOpmode.hardwareMap.appContext;
+            Context ctx = Gamepadyn.currentOpmode.hardwareMap.appContext;
             File file = new File(ctx.getFilesDir(), cfgName);
             FileReader fr = new FileReader(file);
             Gson gs = new Gson();
@@ -58,28 +58,32 @@ public final class Gamepad {
      * @return The name/path/identifier of the configuration file.
      */
     @Nullable
-    public String getConfiguration() { return _configName; }
+    public String getConfiguration() { return configName; }
 
     public final int index;
 
-    private final EnumMap<UserActions, ActionSource> _actions = new EnumMap<>(UserActions.class);
+    private final EnumMap<UserActions, ActionSource> actions = new EnumMap<>(UserActions.class);
 
     /**
      * Map of buttons -> mapping actions
      */
     @SuppressWarnings("FieldMayBeFinal")
-    private EnumMap<RawGamepadInput, MappingAction> _mapping = new EnumMap<>(RawGamepadInput.class);
+    EnumMap<RawGamepadInput, MappingAction> mapping = new EnumMap<>(RawGamepadInput.class);
 
     // The name/path/identifier of the configuration file.
     @SuppressWarnings("FieldMayBeFinal")
-    private String _configName = null;
-    private String _configJson = null;
+    private String configName = null;
+    private String configJson = null;
 
-    private Gamepad(int id) {
-        index = id;
+    @SuppressWarnings("FieldMayBeFinal")
+    private com.qualcomm.robotcore.hardware.Gamepad ftcGamepad;
+
+    Gamepad(int index, com.qualcomm.robotcore.hardware.Gamepad ftcGamepad) {
+        this.index = index;
+        this.ftcGamepad = ftcGamepad;
         // fill
         for (UserActions ua : UserActions.values()) {
-             _actions.put(ua, new ActionSource(ua.type));
+             actions.put(ua, new ActionSource(ua.type));
         }
     }
 }
