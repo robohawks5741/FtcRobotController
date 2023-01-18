@@ -4,7 +4,7 @@ import org.firstinspires.ftc.teamcode.Opticon.EventEmitter;
 // ""emitter""
 public final class ActionSource {
 
-    public final EventEmitter<Object> eventEmitter = new EventEmitter<>();
+    public final EventEmitter<Object> emitter = new EventEmitter<>();
 
     public Object getValue() { return _value; }
 
