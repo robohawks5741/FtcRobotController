@@ -10,35 +10,25 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
-/**
- * This is a simple teleop routine for testing localization. Drive the robot around like a normal
- * teleop routine and make sure the robot's estimated pose matches the robot's actual pose (slight
- * errors are not out of the ordinary, especially with sudden drive motions). The goal of this
- * exercise is to ascertain whether the localizer has been configured properly (note: the pure
- * encoder localizer heading may be significantly off if the track width has not been tuned).
- */
 @TeleOp(group = "drive")
-public class LocalizationTest extends LinearOpMode{
+public class DriverControl extends LinearOpMode{
+
     @Override
     public void runOpMode() throws InterruptedException {
+
         double speed = 1;
-
-
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
-        SampleMecanumDrive LinearPosition = new SampleMecanumDrive(hardwareMap);
 
-        LinearPosition.LinearSlideResetEnc();
 
-        //drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         waitForStart();
 
 
         while (opModeIsActive()) {
             if(gamepad1.right_bumper)
-                 speed = .5;
+                speed = .5;
             if(gamepad1.left_bumper)
                 speed = 1;
             drive.setWeightedDrivePower(
@@ -81,7 +71,7 @@ public class LocalizationTest extends LinearOpMode{
                 drive.LinearSlideToStop(3,0,25, 35);
             }
             //if(gamepad2.b){
-                //drive.LinearSlideToStop(0,1,25);
+            //drive.LinearSlideToStop(0,1,25);
             //}
             if(gamepad2.x){
                 drive.LinearSlideToStop(1,0,25,35);
@@ -118,8 +108,6 @@ public class LocalizationTest extends LinearOpMode{
             telemetry.addData("rightX",gamepad1.right_stick_x);
 
             telemetry.addData("RawLsPos",drive.LinearSlidePos());
-
-            telemetry.addData("susan", drive.SusanEncoderPosition());
 
             telemetry.update();
 

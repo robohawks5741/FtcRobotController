@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.drive;
 public interface SampleMecanumDrive2testJames {
 
 
+    double SusanEncoderPosition();
+
     void setLinearSlide(double linearPower);
 
     //void LinearSlideToStop(int stop);

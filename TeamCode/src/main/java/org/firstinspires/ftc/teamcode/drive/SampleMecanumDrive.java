@@ -316,6 +316,11 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
         rightFront.setPower(v3);
     }
 
+    @Override
+    public double SusanEncoderPosition(){
+        return rightEncoder.getCurrentPosition();
+    }
+
 
     @Override
     public void setLinearSlide(double linearPower)  {

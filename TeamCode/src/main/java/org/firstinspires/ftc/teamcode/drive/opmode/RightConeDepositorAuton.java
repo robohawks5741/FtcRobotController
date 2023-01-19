@@ -104,6 +104,8 @@ public class RightConeDepositorAuton extends LinearOpMode implements RightConeDe
     @Override
     public void Park(int location){
 
+        drive.LinearSlideResetEnc();
+
         Pose2d destination = null;
 
 
