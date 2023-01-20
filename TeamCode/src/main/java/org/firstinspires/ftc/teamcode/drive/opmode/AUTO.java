@@ -369,10 +369,26 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
         /* Actually do something useful */
         if(tagOfInterest == null)
         {
-            drive.followTrajectory(four);
+            FirstCone();
+            LeftAndDump();
+            RightAndPickup();
+            LeftAndDump();
+            RightAndPickup();
+            LeftAndDump();
+            RightAndPickup();
+            LeftAndDump();
+            Park(2);
         }
         else {
-
+            FirstCone();
+            LeftAndDump();
+            RightAndPickup();
+            LeftAndDump();
+            RightAndPickup();
+            LeftAndDump();
+            RightAndPickup();
+            LeftAndDump();
+            Park(NumberOfTag);
 
 
         }
