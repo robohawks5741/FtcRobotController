@@ -48,17 +48,12 @@ public final class MappingActionAnalog extends MappingAction {
     public final int axes;
     public final MappingActionAnalog.Mode mode;
 
-//    Shared Settings
-
-    // Multiplies the values of axis. Depending on the AnalogMode where applicable, it may be clamped.
-    final Float[] inputScale;
-    // Adds a constant value to each axis. May be clamped (see inputScale)
-    final Float[] inputOffset;
-
 //    One to One Axis settings
 
     // The action with the SAME AMOUNT OF AXIS to map onto.
     UserActions action;
+    // Multiplies the values of the input axes by each element.
+    final Float[] inputScale;
 
 //    Split Axis settings
 

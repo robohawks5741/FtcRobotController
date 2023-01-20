@@ -20,7 +20,7 @@ public final class Gamepad {
 
     @NonNull
     public ActionSource action(UserActions ua) {
-        return Objects.requireNonNull(actions.get(ua));
+        return Objects.requireNonNull(actionSources.get(ua));
     }
 
     /**
@@ -51,7 +51,6 @@ public final class Gamepad {
      */
     @SuppressWarnings("JavaDoc")
     public void loadJsonConfiguration(MappingObject mo) throws Exception {
-
     }
 
     /**
@@ -60,20 +59,25 @@ public final class Gamepad {
     @Nullable
     public String getConfiguration() { return configName; }
 
-    public final int index;
-
-    private final EnumMap<UserActions, ActionSource> actions = new EnumMap<>(UserActions.class);
+    // ActionSources (emitters + values) for each of the actions.
+    private final EnumMap<UserActions, ActionSource> actionSources = new EnumMap<>(UserActions.class);
 
     /**
      * Map of buttons -> mapping actions
      */
     @SuppressWarnings("FieldMayBeFinal")
     EnumMap<RawGamepadInput, MappingAction> mapping = new EnumMap<>(RawGamepadInput.class);
+    // In order to create event-driven input, we need to determine change. Tracking change requires recording state.
+    // Object is of type RawGamepadInput.inputType.inputClass depending on the key.
+    private EnumMap<RawGamepadInput, Object> stateCache;
 
     // The name/path/identifier of the configuration file.
     @SuppressWarnings("FieldMayBeFinal")
     private String configName = null;
     private String configJson = null;
+
+    // The index of the gamepad.
+    public final int index;
 
     @SuppressWarnings("FieldMayBeFinal")
     private com.qualcomm.robotcore.hardware.Gamepad ftcGamepad;
@@ -83,7 +87,19 @@ public final class Gamepad {
         this.ftcGamepad = ftcGamepad;
         // fill
         for (UserActions ua : UserActions.values()) {
-             actions.put(ua, new ActionSource(ua.type));
+             actionSources.put(ua, new ActionSource(ua.type));
+        }
+        for (RawGamepadInput rin : RawGamepadInput.values()) {
+            switch (rin.inputType) {
+                case ANALOG: {
+                    stateCache.put(rin, new AnalogValue(new float[rin.axes]));
+                    break;
+                }
+                case DIGITAL: {
+                    stateCache.put(rin, false);
+                    break;
+                }
+            }
         }
     }
 }

@@ -1,28 +1,24 @@
 {
-    "$schema": "config.schema.json",
+    "$schema": "./config.schema.json",
     "description": "Configuration for controller 1",
     "maps": {
         "br": {
-            "$comment": "Set speed to half"
+            "$comment": "Set speed to half",
+            "mode": "TRIGGER",
+            "action": "MOTOR_SPEED_HALF"
         },
         "bl": {
-            "$comment": "set speed to max"
+            "$comment": "Set speed to full",
+            "mode": "TRIGGER",
+            "action": "MOTOR_SPEED_FULL"
         },
         "sr": {
-            "$comment": "x/y = lateral movement"
+            "$comment": "x/y = lateral movement",
+            "mode": "ONE_TO_ONE_AXES",
+            
         },
         "sl": {
             "$comment": "x axis = yaw rotation"
         }
     }
 }
-
-// Controller 2:
-//      dpad-u = open claw
-//      dpad-d = close claw
-//      lt = slide up
-//      rt = slide down
-//      y = top
-//      b = pickup pos/lowest/0
-//      x = low pole
-//      a = medium pole

@@ -62,13 +62,13 @@ public final class Gamepadyn {
                         MappingActionDigital value = (MappingActionDigital) entry.getValue();
                         switch (value.mode) {
                             case TRIGGER: {
-                                gp.action(value.action).eventEmitter.emit();
+                                gp.action(value.action).emitter.emit(true);
                             }
                             case ANALOG_MAP: {
 
                             }
                             case ANALOG_OFFSET: {
-                                value.
+
                             }
                         }
                         break;

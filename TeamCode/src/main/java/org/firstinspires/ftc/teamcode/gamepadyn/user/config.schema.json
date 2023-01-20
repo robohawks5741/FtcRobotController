@@ -15,95 +15,197 @@
             "properties": {
                 "fd": {
                     "description": "Face Button Down (`A` w/ XBox layout)",
-                    "$ref": "#/definitions/DigitalInput"
+                    "$ref": "#/$defs/DigitalInput"
                 },
                 "fr": {
                     "description": "Face Button Right (`B` w/ XBox layout)",
-                    "$ref": "#/definitions/DigitalInput"
+                    "$ref": "#/$defs/DigitalInput"
                 },
                 "fl": {
                     "description": "Face Button Left (`X` w/ XBox layout)",
-                    "$ref": "#/definitions/DigitalInput"
+                    "$ref": "#/$defs/DigitalInput"
                 },
                 "fu": {
                     "description": "Face Button Up (`Y` w/ XBox layout)",
-                    "$ref": "#/definitions/DigitalInput"
+                    "$ref": "#/$defs/DigitalInput"
                 },
                 "du": {
                     "description": "D-Pad Up",
-                    "$ref": "#/definitions/DigitalInput"
+                    "$ref": "#/$defs/DigitalInput"
                 },
                 "dd": {
                     "description": "D-Pad Down",
-                    "$ref": "#/definitions/DigitalInput"
+                    "$ref": "#/$defs/DigitalInput"
                 },
                 "dl": {
                     "description": "D-Pad Left",
-                    "$ref": "#/definitions/DigitalInput"
+                    "$ref": "#/$defs/DigitalInput"
                 },
                 "dr": {
                     "description": "D-Pad Right",
-                    "$ref": "#/definitions/DigitalInput"
+                    "$ref": "#/$defs/DigitalInput"
                 },
                 "tr": {
                     "description": "Trigger Right",
-                    "$ref": "#/definitions/AnalogInput"
+                    "$ref": "#/$defs/AnalogInput"
                 },
                 "tl": {
                     "description": "Trigger Left",
-                    "$ref": "#/definitions/AnalogInput"
+                    "$ref": "#/$defs/AnalogInput"
                 },
                 "br": {
                     "description": "Bumper Right",
-                    "$ref": "#/definitions/DigitalInput"
+                    "$ref": "#/$defs/DigitalInput"
                 },
                 "bl": {
                     "description": "Bumper Left",
-                    "$ref": "#/definitions/DigitalInput"
+                    "$ref": "#/$defs/DigitalInput"
                 },
                 "sr": {
                     "description": "Right Stick",
-                    "$ref": "#/definitions/AnalogInput"
+                    "$ref": "#/$defs/AnalogInput"
                 },
                 "sbr": {
                     "description": "Right Stick Button",
-                    "$ref": "#/definitions/DigitalInput"
+                    "$ref": "#/$defs/DigitalInput"
                 },
                 "sl": {
                     "description": "Left Stick",
-                    "$ref": "#/definitions/AnalogInput"
+                    "$ref": "#/$defs/AnalogInput"
                 },
                 "sbl": {
                     "description": "Left Stick Button",
-                    "$ref": "#/definitions/DigitalInput"
+                    "$ref": "#/$defs/DigitalInput"
                 }
             }
         }
     },
+    
     "$defs": {
+        "SharedDigitalSettings": {
+            "properties": {
+                "axis": {
+                    "description": "The analog axis that this map affects",
+                    "type": "integer",
+                    "minimum": 0
+                }
+            },
+            "required": [ "axis" ]
+        },
+        "AnalogMapModeMap": {
+            "properties": {
+                "depressedValue": {
+                    "description": "The value of the axis while the button is depressed",
+                    "type": "number"
+                },
+                "releasedValue": {
+                    "description": "The value of the axis while the button is released. LEAVE THIS AS NULL if you want other inputs to map/change the action.",
+                    "type": [ "number", "null" ]
+                }
+            },
+            "$ref": "#/$defs/SharedDigitalSettings",
+            "required": [ "depressedValue" ]
+        },
+        "AnalogOffsetModeMap": {
+            "properties": {
+                "offsetRate": {
+                    "description": "The rate at which the axis should be changed while the button is depressed. Can be negative.",
+                    "type": "number"
+                }
+            },
+            "$ref": "#/$defs/SharedDigitalSettings",
+            "required": [ "offsetRate" ]
+        },
+        "OneToOneAxesModeMap": {
+            "properties": {
+                "action": {
+                    "description": "The action that this input maps on to.",
+                    "type": "string"
+                },
+                "inputScale": {
+                    "description": "The scale of the input.",
+                    "type": [ "array", "null" ],
+                    "items": { "type": "number" }
+                }
+            },
+            "required": [ "action" ]
+        },
+        "SplitAxesSetting": {
+            "properties": {
+                "axisScale": {
+                    "description": "The scale of the input axis",
+                    "type": [ "number", "null" ],
+                    "default": null
+                },
+                "targetAction": {
+                    "description": "The action to map onto/offset",
+                    "type": "string"
+                },
+                "targetAxis": {
+                    "description": "The axis of the action to map onto/offset",
+                    "type": "string"
+                },
+                "mode": {
+                    "description": "Whether to either set or offset the axis.",
+                    "type": "string",
+                    "enum": [ "SET", "OFFSET" ]
+                },
+                "required": [ "targetAction", "targetAxis", "mode" ]
+            }
+        },
+        "SplitAxesModeMap": {
+            "properties": {
+                "axisMaps": {
+                    "description": "A mapping for each axis. Elements can be null.",
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "$ref": "#/$defs/SplitAxesSetting"
+                    }
+                }
+            },
+            "required": [ "axisMaps" ]
+        },
         "DigitalInput": {
             "title": "A digital input.",
             "type": "object",
             "properties": {
+                "mode": {
+                    "description": "The digital input mode. See MappingActionDigital.java for more info.",
+                    "type": "string",
+                    "enum": [ "TRIGGER", "ANALOG_MAP", "ANALOG_OFFSET" ]
+                },
+                "action": {
+                    "description": "The action that the digital mapping refers to.",
+                    "type": "string"
+                }
+            },
+            "required": [ "mode", "action" ],
+            "if": { "properties": { "mode": { "const": "ANALOG_MAP" } } },
+            "then": { "$ref": "#/$defs/AnalogMapModeMap" },
+            "else": {
+                "if": { "properties": { "mode": { "const": "ANALOG_OFFSET" } } },
+                "then": { "$ref": "#/$defs/AnalogOffsetModeMap" },
+                "else": { }
             }
         },
         "AnalogInput": {
             "title": "An analog input.",
             "type": "object",
             "properties": {
-                "axes": {
-                    "description": "The number of axes of the input.",
-                    "type": "integer",
-                    "exclusiveMinimum": 0
-                },
                 "mode": {
+                    "description": "The analog input mode. See MappingActionAnalog.java for more info.",
                     "type": "string",
                     "enum": [ "ONE_TO_ONE_AXES", "SPLIT_AXES" ]
                 }
+            },
+            "if": { "properties": { "mode": { "const": "ONE_TO_ONE_AXES" } } },
+            "then": { "$ref": "#/$defs/OneToOneAxesModeMap" },
+            "else": {
+                "if": { "properties": { "mode": { "const": "SPLIT_AXES" } } },
+                "then": { "$ref": "#/$defs/SplitAxesModeMap" }
             }
         }
     },
-    "required": [
-        "maps"
-    ]
+    "required": [ "maps" ]
 }

@@ -50,9 +50,11 @@ public enum UserActions {
     LINEAR_SLIDE_MIDDLE (DIGITAL),
     LINEAR_SLIDE_HIGH   (DIGITAL),
     LINEAR_SLIDE_TOP    (DIGITAL),
+    MOTOR_SPEED_HALF    (DIGITAL),
+    MOTOR_SPEED_FULL    (DIGITAL),
     CLAW                (ANALOG, 1),
     MOVEMENT            (ANALOG, 2),
-    ROTATION            (ANALOG, 2);
+    ROTATION            (ANALOG, 1);
 
     public final InputType type;
     public final int axes;
