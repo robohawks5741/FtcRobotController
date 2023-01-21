@@ -59,7 +59,7 @@ public class DriverControl extends LinearOpMode{
                 drive.penetrate(.525);
             }//drive.LinearSlideToStop(2,25,10); //mid pole
             if(gamepad2.dpad_up){
-                drive.moveTestServo(.5);
+                drive.moveTestServo(.7);
                 //drive.LinearSlideToStop(0,25,50);
             }
             //drive.LinearSlideToStop(3,25,10); //high pole
