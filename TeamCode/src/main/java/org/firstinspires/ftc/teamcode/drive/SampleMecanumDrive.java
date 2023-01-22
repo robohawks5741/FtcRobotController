@@ -64,6 +64,7 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
     public int tallStop= 2550;//placeholder value because slide isn't currently tall enough to reach the "tallStop"
     public int tooTall = 2970;//max height
     public int target =     0;//placeholder here, gets used in function LinearSlideToStop()
+    public boolean slide = false;
 
     public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0, 0, 0);
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(0, 0, 0);
@@ -81,7 +82,7 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
 
     private TrajectoryFollower follower;
 
-    private DcMotorEx leftFront, leftRear, rightRear, rightFront, linearSlide, leftEncoder, rightEncoder;
+    private DcMotorEx leftFront, leftRear, rightRear, rightFront, linearSlide, leftEncoder, rightEncoder, frontEncoder;
     private List<DcMotorEx> motors;
     private Servo clawServo, penetrationServo;
 
@@ -139,12 +140,13 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
         linearSlide = hardwareMap.get(DcMotorEx.class, "linearSlide");
         leftEncoder =  hardwareMap.get(DcMotorEx.class, "leftEncoder");
         rightEncoder = hardwareMap.get(DcMotorEx.class, "rightEncoder");
+        frontEncoder = hardwareMap.get(DcMotorEx.class,"frontEncoder");
 
         clawServo = hardwareMap.get(Servo.class, "clawServo");
         penetrationServo = hardwareMap.get(Servo.class,"penetrationServo");
 
         //added, testing
-        motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront, linearSlide, leftEncoder, rightEncoder);
+        motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront, linearSlide, leftEncoder, rightEncoder, frontEncoder);
         //added linear slide to these.
         for (DcMotorEx motor : motors) {
             MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
@@ -309,6 +311,11 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
     }
 
     @Override
+    public void holdSusan(){
+        leftEncoder.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    }
+
+    @Override
     public void setMotorPowers(double v, double v1, double v2, double v3) {
         leftFront.setPower(v);
         leftRear.setPower(v1);
@@ -317,10 +324,20 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
     }
 
     @Override
-    public double SusanEncoderPosition(){
-        return rightEncoder.getCurrentPosition();
+    public void ResetSusan(){
+        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
+    @Override
+    public double SusanEncoderPosition(){
+        return leftFront.getCurrentPosition();
+    }
+
+    @Override
+    public void holdSlides(){
+        if (LinearSlidePos()>512)
+            setLinearSlide(0.17);
+    }
 
     @Override
     public void setLinearSlide(double linearPower)  {
@@ -330,7 +347,7 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
 
     }
     @Override
-    public void LinearSlideToStop(int stop, int conesUp, double power,int tolerance){ //TODO: Add recursion with a tolerance var to make this as accurate as possible, requires good rope tension for up and down.
+    public boolean LinearSlideToStop(int stop, int conesUp, double power, int tolerance){ //TODO: Add recursion with a tolerance var to make this as accurate as possible, requires good rope tension for up and down.
         linearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftEncoder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         linearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -366,7 +383,7 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
         //above sets the target encoder position specified by the user input "stop"
         //----------------------------------------------------------------------------------------
         if(LinearSlidePos()<=target){
-            while(LinearSlidePos()<=target){
+            if(LinearSlidePos()<=target){
                 rawProximity = abs(abs(LinearSlidePos())-abs(target)); //finds how close slide is to target (unit is encoder ticks)
                 proximityMultiplier1 = (rawProximity < 350 ? 350 : 1 ); //if within 500 ticks of target, output 350, if not, output one.
                 calculatedPower = rawProximity/proximityMultiplier1; // If the slide is under 500 ticks to its destination, the variable calculatedPower is set to: the distance to the destination divided by 350. If the slide is not within 500 ticks, The value is just 1.
@@ -378,10 +395,16 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
                 //LSspeed = 1;
                 linearSlide.setPower(LSspeed);
                 leftEncoder.setPower(-LSspeed);
+
+                if(LinearSlidePos()<=target-tolerance||LinearSlidePos()>=target+tolerance)
+                    slide = false;
+                else
+                    slide = true;
+
             }
         }
         else{
-            while (LinearSlidePos()>=target){
+            if(LinearSlidePos()>=target){
                 rawProximity = abs(abs(LinearSlidePos())-abs(target));
                 proximityMultiplier1 = (rawProximity < 500 ? 350 : 1 );
                 calculatedPower = rawProximity/proximityMultiplier1;
@@ -394,6 +417,12 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
                 linearSlide.setPower(-LSspeed);
                 leftEncoder.setPower(LSspeed);
 
+                if(LinearSlidePos()<=target-tolerance||LinearSlidePos()>=target+tolerance)
+                    slide = false;
+                else
+                    slide = true;
+
+
             }
         }
 
@@ -401,7 +430,11 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
      //   if (LinearSlidePos()+tolerance<target||LinearSlidePos()-tolerance>target){
      //       LinearSlideToStop(stop, power/2,tolerance-2);
      //   }
-
+     //   holdSlides();
+        if(slide)
+            return true;
+        else
+            return false;
     }
 
     @Override
@@ -457,12 +490,57 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
 
         clawServo.setPosition(pos);
     }
+
     @Override
     public void MoveSusan(double speed){
-        rightEncoder.setPower(speed);
+        frontEncoder.setPower(speed);
     }
 
+    /*@Override
+    public void up(){
+        boolean yes = false;
+        int wheel = 0;
+        if(SusanEncoderPosition()<-127 && SusanEncoderPosition()>-356)
+            yes = true;
+        else if(SusanEncoderPosition()>-569 || SusanEncoderPosition()<-846)
+            yes = true;
+        else if(SusanEncoderPosition()>-1013 || SusanEncoderPosition()<-1278)
+            yes = true;
+        else if(SusanEncoderPosition()>-1476 || SusanEncoderPosition()<-1756)
+            yes = true;
 
+        if(yes)
+            LinearSlideToStop(10,0,35,35);
+
+        yes=false;
+
+        if(SusanEncoderPosition()<-127 && SusanEncoderPosition()>-356){
+            yes = true; wheel = 1;}
+
+        else if(SusanEncoderPosition()>-569 || SusanEncoderPosition()<-846){
+            yes = true; wheel = 2;}
+
+        else if(SusanEncoderPosition()>-1013 || SusanEncoderPosition()<-1278){
+            yes = true; wheel = 3;}
+
+        else if(SusanEncoderPosition()>-1476 || SusanEncoderPosition()<-1756){
+            yes = true; wheel = 4;}
+
+
+
+    }
+
+    @Override
+    public void zHopSusan(double input){
+
+        if(SusanEncoderPosition()<-127 && SusanEncoderPosition()>-356)
+            up
+
+
+        else if(SusanEncoderPosition()>-569 || SusanEncoderPosition()<-846)
+            MoveSusan();
+
+    }*/
 
 
 

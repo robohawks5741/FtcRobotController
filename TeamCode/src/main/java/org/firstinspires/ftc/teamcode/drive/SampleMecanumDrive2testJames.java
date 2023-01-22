@@ -3,7 +3,13 @@ package org.firstinspires.ftc.teamcode.drive;
 public interface SampleMecanumDrive2testJames {
 
 
+    void holdSusan();
+
+    void ResetSusan();
+
     double SusanEncoderPosition();
+
+    void holdSlides();
 
     void setLinearSlide(double linearPower);
 
@@ -13,7 +19,7 @@ public interface SampleMecanumDrive2testJames {
 
     //void LinearSlideToStop(int stop, double power, int tolerance);
 
-    void LinearSlideToStop(int stop, int conesUp, double power, int tolerance);
+    boolean LinearSlideToStop(int stop, int conesUp, double power, int tolerance);
 
     void LinearSlideToStop2(int stop, int tolerance);
 
@@ -28,4 +34,10 @@ public interface SampleMecanumDrive2testJames {
     void moveTestServo(double pos);
 
     void MoveSusan(double speed);
+
+   // void zHopSusan();
+
+    //void up();
+
+   // void zHopSusan(double input);
 }
