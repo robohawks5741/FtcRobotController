@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.LSD;
+package org.firstinspires.ftc.teamcode.lsd;
 
 import static java.lang.Math.abs;
 import static java.lang.Math.max;
@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
-import org.firstinspires.ftc.teamcode.Opticon.EventEmitter;
+import org.firstinspires.ftc.teamcode.eventd.EventEmitter;
 
 // Linear Slide Driver
 public class LSD {

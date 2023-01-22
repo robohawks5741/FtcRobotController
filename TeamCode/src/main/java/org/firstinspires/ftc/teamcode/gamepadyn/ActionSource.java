@@ -1,5 +1,5 @@
 package org.firstinspires.ftc.teamcode.gamepadyn;
-import org.firstinspires.ftc.teamcode.Opticon.EventEmitter;
+import org.firstinspires.ftc.teamcode.eventd.EventEmitter;
 
 // ""emitter""
 public final class ActionSource {
