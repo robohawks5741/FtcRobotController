@@ -2,6 +2,9 @@ package org.firstinspires.ftc.teamcode.gamepadyn;
 
 import static org.firstinspires.ftc.teamcode.gamepadyn.InputType.*;
 
+/**
+ * An enum representing the different inputs on a standard competition-legal controller.
+ */
 public enum RawGamepadInput {
     /// A (Face Button Down)
     FD  (DIGITAL),
@@ -29,12 +32,12 @@ public enum RawGamepadInput {
     BL  (DIGITAL),
     /// Left Stick
     SL  (ANALOG, 2),
+    /// Left Stick Button
+    SLB (DIGITAL),
     /// Right Stick
     SR  (ANALOG, 2),
-    /// Left Stick Button
-    SBL (DIGITAL),
     /// Right Stick Button
-    SBR (DIGITAL);
+    SRB (DIGITAL);
 
     public final InputType inputType;
     public final int axes;

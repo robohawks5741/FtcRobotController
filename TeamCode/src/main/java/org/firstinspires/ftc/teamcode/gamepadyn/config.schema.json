@@ -65,7 +65,7 @@
                     "description": "Right Stick",
                     "$ref": "#/$defs/AnalogInput"
                 },
-                "sbr": {
+                "srb": {
                     "description": "Right Stick Button",
                     "$ref": "#/$defs/DigitalInput"
                 },
@@ -73,7 +73,7 @@
                     "description": "Left Stick",
                     "$ref": "#/$defs/AnalogInput"
                 },
-                "sbl": {
+                "slb": {
                     "description": "Left Stick Button",
                     "$ref": "#/$defs/DigitalInput"
                 }
@@ -143,15 +143,15 @@
                 },
                 "targetAxis": {
                     "description": "The axis of the action to map onto/offset",
-                    "type": "string"
+                    "type": "integer"
                 },
                 "mode": {
                     "description": "Whether to either set or offset the axis.",
                     "type": "string",
                     "enum": [ "SET", "OFFSET" ]
-                },
-                "required": [ "targetAction", "targetAxis", "mode" ]
-            }
+                }
+            },
+            "required": [ "targetAction", "targetAxis", "mode" ]
         },
         "SplitAxesModeMap": {
             "properties": {
@@ -159,7 +159,7 @@
                     "description": "A mapping for each axis. Elements can be null.",
                     "type": "array",
                     "items": {
-                        "type": "object",
+                        "type": [ "object", "null" ],
                         "$ref": "#/$defs/SplitAxesSetting"
                     }
                 }

@@ -1,6 +1,6 @@
 {
-    "$schema": "./config.schema.json",
-    "description": "Configuration for controller 1",
+    "$schema": "../config.schema.json",
+    "description": "Configuration for movement controls",
     "maps": {
         "br": {
             "$comment": "Set speed to half",
@@ -15,10 +15,18 @@
         "sr": {
             "$comment": "x/y = lateral movement",
             "mode": "ONE_TO_ONE_AXES",
-            
+            "action": "MOVEMENT"
         },
         "sl": {
-            "$comment": "x axis = yaw rotation"
+            "$comment": "x axis = yaw rotation",
+            "mode": "SPLIT_AXES",
+            "axisMaps": [
+                {
+                    "targetAction": "ROTATION",
+                    "targetAxis": 0,
+                    "mode": "OFFSET"
+                }
+            ]
         }
     }
 }

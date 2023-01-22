@@ -1,0 +1,47 @@
+{
+    "$schema": "../config.schema.json",
+    "description": "Configuration for slide/halo/claw controls",
+    "maps": {
+        "fr": {
+            "mode": "ANALOG_MAP",
+            "action": "CLAW",
+            "axis": 0,
+            "depressedValue": 1
+        },
+        "tl": {
+            "$comment": "left trigger = linear slide down",
+            "mode": "SPLIT_AXES",
+            "axisMaps": [
+                {
+                    "targetAction": "LINEAR_SLIDE",
+                    "axisScale": -1,
+                    "targetAxis": 0,
+                    "mode": "OFFSET"
+                }
+            ]
+        },
+        "tr": {
+            "$comment": "right trigger = linear slide up",
+            "mode": "SPLIT_AXES",
+            "axisMaps": [
+                {
+                    "targetAction": "LINEAR_SLIDE",
+                    "targetAxis": 0,
+                    "mode": "OFFSET"
+                }
+            ]
+        },
+        "sl": {
+            "$comment": "left stick x = rotate halo",
+            "mode": "SPLIT_AXES",
+            "axisMaps": [
+                {
+                    "targetAction": "HALO",
+                    "targetAxis": 0,
+                    "mode": "OFFSET"
+                },
+                null
+            ]
+        }
+    }
+}

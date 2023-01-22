@@ -19,12 +19,18 @@ android {
     namespace = 'org.firstinspires.ftc.teamcode'
 
     packagingOptions {
+        jniLibs {
+            pickFirsts += ['**/*.so']
+        }
         jniLibs.useLegacyPackaging true
     }
     
     dependenciesInfo {
         includeInApk true
         includeInBundle true
+    }
+    androidResources {
+        noCompress 'tflite'
     }
 }
 
