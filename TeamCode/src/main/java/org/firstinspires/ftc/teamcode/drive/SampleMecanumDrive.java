@@ -82,7 +82,7 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
 
     private TrajectoryFollower follower;
 
-    private DcMotorEx leftFront, leftRear, rightRear, rightFront, linearSlide, leftEncoder, rightEncoder, frontEncoder;
+    private DcMotorEx lazySusan, leftRear, rightRear, rightFront, linearSlide, leftEncoder, rightEncoder, frontEncoder;
     private List<DcMotorEx> motors;
     private Servo clawServo, penetrationServo;
 
@@ -132,7 +132,7 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
         // For example, if +Y in this diagram faces downwards, you would use AxisDirection.NEG_Y.
         // BNO055IMUUtil.remapZAxis(imu, AxisDirection.NEG_Y);
 
-        leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
+        lazySusan = hardwareMap.get(DcMotorEx.class, "lazySusan");
         leftRear = hardwareMap.get(DcMotorEx.class, "leftRear");
         rightRear = hardwareMap.get(DcMotorEx.class, "rightRear");
         rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
@@ -146,7 +146,7 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
         penetrationServo = hardwareMap.get(Servo.class,"penetrationServo");
 
         //added, testing
-        motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront, linearSlide, leftEncoder, rightEncoder, frontEncoder);
+        motors = Arrays.asList(lazySusan, leftRear, rightRear, rightFront, linearSlide, leftEncoder, rightEncoder, frontEncoder);
         //added linear slide to these.
         for (DcMotorEx motor : motors) {
             MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
@@ -317,7 +317,7 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
 
     @Override
     public void setMotorPowers(double v, double v1, double v2, double v3) {
-        leftFront.setPower(v);
+        frontEncoder.setPower(v);
         leftRear.setPower(v1);
         rightRear.setPower(v2);
         rightFront.setPower(v3);
@@ -325,12 +325,12 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
 
     @Override
     public void ResetSusan(){
-        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        lazySusan.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     @Override
     public double SusanEncoderPosition(){
-        return leftFront.getCurrentPosition();
+        return lazySusan.getCurrentPosition();
     }
 
     @Override

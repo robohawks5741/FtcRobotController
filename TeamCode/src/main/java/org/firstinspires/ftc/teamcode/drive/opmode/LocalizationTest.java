@@ -28,7 +28,7 @@ public class LocalizationTest extends LinearOpMode implements localinterface {
     public int target =     0;//placeholder here, gets used in function LinearSlideToStop()
     public boolean slide = false;
 
-    private DcMotorEx linearSlide, frontEncoder;
+    private DcMotorEx linearSlide, lazySusan;
 
     @Override
     public boolean LinearSlideToStop2(int stop, int tolerance){
@@ -66,7 +66,7 @@ public class LocalizationTest extends LinearOpMode implements localinterface {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        frontEncoder = hardwareMap.get(DcMotorEx.class,"frontEncoder");
+        lazySusan = hardwareMap.get(DcMotorEx.class,"lazySusan");
 
         linearSlide = hardwareMap.get(DcMotorEx.class, "linearSlide");
 
@@ -183,6 +183,18 @@ public class LocalizationTest extends LinearOpMode implements localinterface {
             else {
                 drive.MoveSusan(0);
             }
+
+
+            //LAZYsUSAN
+
+            if(gamepad2.dpad_up)
+                driveB.susanToPosition(0);
+            else if(gamepad2.dpad_left)
+                driveB.susanToPosition(1);
+            else if(gamepad2.dpad_down)
+                driveB.susanToPosition(2);
+            else if(gamepad2.dpad_right)
+                driveB.susanToPosition(3);
 
 
 
