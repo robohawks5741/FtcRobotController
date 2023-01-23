@@ -19,7 +19,7 @@ public interface SampleMecanumDrive2testJames {
 
     //void LinearSlideToStop(int stop, double power, int tolerance);
 
-    void susanToPosition(int targetPosition);
+    void susanToPosition(int targetPosition) throws InterruptedException;
 
     boolean LinearSlideToStop(int stop, int conesUp, double power, int tolerance);
 

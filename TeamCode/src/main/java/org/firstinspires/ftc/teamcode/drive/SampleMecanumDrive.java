@@ -58,13 +58,14 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
     //public int ctr = 0;
     //public double Lpos = 0;
 //done: fix values to reflect real numbers
-    public int bottomStop = 0;//bottom, stop here
+    public int bottomStop = 10;//bottom, stop here
     public int lowStop = 1000;
     public int midStop = 1800;
     public int tallStop= 2550;//placeholder value because slide isn't currently tall enough to reach the "tallStop"
     public int tooTall = 2970;//max height
     public int target =     0;//placeholder here, gets used in function LinearSlideToStop()
     public boolean slide = false;
+    public int hopStop = 256;
 
     public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0, 0, 0);
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(0, 0, 0);
@@ -348,18 +349,21 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
     }
 
     @Override
-    public void susanToPosition(int targetPosition){
+    public void susanToPosition(int targetPosition) throws InterruptedException {
 
         double desiredPosition = targetPosition == 0 ? 0 : targetPosition == 1 ? 1385 : targetPosition == 2 ? 923 : 462;
 
+
         LinearSlideToStop2(10,40);
 
-        frontEncoder.setTargetPositionTolerance(45);
-        frontEncoder.setTargetPosition((int) desiredPosition);
-        frontEncoder.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        frontEncoder.setPower(.4);
+        Thread.sleep(200);
 
-        LinearSlideToStop2(0,20);
+        lazySusan.setTargetPositionTolerance(45);
+        lazySusan.setTargetPosition((int) desiredPosition);
+        lazySusan.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        lazySusan.setPower(.4);
+        if(desiredPosition+22>desiredPosition || desiredPosition-22<desiredPosition)
+            LinearSlideToStop2(0,20);
 
     }
 
@@ -468,14 +472,17 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
         else if(stop == 3){
             target = tallStop;
         }
-        else{
+        else if(stop == 10){
+            target = hopStop;
+        }
+        else if(stop == 0){
             target = bottomStop;
         }
 
         linearSlide.setTargetPositionTolerance(tolerance);
         linearSlide.setTargetPosition(target);
         linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        linearSlide.setPower(.35);
+        linearSlide.setPower(.7);
 
         if(LinearSlidePos()<=target-tolerance||LinearSlidePos()>=target+tolerance)
             slide = false;
@@ -521,7 +528,7 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
 
     @Override
     public void MoveSusan(double speed){
-        frontEncoder.setPower(speed);
+        lazySusan.setPower(speed);
     }
 
     /*@Override

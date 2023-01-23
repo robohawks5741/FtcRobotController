@@ -11,22 +11,15 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 @Autonomous
 public class RightConeDepositorAuton extends LinearOpMode implements RightConeDepositorAutonInterface {
 
-    SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+    SampleMecanumDrive drive = null;
 
     public int conesUp = 0;
 
-    Trajectory forwards = drive.trajectoryBuilder(new Pose2d())
-            .lineTo( new Vector2d(0,48))
-            .build();
-    Trajectory right1 = drive.trajectoryBuilder(forwards.end())
-            .lineTo(new Vector2d(0,72))
-            .build();
-    Trajectory left = drive.trajectoryBuilder(right1.end())
-            .lineTo(new Vector2d(0,24))
-            .build();
-    Trajectory right = drive.trajectoryBuilder(left.end())
-            .lineTo(new Vector2d(0,72))
-            .build();
+    Trajectory forwards = null;
+    Trajectory right1 = null;
+    Trajectory left = null;
+    Trajectory right = null;
+
 
     @Override
     public void LeftAndDump(){
@@ -109,8 +102,9 @@ public class RightConeDepositorAuton extends LinearOpMode implements RightConeDe
         Pose2d destination = null;
 
 
+
         if(location == 1)
-            destination = new Pose2d(24,24);
+            destination = new Pose2d(24,24); //todo : fix coordinates
         else if(location == 2)
             destination = new Pose2d(24,48);
         else if(location == 3)
@@ -150,6 +144,22 @@ public class RightConeDepositorAuton extends LinearOpMode implements RightConeDe
 
     @Override
     public void runOpMode() throws InterruptedException {
+
+        drive = new SampleMecanumDrive(hardwareMap);
+
+        Trajectory forwards = drive.trajectoryBuilder(new Pose2d()) //todo fix coordinates
+                .lineTo( new Vector2d(0,48))
+                .build();
+        Trajectory right1 = drive.trajectoryBuilder(forwards.end())
+                .lineTo(new Vector2d(0,72))
+                .build();
+        Trajectory left = drive.trajectoryBuilder(right1.end())
+                .lineTo(new Vector2d(0,24))
+                .build();
+        Trajectory right = drive.trajectoryBuilder(left.end())
+                .lineTo(new Vector2d(0,72))
+                .build();
+
 
         while (!isStarted() && !isStopRequested()){
 

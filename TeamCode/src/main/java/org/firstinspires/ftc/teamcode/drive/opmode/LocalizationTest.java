@@ -27,6 +27,7 @@ public class LocalizationTest extends LinearOpMode implements localinterface {
     public int tooTall = 2970;//max height
     public int target =     0;//placeholder here, gets used in function LinearSlideToStop()
     public boolean slide = false;
+    public int hopStop = 256;
 
     private DcMotorEx linearSlide, lazySusan;
 
@@ -44,14 +45,14 @@ public class LocalizationTest extends LinearOpMode implements localinterface {
         else if(stop == 3){
             target = tallStop;
         }
-        else{
-            target = bottomStop;
+        else if(stop == 10){
+            target = hopStop;
         }
 
         linearSlide.setTargetPositionTolerance(tolerance);
         linearSlide.setTargetPosition(target);
         linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        linearSlide.setPower(.35);
+        linearSlide.setPower(.7);
 
         if(linearSlide.getCurrentPosition()<=target-tolerance||linearSlide.getCurrentPosition()>=target+tolerance)
             return false;

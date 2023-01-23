@@ -23,7 +23,7 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
     OpenCvCamera camera;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
 
-    SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+    SampleMecanumDrive drive = null;
 
     int ctr = 1;
 
