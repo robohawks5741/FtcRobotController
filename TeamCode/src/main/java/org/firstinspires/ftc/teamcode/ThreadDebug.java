@@ -47,13 +47,13 @@ public class ThreadDebug extends OpMode {
         threadReport();
         t = new Thread(new TelemThread(this.telemetry));
         this.telemetry.addData("!!! THREAD DEBUG OPMODE !!!", "after thread creation");
-        threadReport();
     }
 
     @Override
     public void start() {
         this.telemetry.addData("!!! THREAD DEBUG OPMODE !!!", "start() called!");
         t.start();
+        threadReport();
     }
 
     @Override
@@ -71,6 +71,7 @@ public class ThreadDebug extends OpMode {
         @Override
         public void run() {
             telem.addData("!!! THREAD DEBUG THREAD !!!", "ran!");
+
         }
     }
 
