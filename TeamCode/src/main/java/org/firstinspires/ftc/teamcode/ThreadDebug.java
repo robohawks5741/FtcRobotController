@@ -38,18 +38,22 @@ public class ThreadDebug extends OpMode {
                 i++;
             }
         }
-
     }
 
     @Override
     public void init() {
         this.telemetry.addData("!!! THREAD DEBUG OPMODE !!!", "init() called!");
+        this.telemetry.addData("!!! THREAD DEBUG OPMODE !!!", "attemp 2");
+        threadReport();
         t = new Thread(new TelemThread(this.telemetry));
+        this.telemetry.addData("!!! THREAD DEBUG OPMODE !!!", "after thread creation");
+        threadReport();
     }
 
     @Override
     public void start() {
         this.telemetry.addData("!!! THREAD DEBUG OPMODE !!!", "start() called!");
+        t.start();
     }
 
     @Override
@@ -76,7 +80,5 @@ public class ThreadDebug extends OpMode {
      * This method will be called repeatedly in a loop while this op mode is running
      */
     @Override
-    public void loop() {
-
-    }
+    public void loop() { }
 }
