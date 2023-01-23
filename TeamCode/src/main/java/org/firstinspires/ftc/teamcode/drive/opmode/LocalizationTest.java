@@ -6,7 +6,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
@@ -18,9 +18,57 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
  * encoder localizer heading may be significantly off if the track width has not been tuned).
  */
 @TeleOp(group = "drive")
-public class LocalizationTest extends LinearOpMode{
+public class LocalizationTest extends LinearOpMode implements localinterface {
+
+    public int bottomStop = 0;//bottom, stop here
+    public int lowStop = 1000;
+    public int midStop = 1800;
+    public int tallStop= 2550;//placeholder value because slide isn't currently tall enough to reach the "tallStop"
+    public int tooTall = 2970;//max height
+    public int target =     0;//placeholder here, gets used in function LinearSlideToStop()
+    public boolean slide = false;
+
+    private DcMotorEx linearSlide, frontEncoder;
+
+    @Override
+    public boolean LinearSlideToStop2(int stop, int tolerance){
+
+        //linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        if(stop == 1){
+            target = lowStop;
+        }
+        else if(stop == 2){
+            target = midStop;
+        }
+        else if(stop == 3){
+            target = tallStop;
+        }
+        else{
+            target = bottomStop;
+        }
+
+        linearSlide.setTargetPositionTolerance(tolerance);
+        linearSlide.setTargetPosition(target);
+        linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        linearSlide.setPower(.35);
+
+        if(linearSlide.getCurrentPosition()<=target-tolerance||linearSlide.getCurrentPosition()>=target+tolerance)
+            return false;
+        else
+            return true;
+
+
+    }
+
+
+
     @Override
     public void runOpMode() throws InterruptedException {
+
+        frontEncoder = hardwareMap.get(DcMotorEx.class,"frontEncoder");
+
+        linearSlide = hardwareMap.get(DcMotorEx.class, "linearSlide");
 
 
         double speed = 1;
@@ -41,6 +89,7 @@ public class LocalizationTest extends LinearOpMode{
         //drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         drive.holdSusan();
+        driveB.ResetSusan();
 
 
         waitForStart();
@@ -101,7 +150,8 @@ public class LocalizationTest extends LinearOpMode{
 
 
             if(gamepad2.y || slideY){
-                if(driveB.LinearSlideToStop(3,0,25, 35))
+                if(LinearSlideToStop2(3,35))
+                //if(driveB.LinearSlideToStop(3,0,25, 35))
                     slideY = false;
                 else
                     slideY = true;

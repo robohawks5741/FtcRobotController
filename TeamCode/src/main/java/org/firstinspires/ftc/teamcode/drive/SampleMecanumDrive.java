@@ -346,6 +346,23 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
         leftEncoder.setPower(-linearPower);
 
     }
+
+    @Override
+    public void susanToPosition(int targetPosition){
+
+        double desiredPosition = targetPosition == 0 ? 0 : targetPosition == 1 ? 1385 : targetPosition == 2 ? 923 : 462;
+
+        LinearSlideToStop2(10,40);
+
+        frontEncoder.setTargetPositionTolerance(45);
+        frontEncoder.setTargetPosition((int) desiredPosition);
+        frontEncoder.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frontEncoder.setPower(.4);
+
+        LinearSlideToStop2(0,20);
+
+    }
+
     @Override
     public boolean LinearSlideToStop(int stop, int conesUp, double power, int tolerance){ //TODO: Add recursion with a tolerance var to make this as accurate as possible, requires good rope tension for up and down.
         linearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -394,7 +411,7 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
                 LSspeed = power*correctedVelocity;
                 //LSspeed = 1;
                 linearSlide.setPower(LSspeed);
-                leftEncoder.setPower(-LSspeed);
+                //leftEncoder.setPower(-LSspeed);
 
                 if(LinearSlidePos()<=target-tolerance||LinearSlidePos()>=target+tolerance)
                     slide = false;
@@ -415,7 +432,7 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
                 LSspeed = power*correctedVelocity;
                 //LSspeed = 1;
                 linearSlide.setPower(-LSspeed);
-                leftEncoder.setPower(LSspeed);
+                //leftEncoder.setPower(LSspeed);
 
                 if(LinearSlidePos()<=target-tolerance||LinearSlidePos()>=target+tolerance)
                     slide = false;
@@ -438,9 +455,9 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
     }
 
     @Override
-    public void LinearSlideToStop2(int stop, int tolerance){
+    public boolean LinearSlideToStop2(int stop, int tolerance){
 
-        //linearSlide.setMode(DcMotor.1.RUN_TO_POSITION);
+        //linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         if(stop == 1){
             target = lowStop;
@@ -457,7 +474,18 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
 
         linearSlide.setTargetPositionTolerance(tolerance);
         linearSlide.setTargetPosition(target);
+        linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        linearSlide.setPower(.35);
 
+        if(LinearSlidePos()<=target-tolerance||LinearSlidePos()>=target+tolerance)
+            slide = false;
+        else
+            slide = true;
+
+        if(slide)
+            return true;
+        else
+            return false;
     }
 
 
