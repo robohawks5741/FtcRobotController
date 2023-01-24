@@ -133,11 +133,11 @@ public class RightConeDepositorAuton extends LinearOpMode implements RightConeDe
 
     @Override
     public void FirstCone(){
-        drive.MoveSusan(60);
+        drive.susanEncoderPosition(2000);
         drive.LinearSlideToStop(3,0,25,35);
         drive.followTrajectory(forwards);
         drive.moveTestServo(1);
-        drive.MoveSusan(0);
+        drive.susanEncoderPosition(0);
         drive.LinearSlideToStop(0,0,25,35);
     }
 

@@ -20,14 +20,17 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 @TeleOp(group = "drive")
 public class LocalizationTest extends LinearOpMode implements localinterface {
 
-    public int bottomStop = 0;//bottom, stop here
-    public int lowStop = 1000;
-    public int midStop = 1800;
-    public int tallStop= 2550;//placeholder value because slide isn't currently tall enough to reach the "tallStop"
-    public int tooTall = 2970;//max height
-    public int target =     0;//placeholder here, gets used in function LinearSlideToStop()
-    public boolean slide = false;
-    public int hopStop = 256;
+    private int bottomStop = 0;//bottom, stop here
+    private int lowStop = 1000;
+    private int midStop = 1800;
+    private int tallStop= 2550;//placeholder value because slide isn't currently tall enough to reach the "tallStop"
+    private int tooTall = 2970;//max height
+    private int target =     0;//placeholder here, gets used in function LinearSlideToStop()
+    private boolean slide = false;
+    private int hopStop = 270;
+    private boolean off = false;
+    private boolean turn = false;
+    private boolean down1 = false;
 
     private DcMotorEx linearSlide, lazySusan;
 
@@ -59,6 +62,40 @@ public class LocalizationTest extends LinearOpMode implements localinterface {
         else
             return true;
 
+
+    }
+    @Override
+    public void susanToPosition(int targetPosition) {
+
+        double desiredPosition = targetPosition == 0 ? 0 : targetPosition == 1 ? 1385 : targetPosition == 2 ? 923 : 462;
+
+        //if(linearSlide.getCurrentPosition()+50<256||linearSlide.getCurrentPosition()-50>256 & off == false) {
+        //if(!off) {
+           LinearSlideToStop2(10, 40);
+
+           // if(linearSlide.getCurrentPosition()+50>256 & linearSlide.getCurrentPosition()-50<256){
+                //turn = true; off = true;}
+
+       // }
+
+
+        //else if(linearSlide.getCurrentPosition()+50>256 & linearSlide.getCurrentPosition()-50<256){
+     //   if(turn){
+
+            lazySusan.setTargetPositionTolerance(45);
+            lazySusan.setTargetPosition((int) desiredPosition);
+            lazySusan.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            lazySusan.setPower(.4);
+           // if(lazySusan.getCurrentPosition()+50>desiredPosition & lazySusan.getCurrentPosition()-50<desiredPosition){
+            //    down1 = true; turn = false;}
+       // }
+
+
+      //  if(down1) {
+            LinearSlideToStop2(0, 20);
+           // if(linearSlide.getCurrentPosition()<=20)
+               // off = false;
+       // }
 
     }
 
@@ -120,7 +157,7 @@ public class LocalizationTest extends LinearOpMode implements localinterface {
                 }
                 else driveB.setLinearSlide(-gamepad2.left_trigger);
             }
-            else driveB.setLinearSlide(0);
+            //else driveB.setLinearSlide(0); //todo PROBLEM
 
 
             //drive.holdSlides();
@@ -181,21 +218,21 @@ public class LocalizationTest extends LinearOpMode implements localinterface {
                 drive.MoveSusan(gamepad2.left_stick_x >= .05 ? -Math.pow(gamepad2.left_stick_x, 2)<=-.25 ? -.25 : -Math.pow(gamepad2.left_stick_x, 2) >= -.05 ? -.05 : -Math.pow(gamepad2.left_stick_x, 2) : Math.pow(gamepad2.left_stick_x, 2)>=.25 ? .25 : Math.pow(gamepad2.left_stick_x, 2)<=.05 ? .05 : Math.pow(gamepad2.left_stick_x, 2));
             }
 
-            else {
-                drive.MoveSusan(0);
-            }
+            //else {
+             //   drive.MoveSusan(0);
+            //}
 
 
             //LAZYsUSAN
 
             if(gamepad2.dpad_up)
-                driveB.susanToPosition(0);
+                susanToPosition(0);
             else if(gamepad2.dpad_left)
-                driveB.susanToPosition(1);
+                susanToPosition(1);
             else if(gamepad2.dpad_down)
-                driveB.susanToPosition(2);
+                susanToPosition(2);
             else if(gamepad2.dpad_right)
-                driveB.susanToPosition(3);
+                susanToPosition(3);
 
 
 

@@ -58,14 +58,17 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
     //public int ctr = 0;
     //public double Lpos = 0;
 //done: fix values to reflect real numbers
-    public int bottomStop = 10;//bottom, stop here
+    public int bottomStop = 15;//bottom, stop here
     public int lowStop = 1000;
     public int midStop = 1800;
-    public int tallStop= 2550;//placeholder value because slide isn't currently tall enough to reach the "tallStop"
+    public int tallStop= 2550;//placeholder value because8 slide isn't currently tall enough to reach the "tallStop"
     public int tooTall = 2970;//max height
-    public int target =     0;//placeholder here, gets used in function LinearSlideToStop()
+    public int target = 0;//placeholder here, gets used in function LinearSlideToStop()
     public boolean slide = false;
-    public int hopStop = 256;
+    public int hopStop = 270;
+    public boolean off = false;
+    public boolean turn = false;
+    public boolean down1 = false;
 
     public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0, 0, 0);
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(0, 0, 0);
@@ -76,12 +79,12 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
     public static double VY_WEIGHT = 1;
     public static double OMEGA_WEIGHT = 1;
 
-    private TrajectorySequenceRunner trajectorySequenceRunner;
+    public TrajectorySequenceRunner trajectorySequenceRunner;
 
     private static final TrajectoryVelocityConstraint VEL_CONSTRAINT = getVelocityConstraint(MAX_VEL, MAX_ANG_VEL, TRACK_WIDTH);
     private static final TrajectoryAccelerationConstraint ACCEL_CONSTRAINT = getAccelerationConstraint(MAX_ACCEL);
 
-    private TrajectoryFollower follower;
+    public TrajectoryFollower follower;
 
     private DcMotorEx lazySusan, leftRear, rightRear, rightFront, linearSlide, leftEncoder, rightEncoder, frontEncoder;
     private List<DcMotorEx> motors;
@@ -170,7 +173,7 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
         rightRear.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // TODO: if desired, use setLocalizer() to change the localization method
-        // for instance, setLocalizer(new ThreeTrackingWheelLocalizer(...));
+        setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap));
 
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
     }
@@ -349,21 +352,37 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
     }
 
     @Override
-    public void susanToPosition(int targetPosition) throws InterruptedException {
+    public void susanToPosition(int targetPosition) {
 
         double desiredPosition = targetPosition == 0 ? 0 : targetPosition == 1 ? 1385 : targetPosition == 2 ? 923 : 462;
 
+        //if(linearSlide.getCurrentPosition()+50<256||linearSlide.getCurrentPosition()-50>256 & off == false) {
+        if(!off) {
+            LinearSlideToStop2(10, 40);
 
-        LinearSlideToStop2(10,40);
+            if(linearSlide.getCurrentPosition()+50>256 & linearSlide.getCurrentPosition()-50<256){
+                turn = true; off = true;}
 
-        Thread.sleep(200);
+        }
 
-        lazySusan.setTargetPositionTolerance(45);
-        lazySusan.setTargetPosition((int) desiredPosition);
-        lazySusan.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        lazySusan.setPower(.4);
-        if(desiredPosition+22>desiredPosition || desiredPosition-22<desiredPosition)
-            LinearSlideToStop2(0,20);
+
+        //else if(linearSlide.getCurrentPosition()+50>256 & linearSlide.getCurrentPosition()-50<256){
+        if(turn){
+
+            lazySusan.setTargetPositionTolerance(45);
+            lazySusan.setTargetPosition((int) desiredPosition);
+            lazySusan.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            lazySusan.setPower(.4);
+            if(lazySusan.getCurrentPosition()+50>desiredPosition & lazySusan.getCurrentPosition()-50<desiredPosition){
+                down1 = true; turn = false;}
+        }
+
+
+        if(down1) {
+            LinearSlideToStop2(0, 20);
+            if(linearSlide.getCurrentPosition()<=20)
+                off = false;
+        }
 
     }
 
@@ -495,6 +514,14 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
             return false;
     }
 
+    @Override
+    public void susanEncoderPosition(int pos){
+        lazySusan.setTargetPositionTolerance(20);
+        lazySusan.setTargetPosition(target);
+        lazySusan.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        lazySusan.setPower(.4);
+    }
+
 
     @Override
     public void penetrate(double pos){
@@ -528,6 +555,7 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
 
     @Override
     public void MoveSusan(double speed){
+        lazySusan.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         lazySusan.setPower(speed);
     }
 
