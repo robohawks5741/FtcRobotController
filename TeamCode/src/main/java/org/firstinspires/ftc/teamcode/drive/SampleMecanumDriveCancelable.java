@@ -21,8 +21,10 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
@@ -69,7 +71,9 @@ public class SampleMecanumDriveCancelable extends MecanumDrive {
 
     private TrajectoryFollower follower;
 
-    private DcMotorEx leftFront, leftRear, rightRear, rightFront;
+    private DcMotorEx leftFront, leftRear, rightRear, rightFront,linearSlide, leftEncoder, rightEncoder;
+    private Servo clawServo, penetrationServo;
+
     private List<DcMotorEx> motors;
 
     private BNO055IMU imu;
@@ -122,7 +126,14 @@ public class SampleMecanumDriveCancelable extends MecanumDrive {
         rightRear = hardwareMap.get(DcMotorEx.class, "rightRear");
         rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
 
-        motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
+        linearSlide = hardwareMap.get(DcMotorEx.class, "linearSlide");
+        leftEncoder =  hardwareMap.get(DcMotorEx.class, "leftEncoder");
+        rightEncoder = hardwareMap.get(DcMotorEx.class, "rightEncoder");
+
+        clawServo = hardwareMap.get(Servo.class, "clawServo");
+        penetrationServo = hardwareMap.get(Servo.class,"penetrationServo");
+
+        motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront, linearSlide, leftEncoder, rightEncoder);
 
         for (DcMotorEx motor : motors) {
             MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
@@ -141,6 +152,9 @@ public class SampleMecanumDriveCancelable extends MecanumDrive {
         }
 
         // TODO: reverse any motors using DcMotor.setDirection()
+
+        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightRear.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // TODO: if desired, use setLocalizer() to change the localization method
         // for instance, setLocalizer(new ThreeTrackingWheelLocalizer(...));
@@ -321,4 +335,16 @@ public class SampleMecanumDriveCancelable extends MecanumDrive {
     public static TrajectoryAccelerationConstraint getAccelerationConstraint(double maxAccel) {
         return new ProfileAccelerationConstraint(maxAccel);
     }
+
+    //new crap
+
+    public int bottomStop = 0;//bottom, stop here
+    public int lowStop = 1000;
+    public int midStop = 1800;
+    public int tallStop= 2550;//placeholder value because slide isn't currently tall enough to reach the "tallStop"
+    public int tooTall = 2970;//max height
+    public int target =     0;//placeholder here, gets used in function LinearSlideToStop()
+
+
+
 }
