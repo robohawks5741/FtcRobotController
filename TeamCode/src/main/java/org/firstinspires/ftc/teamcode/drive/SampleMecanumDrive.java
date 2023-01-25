@@ -357,32 +357,32 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
         double desiredPosition = targetPosition == 0 ? 0 : targetPosition == 1 ? 1385 : targetPosition == 2 ? 923 : 462;
 
         //if(linearSlide.getCurrentPosition()+50<256||linearSlide.getCurrentPosition()-50>256 & off == false) {
-        if(!off) {
-            LinearSlideToStop2(10, 40);
+        //if(!off) {
+            LinearSlideToStop2(10, 40,0);
 
-            if(linearSlide.getCurrentPosition()+50>256 & linearSlide.getCurrentPosition()-50<256){
+           /* if(linearSlide.getCurrentPosition()+50>256 & linearSlide.getCurrentPosition()-50<256){
                 turn = true; off = true;}
 
         }
 
 
         //else if(linearSlide.getCurrentPosition()+50>256 & linearSlide.getCurrentPosition()-50<256){
-        if(turn){
+        if(turn){ */
 
             lazySusan.setTargetPositionTolerance(45);
             lazySusan.setTargetPosition((int) desiredPosition);
             lazySusan.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             lazySusan.setPower(.4);
-            if(lazySusan.getCurrentPosition()+50>desiredPosition & lazySusan.getCurrentPosition()-50<desiredPosition){
+            /*if(lazySusan.getCurrentPosition()+50>desiredPosition & lazySusan.getCurrentPosition()-50<desiredPosition){
                 down1 = true; turn = false;}
         }
 
 
-        if(down1) {
-            LinearSlideToStop2(0, 20);
-            if(linearSlide.getCurrentPosition()<=20)
-                off = false;
-        }
+        if(down1) { */
+            LinearSlideToStop2(0, 20,0);
+            //if(linearSlide.getCurrentPosition()<=20)
+              //  off = false;
+      //  }
 
     }
 
@@ -478,11 +478,11 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
     }
 
     @Override
-    public boolean LinearSlideToStop2(int stop, int tolerance){
+    public boolean LinearSlideToStop2(int stop, int tolerance, int conesUp){
 
         //linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        if(stop == 1){
+        /*if(stop == 1){
             target = lowStop;
         }
         else if(stop == 2){
@@ -496,7 +496,34 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
         }
         else if(stop == 0){
             target = bottomStop;
+        } */
+
+
+
+        if (conesUp == 0 || stop !=0) {
+
+
+            if (stop == 1) {
+                target = lowStop;
+            }
+            else if (stop == 2) {
+                target = midStop;
+            }
+            else if (stop == 3) {
+                target = tallStop;
+            }
+            else if (stop == 0) {
+                target = bottomStop;
+            }
+            else if(stop == 10){
+                target = hopStop;
+            }
         }
+        else if (conesUp != 0 && stop == 0){
+            target = bottomStop-(25*conesUp);
+        }
+
+
 
         linearSlide.setTargetPositionTolerance(tolerance);
         linearSlide.setTargetPosition(target);
@@ -515,7 +542,7 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
     }
 
     @Override
-    public void susanEncoderPosition(int pos){
+    public void susanToEncoderPosition(int pos){
         lazySusan.setTargetPositionTolerance(20);
         lazySusan.setTargetPosition(target);
         lazySusan.setMode(DcMotor.RunMode.RUN_TO_POSITION);

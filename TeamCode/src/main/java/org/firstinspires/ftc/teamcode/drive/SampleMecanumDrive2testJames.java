@@ -23,9 +23,13 @@ public interface SampleMecanumDrive2testJames {
 
     boolean LinearSlideToStop(int stop, int conesUp, double power, int tolerance);
 
-    boolean LinearSlideToStop2(int stop, int tolerance);
+    //boolean LinearSlideToStop2(int stop, int tolerance);
 
-    void susanEncoderPosition(int pos);
+    //void susanEncoderPosition(int pos);
+
+    boolean LinearSlideToStop2(int stop, int tolerance, int conesUp);
+
+    void susanToEncoderPosition(int pos);
 
     void penetrate(double pos);
 
