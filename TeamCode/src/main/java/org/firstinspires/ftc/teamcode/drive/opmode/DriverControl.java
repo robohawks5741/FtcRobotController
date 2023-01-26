@@ -129,7 +129,7 @@ public class DriverControl extends LinearOpMode implements localinterface {
         boolean slideA = false;
         boolean slideB = false;
 
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap); //Instances of SampleMecanum drive to access methods in the file.
+        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap); //Instance of SampleMecanum drive to access methods in the file.
 
         linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); //Start encoders at position 0.
         lazySusan.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
