@@ -180,9 +180,11 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
     @Override
     public void FirstCone(){
 
+
+        drive.followTrajectory(forwards);
         drive.LinearSlideToStop2(3,35,0);
         drive.susanToEncoderPosition(2000);
-        drive.followTrajectory(forwards);
+        //Thread.sleep(x);
         drive.moveTestServo(1);
         drive.susanToEncoderPosition(0);
         drive.LinearSlideToStop2(0,35,0);
