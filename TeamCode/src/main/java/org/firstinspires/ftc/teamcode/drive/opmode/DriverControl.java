@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
@@ -33,41 +34,47 @@ public class DriverControl extends LinearOpMode implements localinterface {
     private boolean down1 = false;
     private boolean manualSlide = false;
     private boolean manualSusan = false;
+    private Servo clawServo;
 
     private DcMotorEx linearSlide, lazySusan;
 
     @Override
     public boolean LinearSlideToStop2(int stop, int tolerance){
 
-        //linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        // These if statements set the target location for the slide based on user input.
 
-        if(stop == 1){
-            target = lowStop;
-        }
-        else if(stop == 2){
-            target = midStop;
-        }
-        else if(stop == 3){
+        if(stop == 3)
             target = tallStop;
-        }
-        else if(stop == 10){
-            target = hopStop;
-        }
 
-        linearSlide.setTargetPositionTolerance(tolerance);
+        else if(stop == 0)
+            target = bottomStop;
+
+        else if(stop == 10)
+            target = hopStop;
+
+        else if(stop == 2)
+            target = midStop;
+
+        else if(stop == 1)
+            target = lowStop;
+
+
+        linearSlide.setTargetPositionTolerance(tolerance); // This actually moves the motors.
         linearSlide.setTargetPosition(target);
         linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         linearSlide.setPower(.7);
 
-        if(linearSlide.getCurrentPosition()<=target-tolerance||linearSlide.getCurrentPosition()>=target+tolerance)
+
+        if(linearSlide.getCurrentPosition()<=target-tolerance||linearSlide.getCurrentPosition()>=target+tolerance) // This is how the program knows if it needs to call the function in the next loop to complete the move.
             return false;
         else
             return true;
 
 
     }
+
     @Override
-    public void susanToPosition(int targetPosition) {
+    public void susanToPosition(int targetPosition) { //TODO cleanup
 
         double desiredPosition = targetPosition == 0 ? 0 : targetPosition == 1 ? 1385 : targetPosition == 2 ? 923 : 462;
 
@@ -106,43 +113,43 @@ public class DriverControl extends LinearOpMode implements localinterface {
     @Override
     public void runOpMode() throws InterruptedException {
 
+        // Declare the used non-drive motors.
+
         lazySusan = hardwareMap.get(DcMotorEx.class,"lazySusan");
 
         linearSlide = hardwareMap.get(DcMotorEx.class, "linearSlide");
 
+        clawServo = hardwareMap.get(Servo.class, "clawServo");
 
-        double speed = 1;
 
-        boolean slideY = false;
+        double speed = 1; //Speed multiplier for the drivetrain.
+
+        boolean slideY = false; //state of movement (yes or no) for different target slide positions.
         boolean slideX = false;
         boolean slideA = false;
         boolean slideB = false;
 
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap); //Instances of SampleMecanum drive to access methods in the file.
 
-        //drive.ResetSusan();
+        linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); //Start encoders at position 0.
+        lazySusan.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        SampleMecanumDrive driveB = new SampleMecanumDrive(hardwareMap);
+        lazySusan.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE); //Sets HALO to brake mode.
 
-        driveB.LinearSlideResetEnc();
-
-        //drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        drive.holdSusan();
-        driveB.ResetSusan();
 
 
         waitForStart();
 
 
-        while (opModeIsActive()) {
+        while (opModeIsActive()) { //!!Main loop!!
 
 
-
-            if(gamepad1.left_bumper)
+            if(gamepad1.left_bumper) //Change drive speed coefficient.
                  speed = .25;
             if(gamepad1.right_bumper)
                 speed = .5;
+
+
             drive.setWeightedDrivePower(
                     new Pose2d(
 
@@ -152,86 +159,85 @@ public class DriverControl extends LinearOpMode implements localinterface {
                     )
             );
 
-            if (gamepad2.left_trigger >= .05 || gamepad2.right_trigger >=.05){
-                manualSlide = true;
-                //drive.setLinearSlide(gamepad1.left_trigger);
-                if (gamepad2.right_trigger >= .05){
-                    driveB.setLinearSlide(gamepad2.right_trigger);
-                }
-                else driveB.setLinearSlide(-gamepad2.left_trigger);
+
+            if (gamepad2.left_trigger >= .05 || gamepad2.right_trigger >=.05){  //manual LinearSlide controls via triggers.
+
+                manualSlide = true; //Reports that slide is operating manually, not via a macro.
+
+                if (gamepad2.right_trigger >= .05)
+                    linearSlide.setPower(gamepad2.right_trigger);
+                else
+                    linearSlide.setPower(-gamepad2.left_trigger);
             }
-            else if(manualSlide) {
-                driveB.setLinearSlide(0); //todo PROBLEM
+            else if(manualSlide) { //Tests to see if its operating via a macro, doesn't interrupt macro if the test is positive.
+
+                linearSlide.setPower(0); //todo PROBLEM (might be resolved)
                 manualSlide = false;
+
             }
 
 
-            //drive.holdSlides();
+            if(gamepad2.right_bumper) //Operate end effector (claw)
+                clawServo.setPosition(.7);
 
-            //drive.moveTestServo(.5);
-
-            if(gamepad2.left_bumper) {
-                driveB.penetrate(0);
-            }
-//drive.LinearSlideToStop(1,25,10); //low pole
-            if(gamepad2.right_bumper) {
-                driveB.penetrate(.525);
-            }
-//drive.LinearSlideToStop(2,25,10); //mid pole
-            if(gamepad2.right_bumper){
-                driveB.moveTestServo(.7);
-                //drive.LinearSlideToStop(0,25,50);
-            }
-
-            //drive.holdSlides();
-            //drive.LinearSlideToStop(3,25,10); //high pole
-            if(gamepad2.left_bumper) {
-                driveB.moveTestServo(1);
-                //drive.LinearSlideToStop(3,25,50);        //drive.LinearSlideToStop(4,25,10); //bottom
-            }
+            if(gamepad2.left_bumper)
+                clawServo.setPosition(1);
 
 
+            //Following if statements operate LinearSlide macros.
 
 
             if(gamepad2.y || slideY){
                 if(LinearSlideToStop2(3,35))
-                //if(driveB.LinearSlideToStop(3,0,25, 35))
+
                     slideY = false;
                 else
                     slideY = true;
             }
 
+            else if(gamepad2.b || slideB){
+                if(LinearSlideToStop2(0,35))
 
-            //drive.holdSlides();
-            //if(gamepad2.b){
-                //drive.LinearSlideToStop(0,1,25);
-            //}
-            if(gamepad2.x || slideX){
-                if(driveB.LinearSlideToStop(1,0,25,35))
+                    slideB = false;
+                else
+                    slideB = true;
+            }
+
+            else if(gamepad2.x || slideX){
+                if(LinearSlideToStop2(1,35))
+
                     slideX = false;
                 else
                     slideX = true;
             }
 
-            if(gamepad2.a || slideA){
-                driveB.LinearSlideToStop(2,0,25,35);
+            else if(gamepad2.a || slideA){
+                if(LinearSlideToStop2(2,35))
 
+                    slideA = false;
+                else
+                    slideA = true;
             }
 
 
-            //drive.holdSlides();
+            // Code for manual operation of HALO device, the big long line with lots of "? :" statements is to curve the stick input to a controllable amount.
+
             if(gamepad2.left_stick_x>=.05 || gamepad2.left_stick_x<=-.05){
-                manualSusan = true;
-                drive.MoveSusan(gamepad2.left_stick_x >= .05 ? -Math.pow(gamepad2.left_stick_x, 2)<=-.25 ? -.25 : -Math.pow(gamepad2.left_stick_x, 2) >= -.05 ? -.05 : -Math.pow(gamepad2.left_stick_x, 2) : Math.pow(gamepad2.left_stick_x, 2)>=.25 ? .25 : Math.pow(gamepad2.left_stick_x, 2)<=.05 ? .05 : Math.pow(gamepad2.left_stick_x, 2));
-            }
+                lazySusan.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                lazySusan.setPower(speed);
 
-            else if(manualSusan){
-                drive.MoveSusan(0);
+                manualSusan = true; // Reports that LazySusan is operating manually, and requires stopping.
+
+                lazySusan.setPower(gamepad2.left_stick_x >= .05 ? -Math.pow(gamepad2.left_stick_x, 2)<=-.25 ? -.25 : -Math.pow(gamepad2.left_stick_x, 2) >= -.05 ? -.05 : -Math.pow(gamepad2.left_stick_x, 2) : Math.pow(gamepad2.left_stick_x, 2)>=.25 ? .25 : Math.pow(gamepad2.left_stick_x, 2)<=.05 ? .05 : Math.pow(gamepad2.left_stick_x, 2));
+            }
+            else if(manualSusan){ // If Susan was moved manually, stop when no longer receiving input.
+
+                lazySusan.setPower(0);
                 manualSusan = false;
             }
 
 
-            //LAZYsUSAN
+            // Macros for LazySusan positions.
 
             if(gamepad2.dpad_up)
                 susanToPosition(0);
@@ -243,35 +249,31 @@ public class DriverControl extends LinearOpMode implements localinterface {
                 susanToPosition(3);
 
 
-
-
-            //drive.holdSlides();
-
-
+            //UPDATE stuff
 
             drive.update();
-            driveB.update();
-
-
             telemetry.update();
+
+
+            // Telemetry for localization data.
 
             Pose2d poseEstimate = drive.getPoseEstimate();
             telemetry.addData("x", poseEstimate.getX());
             telemetry.addData("y", poseEstimate.getY());
             telemetry.addData("heading", poseEstimate.getHeading());
 
-
+            // Telemetry for gamepad input.
 
             telemetry.addData("leftX",gamepad1.left_stick_x);
             telemetry.addData("leftY",gamepad1.left_stick_y);
             telemetry.addData("rightX",gamepad1.right_stick_x);
-            //drive.holdSlides();
-            telemetry.addData("RawLsPos",drive.LinearSlidePos());
 
-            telemetry.addData("susan", drive.SusanEncoderPosition());
+            // Telemetry for LazySusan and LinearSlide positions/
+
+            telemetry.addData("RawLsPos",linearSlide.getCurrentPosition());
+            telemetry.addData("susan", lazySusan.getCurrentPosition());
 
             telemetry.update();
-            //drive.holdSlides();
         }
     }
 }
