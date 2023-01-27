@@ -79,11 +79,13 @@ public class DriverControl extends LinearOpMode implements localinterface {
     @Override
     public void susanToPosition(int targetPosition) { //TODO cleanup
 
-        int desiredPosition = targetPosition == 0 ? 0 : targetPosition == 1 ? 1385 : targetPosition == 2 ? 923 : 462;
+        int desiredPosition = targetPosition == 0 ? 0 : targetPosition == 1 ? 1385 : targetPosition == 2 ? 923 : 462; // Sets target encoder position.
+
+        // If
 
         if(linearSlide.getCurrentPosition()<=270){
             if(!(lazySusan.getCurrentPosition() + 50 > desiredPosition & lazySusan.getCurrentPosition() - 50 < desiredPosition)) {
-                LinearSlideToStop2(10, 40);
+                LinearSlideToStop2(10, 30);
                 down1 = true;
             }
         }
@@ -117,7 +119,7 @@ public class DriverControl extends LinearOpMode implements localinterface {
         clawServo = hardwareMap.get(Servo.class, "clawServo");
 
 
-        double speed = 1; //Speed multiplier for the drivetrain.
+        double speed = .75; //Speed multiplier for the drivetrain.
 
         boolean slideY = false; //state of movement (yes or no) for different target slide positions.
         boolean slideX = false;
@@ -149,9 +151,9 @@ public class DriverControl extends LinearOpMode implements localinterface {
             drive.setWeightedDrivePower(
                     new Pose2d(
 
-                            (gamepad1.right_stick_y>=0 ? 1 : -1) * Math.pow(abs((double)gamepad1.right_stick_y),1.7)*(speed)+(abs(gamepad1.right_stick_y) > .05 ? (gamepad1.right_stick_y >= 0 ? .05 : -.05) : 0), // These lines translate the raw code from the sticks into
-                            (gamepad1.right_stick_x>=0 ? 1 : -1) * Math.pow(abs((double)gamepad1.right_stick_x),1.7)*(speed)+(abs(gamepad1.right_stick_x) > .05 ? (gamepad1.right_stick_x >= 0 ? .05 : -.05) : 0),   //  a curved +/- input for the motors. It sends the values to a
-                            -(gamepad1.left_stick_x>=0 ? -1 : 1) * Math.pow(abs((double)gamepad1.left_stick_x),1.7)*(speed)+(abs(gamepad1.left_stick_x) > .05 ? (gamepad1.left_stick_x >= 0 ? .05 : -.05) : 0)       // function in roadrunner.
+                            -(gamepad1.right_stick_y>=0 ? 1 : -1) * Math.pow(abs((double)gamepad1.right_stick_y),1.7)*(speed)+(abs(gamepad1.right_stick_y) > .05 ? (gamepad1.right_stick_y >= 0 ? .05 : -.05) : 0), // These lines translate the raw code from the sticks into
+                            -(gamepad1.right_stick_x>=0 ? 1 : -1) * Math.pow(abs((double)gamepad1.right_stick_x),1.7)*(speed)+(abs(gamepad1.right_stick_x) > .05 ? (gamepad1.right_stick_x >= 0 ? .05 : -.05) : 0),   //  a curved +/- input for the motors. It sends the values to a
+                            (gamepad1.left_stick_x>=0 ? -1 : 1) * Math.pow(abs((double)gamepad1.left_stick_x),1.7)*(speed)+(abs(gamepad1.left_stick_x) > .05 ? (gamepad1.left_stick_x >= 0 ? .05 : -.05) : 0)       // function in roadrunner.
                     )
             );
 
@@ -175,10 +177,10 @@ public class DriverControl extends LinearOpMode implements localinterface {
 
 
             if(gamepad2.right_bumper) //Operate end effector (claw)
-                clawServo.setPosition(.7);
+                clawServo.setPosition(.5);
 
             if(gamepad2.left_bumper)
-                clawServo.setPosition(1);
+                clawServo.setPosition(.25);
 
 
             //Following if statements operate LinearSlide macros.
