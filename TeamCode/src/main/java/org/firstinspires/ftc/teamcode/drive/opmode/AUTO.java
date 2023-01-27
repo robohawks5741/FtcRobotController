@@ -69,19 +69,19 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
 
     @Override
     public void LeftAndDump(){
-        drive.followTrajectory(left);
-        drive.moveTestServo(1);
-        drive.LinearSlideToStop2(0,35, conesUp);
-        drive.susanToEncoderPosition(0);
+        drive.followTrajectory(left); //TODO no comments!!!
+        //drive.moveTestServo(1);
+        //drive.LinearSlideToStop2(0,35, conesUp);
+        //drive.susanToEncoderPosition(0);
     }
 
     @Override
     public void RightAndPickup(){
         drive.followTrajectory(right);
-        drive.moveTestServo(.5);
-        drive.LinearSlideToStop2(3,35,conesUp);
-        drive.susanToEncoderPosition(60);
-        conesUp++;
+        //drive.moveTestServo(.5);
+        //drive.LinearSlideToStop2(3,35,conesUp);
+        //drive.susanToEncoderPosition(60);
+        //conesUp++;
     }
 
     @Override
@@ -182,12 +182,12 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
 
 
         drive.followTrajectory(forwards);
-        drive.LinearSlideToStop2(3,35,0);
-        drive.susanToEncoderPosition(2000);
+        //drive.LinearSlideToStop2(3,35,0);
+        //drive.susanToEncoderPosition(2000);
         //Thread.sleep(x);
-        drive.moveTestServo(1);
-        drive.susanToEncoderPosition(0);
-        drive.LinearSlideToStop2(0,35,0);
+        //drive.moveTestServo(1);
+        //drive.susanToEncoderPosition(0);
+        //drive.LinearSlideToStop2(0,35,0);
     }
 
 
