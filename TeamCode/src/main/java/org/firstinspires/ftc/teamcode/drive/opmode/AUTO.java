@@ -89,7 +89,7 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
 
         double targetX = 0;
         double targetY = 0;
-
+        double points[][] = {};
         double centerX1 = 12 - position.getX();
         double centerX2 = 36 - position.getX();
         double centerX3 = 60 - position.getX();
@@ -149,13 +149,13 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
 
 
         if(location == 1)
-            destination = new Pose2d(24,24);
+            destination = new Pose2d(12,-36);
         else if(location == 2)
-            destination = new Pose2d(24,48);
+            destination = new Pose2d(36,-36);
         else if(location == 3)
-            destination = new Pose2d(24,72);
+            destination = new Pose2d(60 ,-36);
         else if(true)
-            destination = new Pose2d(24,48);
+            destination = new Pose2d(36,-36);
 
 
         Vector2d x = new Vector2d(destination.getX() , drive.getPoseEstimate().getY()+.001);
@@ -217,17 +217,17 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
                 .build(); */
 
 
-        forwards = drive.trajectoryBuilder(new Pose2d())
-                .lineTo( new Vector2d(0,48))
+        forwards = drive.trajectoryBuilder(new Pose2d(36, -60,Math.toRadians(90)))
+                .lineTo( new Vector2d(36,-12))
                 .build();
         right1 = drive.trajectoryBuilder(forwards.end())
-                .lineTo(new Vector2d(0,72))
+                .lineTo(new Vector2d(60,-12))
                 .build();
         left = drive.trajectoryBuilder(right1.end())
-                .lineTo(new Vector2d(0,24))
+                .lineTo(new Vector2d(12,-12))
                 .build();
         right = drive.trajectoryBuilder(left.end())
-                .lineTo(new Vector2d(0,72))
+                .lineTo(new Vector2d(60,-12))
                 .build();
 
 
