@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
@@ -43,6 +44,8 @@ public class DriverControl extends LinearOpMode implements localinterface {
 
         // These if statements set the target location for the slide based on user input.
 
+        manualSlide = false;
+
         if(stop == 3)
             target = tallStop;
 
@@ -76,39 +79,40 @@ public class DriverControl extends LinearOpMode implements localinterface {
     @Override
     public void susanToPosition(int targetPosition) { //TODO cleanup
 
-        double desiredPosition = targetPosition == 0 ? 0 : targetPosition == 1 ? 1385 : targetPosition == 2 ? 923 : 462;
+        int desiredPosition = targetPosition == 0 ? 0 : targetPosition == 1 ? 1385 : targetPosition == 2 ? 923 : 462;
 
         //if(linearSlide.getCurrentPosition()+50<256||linearSlide.getCurrentPosition()-50>256 & off == false) {
         //if(!off) {
-           LinearSlideToStop2(10, 40);
 
-           // if(linearSlide.getCurrentPosition()+50>256 & linearSlide.getCurrentPosition()-50<256){
-                //turn = true; off = true;}
+        if(!(lazySusan.getCurrentPosition() + 50 > desiredPosition & lazySusan.getCurrentPosition() - 50 < desiredPosition))
+        LinearSlideToStop2(10, 40);
 
-       // }
+        // if(linearSlide.getCurrentPosition()+50>256 & linearSlide.getCurrentPosition()-50<256){
+        //turn = true; off = true;}
+
+        // }
 
 
         //else if(linearSlide.getCurrentPosition()+50>256 & linearSlide.getCurrentPosition()-50<256){
-     //   if(turn){
+        //   if(turn){
 
-            lazySusan.setTargetPositionTolerance(45);
-            lazySusan.setTargetPosition((int) desiredPosition);
-            lazySusan.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            lazySusan.setPower(.4);
-           // if(lazySusan.getCurrentPosition()+50>desiredPosition & lazySusan.getCurrentPosition()-50<desiredPosition){
-            //    down1 = true; turn = false;}
-       // }
+        lazySusan.setTargetPositionTolerance(45);
+        lazySusan.setTargetPosition(desiredPosition);
+        lazySusan.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        lazySusan.setPower(.4);
+
+        // }
 
 
-      //  if(down1) {
+        if (lazySusan.getCurrentPosition() + 50 > desiredPosition & lazySusan.getCurrentPosition() - 50 < desiredPosition & linearSlide.getCurrentPosition()>250) {
             LinearSlideToStop2(0, 20);
-           // if(linearSlide.getCurrentPosition()<=20)
-               // off = false;
-       // }
+            // if(linearSlide.getCurrentPosition()<=20)
+            // off = false;
+            // }
+
+        }
 
     }
-
-
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -135,6 +139,7 @@ public class DriverControl extends LinearOpMode implements localinterface {
         lazySusan.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         lazySusan.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE); //Sets HALO to brake mode.
+        lazySusan.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
 
@@ -161,6 +166,7 @@ public class DriverControl extends LinearOpMode implements localinterface {
 
 
             if (gamepad2.left_trigger >= .05 || gamepad2.right_trigger >=.05){  //manual LinearSlide controls via triggers.
+                linearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
                 manualSlide = true; //Reports that slide is operating manually, not via a macro.
 

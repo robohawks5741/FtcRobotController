@@ -50,7 +50,7 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
 
     AprilTagDetection tagOfInterest = null;
 
-    Trajectory one = null;
+   /* Trajectory one = null;
     Trajectory four = null;
 
 
@@ -58,7 +58,7 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
 
 
     Trajectory three = null;
-    Trajectory five = null;
+    Trajectory five = null; */
 
     int conesUp = 0;
 
@@ -217,16 +217,16 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
                 .build(); */
 
 
-        Trajectory forwards = drive.trajectoryBuilder(new Pose2d())
+        forwards = drive.trajectoryBuilder(new Pose2d())
                 .lineTo( new Vector2d(0,48))
                 .build();
-        Trajectory right1 = drive.trajectoryBuilder(forwards.end())
+        right1 = drive.trajectoryBuilder(forwards.end())
                 .lineTo(new Vector2d(0,72))
                 .build();
-        Trajectory left = drive.trajectoryBuilder(right1.end())
+        left = drive.trajectoryBuilder(right1.end())
                 .lineTo(new Vector2d(0,24))
                 .build();
-        Trajectory right = drive.trajectoryBuilder(left.end())
+        right = drive.trajectoryBuilder(left.end())
                 .lineTo(new Vector2d(0,72))
                 .build();
 
