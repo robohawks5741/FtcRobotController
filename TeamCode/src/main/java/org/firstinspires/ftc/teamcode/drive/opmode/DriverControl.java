@@ -81,37 +81,23 @@ public class DriverControl extends LinearOpMode implements localinterface {
 
         int desiredPosition = targetPosition == 0 ? 0 : targetPosition == 1 ? 1385 : targetPosition == 2 ? 923 : 462;
 
-        //if(linearSlide.getCurrentPosition()+50<256||linearSlide.getCurrentPosition()-50>256 & off == false) {
-        //if(!off) {
-
-        if(!(lazySusan.getCurrentPosition() + 50 > desiredPosition & lazySusan.getCurrentPosition() - 50 < desiredPosition))
-        LinearSlideToStop2(10, 40);
-
-        // if(linearSlide.getCurrentPosition()+50>256 & linearSlide.getCurrentPosition()-50<256){
-        //turn = true; off = true;}
-
-        // }
+        if(linearSlide.getCurrentPosition()>=512){
+            if(!(lazySusan.getCurrentPosition() + 50 > desiredPosition & lazySusan.getCurrentPosition() - 50 < desiredPosition))
+                LinearSlideToStop2(10, 40);
+        }
 
 
-        //else if(linearSlide.getCurrentPosition()+50>256 & linearSlide.getCurrentPosition()-50<256){
-        //   if(turn){
 
-        lazySusan.setTargetPositionTolerance(45);
+        lazySusan.setTargetPositionTolerance(35);
         lazySusan.setTargetPosition(desiredPosition);
         lazySusan.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         lazySusan.setPower(.4);
 
-        // }
-
-
+        if
         if (lazySusan.getCurrentPosition() + 50 > desiredPosition & lazySusan.getCurrentPosition() - 50 < desiredPosition & linearSlide.getCurrentPosition()>250) {
             LinearSlideToStop2(0, 20);
-            // if(linearSlide.getCurrentPosition()<=20)
-            // off = false;
-            // }
 
         }
-
     }
 
     @Override
