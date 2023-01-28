@@ -28,7 +28,7 @@ import java.util.List;
 @Config
 public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer {
     public static double TICKS_PER_REV = 8192;
-    public static double WHEEL_RADIUS = 2; // in
+    public static double WHEEL_RADIUS = 1; // in
     public static double GEAR_RATIO = 1; // output (wheel) speed / input (encoder) speed
 
     public static double LATERAL_DISTANCE = 13.7114527415; // in; distance between the left and right wheels
@@ -49,6 +49,7 @@ public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer 
 
         // TODO: reverse any encoders using Encoder.setDirection(Encoder.Direction.REVERSE)
         leftEncoder.setDirection(Encoder.Direction.REVERSE);
+        frontEncoder.setDirection(Encoder.Direction.REVERSE);
     }
 
     public static double encoderTicksToInches(double ticks) {
@@ -59,9 +60,9 @@ public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer 
     @Override
     public List<Double> getWheelPositions() {
         return Arrays.asList(
-                encoderTicksToInches(leftEncoder.getCurrentPosition())*0.49079754601,
-                encoderTicksToInches(rightEncoder.getCurrentPosition())*0.49079754601,
-                encoderTicksToInches(frontEncoder.getCurrentPosition())*0.48780487804
+                encoderTicksToInches(leftEncoder.getCurrentPosition())*0.98159509202,
+                encoderTicksToInches(rightEncoder.getCurrentPosition())*0.98159509202,
+                encoderTicksToInches(frontEncoder.getCurrentPosition())*0.97560975608
         );
     }
 
@@ -73,9 +74,9 @@ public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer 
         //  compensation method
 
         return Arrays.asList(
-                encoderTicksToInches(leftEncoder.getCorrectedVelocity())*0.49079754601,
-                encoderTicksToInches(rightEncoder.getCorrectedVelocity())*0.49079754601,
-                encoderTicksToInches(frontEncoder.getCorrectedVelocity())*0.48780487804
+                encoderTicksToInches(leftEncoder.getCorrectedVelocity())*0.98159509202,
+                encoderTicksToInches(rightEncoder.getCorrectedVelocity())*0.98159509202,
+                encoderTicksToInches(frontEncoder.getCorrectedVelocity())*0.97560975608
         );
     }
 }
