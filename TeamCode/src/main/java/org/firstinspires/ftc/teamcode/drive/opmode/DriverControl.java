@@ -195,6 +195,8 @@ public class DriverControl extends LinearOpMode implements localinterface {
             }
 
             else if(gamepad2.b || slideB){
+                lazySusan.setTargetPositionTolerance(50);
+                linearSlide.setTargetPosition(lazySusan.getCurrentPosition()+232 <= 462 ? 0 : lazySusan.getCurrentPosition()+232 <= 923 ? 462 : lazySusan.getCurrentPosition()+232 <= 1385 ? 923 : 1385);
                 if(LinearSlideToStop2(0,35))
 
                     slideB = false;
