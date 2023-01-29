@@ -50,16 +50,6 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
 
     AprilTagDetection tagOfInterest = null;
 
-   /* Trajectory one = null;
-    Trajectory four = null;
-
-
-    Trajectory two = null;
-
-
-    Trajectory three = null;
-    Trajectory five = null; */
-
     int conesUp = 0;
 
     Trajectory forwards = null;
@@ -196,26 +186,6 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
 
         drive = new SampleMecanumDrive(hardwareMap);
 
-        /*Trajectory one = drive.trajectoryBuilder(new Pose2d())
-                .strafeRight(24)
-                .build();
-        Trajectory four = drive.trajectoryBuilder(new Pose2d())
-                .forward(30)
-                .build();
-
-
-        Trajectory two = drive.trajectoryBuilder(new Pose2d())
-                .forward(24)
-                .build();
-
-
-        Trajectory three = drive.trajectoryBuilder(new Pose2d())
-                .strafeRight(24)
-                .build();
-        Trajectory five = drive.trajectoryBuilder(new Pose2d())
-                .forward(30)
-                .build(); */
-
 
         forwards = drive.trajectoryBuilder(new Pose2d(36, -60,Math.toRadians(90)))
                 .lineTo( new Vector2d(36,-12))
@@ -229,8 +199,6 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
         right = drive.trajectoryBuilder(left.end())
                 .lineTo(new Vector2d(60,-12))
                 .build();
-
-
 
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
