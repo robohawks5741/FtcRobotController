@@ -16,7 +16,8 @@ import java.util.Map;
 @SuppressWarnings("rawtypes")
 public final class Gamepadyn {
 
-    public static void opmodeInit(@NonNull HardwareMap hmap, @NonNull OpMode op) {
+    public static void opmodeInit(@NonNull OpMode op) {
+        inputThread = null;
         inputThread = new Thread(Gamepadyn::inputThreadLoop);
         inputThread.setUncaughtExceptionHandler(_threadExceptionHandler);
         currentOpmode = op;

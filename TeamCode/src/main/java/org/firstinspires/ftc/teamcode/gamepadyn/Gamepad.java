@@ -69,7 +69,7 @@ public final class Gamepad {
     EnumMap<RawGamepadInput, MappingAction> mapping = new EnumMap<>(RawGamepadInput.class);
     // In order to create event-driven input, we need to determine change. Tracking change requires recording state.
     // Object is of type RawGamepadInput.inputType.inputClass depending on the key.
-    private EnumMap<RawGamepadInput, Object> stateCache;
+    private EnumMap<RawGamepadInput, Object> stateCache = new EnumMap<>(RawGamepadInput.class);
 
     // The name/path/identifier of the configuration file.
     @SuppressWarnings("FieldMayBeFinal")

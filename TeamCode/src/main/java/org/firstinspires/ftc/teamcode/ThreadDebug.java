@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import org.firstinspires.ftc.teamcode.gamepadyn.Gamepadyn;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+
+import java.util.Arrays;
 
 @TeleOp()
 public class ThreadDebug extends OpMode {
@@ -18,32 +20,22 @@ public class ThreadDebug extends OpMode {
         if (threadGroup == null) {
             this.telemetry.addData(logcat, "Not in a thread group.");
         } else {
-//            this.telemetry.addData(logcat,
-            boolean hasParent = true;
-            int i = 0;
-            ThreadGroup r = threadGroup;
-            while (hasParent) {
-                try {
-                    r.checkAccess();
-                    this.telemetry.addData(logcat, "Thread has access to Thread Group iteration #" + i);
-                    this.telemetry.addData(logcat, "Thread Group iteration #" + i + " has name" + r.getName());
-                    Thread[] threads = new Thread[16];
-                    r.enumerate(threads, true);
-                    this.telemetry.addData(logcat, "Thread Group iteration #" + i + " has " + threads.length + " child threads");
-                    r = r.getParent();
-                } catch (SecurityException se) {
-                    this.telemetry.addData(logcat, "Security Exception (thread cannot access parent): " + se.getMessage());
-                    hasParent = false;
-                }
-                i++;
+            this.telemetry.addData(logcat, "");
+            Thread[] threads = new Thread[64];
+            int s = threadGroup.enumerate(threads);
+            threads = Arrays.copyOf(threads, s);
+            for (int i = 0; i < threads.length; i++ ) {
+                String n = threads[i].getName();
+                this.telemetry.addData(logcat, "Child #" + i + " name: " + (n == null ? "<no name>" : n));
             }
         }
     }
 
     @Override
     public void init() {
+        Gamepadyn.opmodeInit(this);
         this.telemetry.addData("!!! THREAD DEBUG OPMODE !!!", "init() called!");
-        this.telemetry.addData("!!! THREAD DEBUG OPMODE !!!", "attemp 2");
+        this.telemetry.addData("!!! THREAD DEBUG OPMODE !!!", "attempt 2");
         threadReport();
         t = new Thread(new TelemThread(this.telemetry));
         this.telemetry.addData("!!! THREAD DEBUG OPMODE !!!", "after thread creation");
@@ -59,6 +51,8 @@ public class ThreadDebug extends OpMode {
     @Override
     public void stop() {
         t = null;
+        this.telemetry.addData("!!! THREAD DEBUG OPMODE !!!", "stop() called!");
+        Gamepadyn.cleanup();
     }
 
     public static class TelemThread implements Runnable {
@@ -71,7 +65,6 @@ public class ThreadDebug extends OpMode {
         @Override
         public void run() {
             telem.addData("!!! THREAD DEBUG THREAD !!!", "ran!");
-
         }
     }
 
