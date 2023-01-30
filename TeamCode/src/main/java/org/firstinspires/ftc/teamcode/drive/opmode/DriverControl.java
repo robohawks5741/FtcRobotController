@@ -39,6 +39,9 @@ public class DriverControl extends LinearOpMode implements localinterface {
 
     private DcMotorEx linearSlide, lazySusan;
 
+   // @Override
+   // public void susan90(int input)
+
     @Override
     public boolean LinearSlideToStop2(int stop, int tolerance){
 
