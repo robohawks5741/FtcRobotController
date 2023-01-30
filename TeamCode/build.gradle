@@ -20,6 +20,9 @@ android {
 
     packagingOptions {
         jniLibs.useLegacyPackaging true
+    dependenciesInfo {
+        includeInApk true
+        includeInBundle true
     }
 }
 
