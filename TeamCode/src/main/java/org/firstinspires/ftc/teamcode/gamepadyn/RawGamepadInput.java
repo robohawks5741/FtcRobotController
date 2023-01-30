@@ -23,7 +23,7 @@ public enum RawGamepadInput {
     /// D-Pad Right
     DR  (DIGITAL),
     /// Right Trigger
-    TR  (ANALOG),
+    TR  (ANALOG, 1),
     /// Left Trigger
     TL  (ANALOG, 1),
     /// Right Bumper
@@ -42,6 +42,9 @@ public enum RawGamepadInput {
     public final InputType inputType;
     public final int axes;
 
-    RawGamepadInput(InputType inputType) { this.inputType = inputType; this.axes = 0; }
+    RawGamepadInput(InputType inputType) {
+        this.inputType = inputType;
+        this.axes = (inputType == DIGITAL ? 0 : 1);
+    }
     RawGamepadInput(InputType inputType, int axes) { this.inputType = inputType; this.axes = axes; }
 }

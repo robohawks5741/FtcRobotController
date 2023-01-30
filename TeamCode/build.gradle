@@ -25,6 +25,7 @@ android {
         includeInApk true
         includeInBundle true
     }
+    buildToolsVersion '33.0.1'
 }
 
 dependencies {
