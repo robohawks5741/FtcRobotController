@@ -23,7 +23,7 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
     OpenCvCamera camera;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
 
-    SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+    SampleMecanumDrive drive = null;
 
     int ctr = 1;
 
@@ -50,46 +50,28 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
 
     AprilTagDetection tagOfInterest = null;
 
-    Trajectory one = null;
-    Trajectory four = null;
-
-
-    Trajectory two = null;
-
-
-    Trajectory three = null;
-    Trajectory five = null;
-
     int conesUp = 0;
 
-    Trajectory forwards = drive.trajectoryBuilder(new Pose2d())
-            .lineTo( new Vector2d(0,48))
-            .build();
-    Trajectory right1 = drive.trajectoryBuilder(forwards.end())
-            .lineTo(new Vector2d(0,72))
-            .build();
-    Trajectory left = drive.trajectoryBuilder(right1.end())
-            .lineTo(new Vector2d(0,24))
-            .build();
-    Trajectory right = drive.trajectoryBuilder(left.end())
-            .lineTo(new Vector2d(0,72))
-            .build();
+    Trajectory forwards = null;
+    Trajectory right1 = null;
+    Trajectory left = null;
+    Trajectory right = null;
 
     @Override
     public void LeftAndDump(){
-        drive.followTrajectory(left);
-        drive.moveTestServo(1);
-        drive.LinearSlideToStop(0,conesUp,25,35);
-        drive.MoveSusan(0);
+        drive.followTrajectory(left); //TODO no comments!!!
+        //drive.moveTestServo(1);
+        //drive.LinearSlideToStop2(0,35, conesUp);
+        //drive.susanToEncoderPosition(0);
     }
 
     @Override
     public void RightAndPickup(){
         drive.followTrajectory(right);
-        drive.moveTestServo(.5);
-        drive.LinearSlideToStop(3,conesUp,25,35);
-        drive.MoveSusan(60);
-        conesUp++;
+        //drive.moveTestServo(.5);
+        //drive.LinearSlideToStop2(3,35,conesUp);
+        //drive.susanToEncoderPosition(60);
+        //conesUp++;
     }
 
     @Override
@@ -97,7 +79,7 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
 
         double targetX = 0;
         double targetY = 0;
-
+        double points[][] = {};
         double centerX1 = 12 - position.getX();
         double centerX2 = 36 - position.getX();
         double centerX3 = 60 - position.getX();
@@ -157,17 +139,18 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
 
 
         if(location == 1)
-            destination = new Pose2d(24,24);
+            destination = new Pose2d(12,-36);
         else if(location == 2)
-            destination = new Pose2d(24,48);
+            destination = new Pose2d(36,-36);
         else if(location == 3)
-            destination = new Pose2d(24,72);
+            destination = new Pose2d(60 ,-36);
         else if(true)
-            destination = new Pose2d(24,48);
+            destination = new Pose2d(36,-36);
 
 
-        Vector2d x = new Vector2d(destination.getX() , drive.getPoseEstimate().getY());
-        Vector2d y = new Vector2d(drive.getPoseEstimate().getX() , destination.getY());
+        Vector2d x = new Vector2d(destination.getX() , drive.getPoseEstimate().getY()+.001);
+        Vector2d y = new Vector2d(drive.getPoseEstimate().getX()+.001 , destination.getY());
+
 
 
         Trajectory parkX = drive.trajectoryBuilder(drive.getPoseEstimate())
@@ -186,53 +169,36 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
 
     @Override
     public void FirstCone(){
-        drive.MoveSusan(60);
-        drive.LinearSlideToStop(3,0,25,35);
+
+
         drive.followTrajectory(forwards);
-        drive.moveTestServo(1);
-        drive.MoveSusan(0);
-        drive.LinearSlideToStop(0,0,25,35);
+        //drive.LinearSlideToStop2(3,35,0);
+        //drive.susanToEncoderPosition(2000);
+        //Thread.sleep(x);
+        //drive.moveTestServo(1);
+        //drive.susanToEncoderPosition(0);
+        //drive.LinearSlideToStop2(0,35,0);
     }
 
 
     @Override
     public void runOpMode() {
 
-        Trajectory one = drive.trajectoryBuilder(new Pose2d())
-                .strafeRight(24)
-                .build();
-        Trajectory four = drive.trajectoryBuilder(new Pose2d())
-                .forward(30)
-                .build();
+        drive = new SampleMecanumDrive(hardwareMap);
 
 
-        Trajectory two = drive.trajectoryBuilder(new Pose2d())
-                .forward(24)
+        forwards = drive.trajectoryBuilder(new Pose2d(36, -60,Math.toRadians(90)))
+                .lineTo( new Vector2d(36,-12))
                 .build();
-
-
-        Trajectory three = drive.trajectoryBuilder(new Pose2d())
-                .strafeRight(24)
+        right1 = drive.trajectoryBuilder(forwards.end())
+                .lineTo(new Vector2d(60,-12))
                 .build();
-        Trajectory five = drive.trajectoryBuilder(new Pose2d())
-                .forward(30)
+        left = drive.trajectoryBuilder(right1.end())
+                .lineTo(new Vector2d(12,-12))
                 .build();
-
-
-        Trajectory forwards = drive.trajectoryBuilder(new Pose2d())
-                .lineTo( new Vector2d(0,48))
+        right = drive.trajectoryBuilder(left.end())
+                .lineTo(new Vector2d(60,-12))
                 .build();
-        Trajectory right1 = drive.trajectoryBuilder(forwards.end())
-                .lineTo(new Vector2d(0,72))
-                .build();
-        Trajectory left = drive.trajectoryBuilder(right1.end())
-                .lineTo(new Vector2d(0,24))
-                .build();
-        Trajectory right = drive.trajectoryBuilder(left.end())
-                .lineTo(new Vector2d(0,72))
-                .build();
-
-
 
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -265,7 +231,7 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
         {
             ArrayList<AprilTagDetection> currentDetections = aprilTagDetectionPipeline.getLatestDetections();
 
-            camera.startStreaming(800,448); //TODO does this work?
+            //camera.startStreaming(800,448); //TODO does this work?
 
             if(currentDetections.size() != 0)
             {

@@ -58,31 +58,35 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
     //public int ctr = 0;
     //public double Lpos = 0;
 //done: fix values to reflect real numbers
-    public int bottomStop = 0;//bottom, stop here
+    public int bottomStop = 15;//bottom, stop here
     public int lowStop = 1000;
     public int midStop = 1800;
     public int tallStop= 2550;//placeholder value because slide isn't currently tall enough to reach the "tallStop"
     public int tooTall = 2970;//max height
-    public int target =     0;//placeholder here, gets used in function LinearSlideToStop()
+    public int target = 0;//placeholder here, gets used in function LinearSlideToStop()
     public boolean slide = false;
+    public int hopStop = 270;
+    public boolean off = false;
+    public boolean turn = false;
+    public boolean down1 = false;
 
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0, 0, 0);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(0, 0, 0);
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(3, 0, 1);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(3, 0, 1);
 
-    public static double LATERAL_MULTIPLIER = 1;
+    public static double LATERAL_MULTIPLIER = 1.66;
 
     public static double VX_WEIGHT = 1;
     public static double VY_WEIGHT = 1;
     public static double OMEGA_WEIGHT = 1;
 
-    private TrajectorySequenceRunner trajectorySequenceRunner;
+    public TrajectorySequenceRunner trajectorySequenceRunner;
 
     private static final TrajectoryVelocityConstraint VEL_CONSTRAINT = getVelocityConstraint(MAX_VEL, MAX_ANG_VEL, TRACK_WIDTH);
     private static final TrajectoryAccelerationConstraint ACCEL_CONSTRAINT = getAccelerationConstraint(MAX_ACCEL);
 
-    private TrajectoryFollower follower;
+    public TrajectoryFollower follower;
 
-    private DcMotorEx leftFront, leftRear, rightRear, rightFront, linearSlide, leftEncoder, rightEncoder, frontEncoder;
+    private DcMotorEx lazySusan, leftRear, rightRear, rightFront, linearSlide, leftEncoder, rightEncoder, frontEncoder;
     private List<DcMotorEx> motors;
     private Servo clawServo, penetrationServo;
 
@@ -105,10 +109,10 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
         }
 
         // done: adjust the names of the following hardware devices to match your configuration
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        /*imu = hardwareMap.get(BNO055IMU.class, "imu");
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
-        imu.initialize(parameters);
+        imu.initialize(parameters);*/
 
         // not needed: If the hub containing the IMU you are using is mounted so that the "REV" logo does
         // not face up, remap the IMU axes so that the z-axis points upward (normal to the floor.)
@@ -132,7 +136,7 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
         // For example, if +Y in this diagram faces downwards, you would use AxisDirection.NEG_Y.
         // BNO055IMUUtil.remapZAxis(imu, AxisDirection.NEG_Y);
 
-        leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
+        lazySusan = hardwareMap.get(DcMotorEx.class, "lazySusan");
         leftRear = hardwareMap.get(DcMotorEx.class, "leftRear");
         rightRear = hardwareMap.get(DcMotorEx.class, "rightRear");
         rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
@@ -146,7 +150,7 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
         penetrationServo = hardwareMap.get(Servo.class,"penetrationServo");
 
         //added, testing
-        motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront, linearSlide, leftEncoder, rightEncoder, frontEncoder);
+        motors = Arrays.asList(lazySusan, leftRear, rightRear, rightFront, linearSlide, leftEncoder, rightEncoder, frontEncoder);
         //added linear slide to these.
         for (DcMotorEx motor : motors) {
             MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
@@ -165,11 +169,11 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
         }
 
         // done: reverse any motors using DcMotor.setDirection()
-        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightRear.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // TODO: if desired, use setLocalizer() to change the localization method
-        // for instance, setLocalizer(new ThreeTrackingWheelLocalizer(...));
+        setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap));
 
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
     }
@@ -317,7 +321,7 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
 
     @Override
     public void setMotorPowers(double v, double v1, double v2, double v3) {
-        leftFront.setPower(v);
+        frontEncoder.setPower(v);
         leftRear.setPower(v1);
         rightRear.setPower(v2);
         rightFront.setPower(v3);
@@ -325,12 +329,12 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
 
     @Override
     public void ResetSusan(){
-        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        lazySusan.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     @Override
     public double SusanEncoderPosition(){
-        return leftFront.getCurrentPosition();
+        return lazySusan.getCurrentPosition();
     }
 
     @Override
@@ -346,6 +350,42 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
         leftEncoder.setPower(-linearPower);
 
     }
+
+    @Override
+    public void susanToPosition(int targetPosition) {
+
+        double desiredPosition = targetPosition == 0 ? 0 : targetPosition == 1 ? 1385 : targetPosition == 2 ? 923 : 462;
+
+        //if(linearSlide.getCurrentPosition()+50<256||linearSlide.getCurrentPosition()-50>256 & off == false) {
+        //if(!off) {
+            LinearSlideToStop2(10, 40,0);
+
+           /* if(linearSlide.getCurrentPosition()+50>256 & linearSlide.getCurrentPosition()-50<256){
+                turn = true; off = true;}
+
+        }
+
+
+        //else if(linearSlide.getCurrentPosition()+50>256 & linearSlide.getCurrentPosition()-50<256){
+        if(turn){ */
+
+            lazySusan.setTargetPositionTolerance(45);
+            lazySusan.setTargetPosition((int) desiredPosition);
+            lazySusan.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            lazySusan.setPower(.4);
+            /*if(lazySusan.getCurrentPosition()+50>desiredPosition & lazySusan.getCurrentPosition()-50<desiredPosition){
+                down1 = true; turn = false;}
+        }
+
+
+        if(down1) { */
+            LinearSlideToStop2(0, 20,0);
+            //if(linearSlide.getCurrentPosition()<=20)
+              //  off = false;
+      //  }
+
+    }
+
     @Override
     public boolean LinearSlideToStop(int stop, int conesUp, double power, int tolerance){ //TODO: Add recursion with a tolerance var to make this as accurate as possible, requires good rope tension for up and down.
         linearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -394,7 +434,7 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
                 LSspeed = power*correctedVelocity;
                 //LSspeed = 1;
                 linearSlide.setPower(LSspeed);
-                leftEncoder.setPower(-LSspeed);
+                //leftEncoder.setPower(-LSspeed);
 
                 if(LinearSlidePos()<=target-tolerance||LinearSlidePos()>=target+tolerance)
                     slide = false;
@@ -415,7 +455,7 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
                 LSspeed = power*correctedVelocity;
                 //LSspeed = 1;
                 linearSlide.setPower(-LSspeed);
-                leftEncoder.setPower(LSspeed);
+                //leftEncoder.setPower(LSspeed);
 
                 if(LinearSlidePos()<=target-tolerance||LinearSlidePos()>=target+tolerance)
                     slide = false;
@@ -438,11 +478,11 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
     }
 
     @Override
-    public void LinearSlideToStop2(int stop, int tolerance){
+    public boolean LinearSlideToStop2(int stop, int tolerance, int conesUp){
 
-        //linearSlide.setMode(DcMotor.1.RUN_TO_POSITION);
+        //linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        if(stop == 1){
+        /*if(stop == 1){
             target = lowStop;
         }
         else if(stop == 2){
@@ -451,13 +491,62 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
         else if(stop == 3){
             target = tallStop;
         }
-        else{
-            target = bottomStop;
+        else if(stop == 10){
+            target = hopStop;
         }
+        else if(stop == 0){
+            target = bottomStop;
+        } */
+
+
+
+        if (conesUp == 0 || stop !=0) {
+
+
+            if (stop == 1) {
+                target = lowStop;
+            }
+            else if (stop == 2) {
+                target = midStop;
+            }
+            else if (stop == 3) {
+                target = tallStop;
+            }
+            else if (stop == 0) {
+                target = bottomStop;
+            }
+            else if(stop == 10){
+                target = hopStop;
+            }
+        }
+        else if (conesUp != 0 && stop == 0){
+            target = bottomStop-(25*conesUp);
+        }
+
+
 
         linearSlide.setTargetPositionTolerance(tolerance);
         linearSlide.setTargetPosition(target);
+        linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        linearSlide.setPower(.7);
 
+        if(LinearSlidePos()<=target-tolerance||LinearSlidePos()>=target+tolerance)
+            slide = false;
+        else
+            slide = true;
+
+        if(slide)
+            return true;
+        else
+            return false;
+    }
+
+    @Override
+    public void susanToEncoderPosition(int pos){
+        lazySusan.setTargetPositionTolerance(20);
+        lazySusan.setTargetPosition(target);
+        lazySusan.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        lazySusan.setPower(.4);
     }
 
 
@@ -493,7 +582,8 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
 
     @Override
     public void MoveSusan(double speed){
-        frontEncoder.setPower(speed);
+        lazySusan.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        lazySusan.setPower(speed);
     }
 
     /*@Override
@@ -546,12 +636,17 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
 
     @Override
     public double getRawExternalHeading() {
-        return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+        return 0;
     }
 
     @Override
     public Double getExternalHeadingVelocity() {
-        return (double) imu.getRobotAngularVelocity(AngleUnit.RADIANS).zRotationRate;
+        // To work around an SDK bug, use -zRotationRate in place of xRotationRate
+        // and -xRotationRate in place of zRotationRate (yRotationRate behaves as 
+        // expected). This bug does NOT affect orientation. 
+        //
+        // See https://github.com/FIRST-Tech-Challenge/FtcRobotController/issues/251 for details.
+        return (double) -imu.getAngularVelocity().xRotationRate;
     }
 
     public static TrajectoryVelocityConstraint getVelocityConstraint(double maxVel, double maxAngularVel, double trackWidth) {
