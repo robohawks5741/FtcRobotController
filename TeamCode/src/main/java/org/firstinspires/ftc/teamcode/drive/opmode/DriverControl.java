@@ -242,11 +242,11 @@ public class DriverControl extends LinearOpMode implements localinterface {
             if(gamepad2.dpad_up)
                 susanToPosition(0);
             else if(gamepad2.dpad_left)
-                susanToPosition(1);
+                susanToPosition(3);
             else if(gamepad2.dpad_down)
                 susanToPosition(2);
             else if(gamepad2.dpad_right)
-                susanToPosition(3);
+                susanToPosition(1);
 
 
             //UPDATE stuff
