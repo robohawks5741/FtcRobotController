@@ -23,9 +23,9 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 public class DriverControl extends LinearOpMode implements localinterface {
 
     private int bottomStop = 0;//bottom, stop here
-    private int lowStop = 1000;
-    private int midStop = 1800;
-    private int tallStop= 2550;//placeholder value because slide isn't currently tall enough to reach the "tallStop"
+    private int lowStop = 1150;
+    private int midStop = 1950;
+    private int tallStop= 2700;//placeholder value because slide isn't currently tall enough to reach the "tallStop"
     private int tooTall = 2970;//max height
     private int target =     0;//placeholder here, gets used in function LinearSlideToStop()
     private boolean slide = false;
@@ -119,7 +119,7 @@ public class DriverControl extends LinearOpMode implements localinterface {
         clawServo = hardwareMap.get(Servo.class, "clawServo");
 
 
-        double speed = .75; //Speed multiplier for the drivetrain.
+        double speed = .5; //Speed multiplier for the drivetrain.
 
         boolean slideY = false; //state of movement (yes or no) for different target slide positions.
         boolean slideX = false;
@@ -141,19 +141,22 @@ public class DriverControl extends LinearOpMode implements localinterface {
 
         while (opModeIsActive()) { //!!Main loop!!
 
-
-            if(gamepad1.left_bumper) //Change drive speed coefficient.
+            if(linearSlide.getCurrentPosition()>=1500)
+                speed = .25;
+            else if(gamepad1.a) //Change drive speed coefficient.
                  speed = .25;
-            if(gamepad1.right_bumper)
+            else if(gamepad1.b)
                 speed = .5;
+            else if(gamepad1.y)
+                speed = .75;
 
 
             drive.setWeightedDrivePower(
                     new Pose2d(
 
-                            -(gamepad1.right_stick_y>=0 ? 1 : -1) * Math.pow(abs((double)gamepad1.right_stick_y),1.7)*(speed)+(abs(gamepad1.right_stick_y) > .05 ? (gamepad1.right_stick_y >= 0 ? .05 : -.05) : 0), // These lines translate the raw code from the sticks into
-                            -(gamepad1.right_stick_x>=0 ? 1 : -1) * Math.pow(abs((double)gamepad1.right_stick_x),1.7)*(speed)+(abs(gamepad1.right_stick_x) > .05 ? (gamepad1.right_stick_x >= 0 ? .05 : -.05) : 0),   //  a curved +/- input for the motors. It sends the values to a
-                            (gamepad1.left_stick_x>=0 ? -1 : 1) * Math.pow(abs((double)gamepad1.left_stick_x),1.7)*(speed)+(abs(gamepad1.left_stick_x) > .05 ? (gamepad1.left_stick_x >= 0 ? .05 : -.05) : 0)       // function in roadrunner.
+                            -(gamepad1.left_stick_y>=0 ? 1 : -1) * Math.pow(abs((double)gamepad1.left_stick_y),1.7)*(speed)+(abs(gamepad1.left_stick_y) > .05 ? (gamepad1.left_stick_y >= 0 ? .05 : -.05) : 0), // These lines translate the raw code from the sticks into
+                            -(gamepad1.left_stick_x>=0 ? 1 : -1) * Math.pow(abs((double)gamepad1.left_stick_x),1.7)*(speed)+(abs(gamepad1.left_stick_x) > .05 ? (gamepad1.left_stick_x >= 0 ? .05 : -.05) : 0),   //  a curved +/- input for the motors. It sends the values to a
+                            (gamepad1.right_stick_x>=0 ? -1 : 1) * Math.pow(abs((double)gamepad1.right_stick_x),1.7)*(speed)+(abs(gamepad1.right_stick_x) > .05 ? (gamepad1.right_stick_x >= 0 ? .05 : -.05) : 0)       // function in roadrunner.
                     )
             );
 
@@ -204,7 +207,7 @@ public class DriverControl extends LinearOpMode implements localinterface {
                     slideB = true;
             }
 
-            else if(gamepad2.x || slideX){
+            else if(gamepad2.a || slideX){
                 if(LinearSlideToStop2(1,35))
 
                     slideX = false;
@@ -212,7 +215,7 @@ public class DriverControl extends LinearOpMode implements localinterface {
                     slideX = true;
             }
 
-            else if(gamepad2.a || slideA){
+            else if(gamepad2.x || slideA){
                 if(LinearSlideToStop2(2,35))
 
                     slideA = false;
