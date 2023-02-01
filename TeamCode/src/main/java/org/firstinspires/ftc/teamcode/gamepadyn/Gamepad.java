@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.gamepadyn.user.UserActions;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.Objects;
 
@@ -69,7 +70,7 @@ public final class Gamepad {
     EnumMap<RawGamepadInput, MappingAction> mapping = new EnumMap<>(RawGamepadInput.class);
     // In order to create event-driven input, we need to determine change. Tracking change requires recording state.
     // Object is of type RawGamepadInput.inputType.inputClass depending on the key.
-    private EnumMap<RawGamepadInput, Object> stateCache = new EnumMap<>(RawGamepadInput.class);
+    EnumMap<RawGamepadInput, Object> stateCache = new EnumMap<>(RawGamepadInput.class);
 
     // The name/path/identifier of the configuration file.
     @SuppressWarnings("FieldMayBeFinal")
@@ -92,7 +93,9 @@ public final class Gamepad {
         for (RawGamepadInput rin : RawGamepadInput.values()) {
             switch (rin.inputType) {
                 case ANALOG: {
-                    stateCache.put(rin, new AnalogValue(new float[rin.axes]));
+                    float[] av = new float[rin.axes];
+                    Arrays.fill(av, 0);
+                    stateCache.put(rin, new AnalogValue(av));
                     break;
                 }
                 case DIGITAL: {

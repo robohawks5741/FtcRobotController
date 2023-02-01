@@ -7,7 +7,7 @@ public class AnalogValue {
     public final int axes;
     public final float[] values;
 //    @SafeVarargs
-    protected AnalogValue(@NonNull float... v) {
+    public AnalogValue(@NonNull float... v) {
         values = v;
         axes = v.length;
     }

@@ -47,11 +47,12 @@ public final class Gamepadyn {
     private static final Thread.UncaughtExceptionHandler _threadExceptionHandler = (Thread t, Throwable e) -> { inputThread = null; };
 
     private static void inputThreadLoop() {
+
         // TODO: fill this in
 
-        for (Gamepad gp :
-                gamepads) {
+        for (Gamepad gp : gamepads) {
             for (Map.Entry<RawGamepadInput, MappingAction> entry : gp.mapping.entrySet()) {
+                if (entry == null) continue;
                 RawGamepadInput key = entry.getKey();
                 // this could be an if statement but I like it better this way
                 switch (key.inputType) {
@@ -76,6 +77,7 @@ public final class Gamepadyn {
                     }
                 }
             }
+//            gp.stateCache
         }
 
     }
