@@ -54,7 +54,7 @@ import static java.lang.Math.abs;
  * Simple mecanum drive hardware implementation for REV hardware.
  */
 @Config
-public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDrive2testJames {
+public class RobohawksMecanumDrive extends MecanumDrive {
     //public int ctr = 0;
     //public double Lpos = 0;
 //done: fix values to reflect real numbers
@@ -93,7 +93,7 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
     private BNO055IMU imu;
     private VoltageSensor batteryVoltageSensor;
 
-    public SampleMecanumDrive(HardwareMap hardwareMap) {
+    public RobohawksMecanumDrive(HardwareMap hardwareMap) {
         super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
 
         follower = new HolonomicPIDVAFollower(TRANSLATIONAL_PID, TRANSLATIONAL_PID, HEADING_PID,
@@ -315,11 +315,6 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
     }
 
     @Override
-    public void holdSusan(){
-        leftEncoder.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-    }
-
-    @Override
     public void setMotorPowers(double v, double v1, double v2, double v3) {
         frontEncoder.setPower(v);
         leftRear.setPower(v1);
@@ -327,23 +322,11 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
         rightFront.setPower(v3);
     }
 
-    @Override
-    public void ResetSusan(){
-        lazySusan.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-    }
-
-    @Override
-    public double SusanEncoderPosition(){
-        return lazySusan.getCurrentPosition();
-    }
-
-    @Override
     public void holdSlides(){
         if (LinearSlidePos()>512)
             setLinearSlide(0.17);
     }
 
-    @Override
     public void setLinearSlide(double linearPower)  {
         //double LSstartPosition = linearSlide.getCurrentPosition();
         linearSlide.setPower(linearPower);
@@ -351,42 +334,6 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
 
     }
 
-    @Override
-    public void susanToPosition(int targetPosition) {
-
-        double desiredPosition = targetPosition == 0 ? 0 : targetPosition == 1 ? 1385 : targetPosition == 2 ? 923 : 462;
-
-        //if(linearSlide.getCurrentPosition()+50<256||linearSlide.getCurrentPosition()-50>256 & off == false) {
-        //if(!off) {
-            LinearSlideToStop2(10, 40,0);
-
-           /* if(linearSlide.getCurrentPosition()+50>256 & linearSlide.getCurrentPosition()-50<256){
-                turn = true; off = true;}
-
-        }
-
-
-        //else if(linearSlide.getCurrentPosition()+50>256 & linearSlide.getCurrentPosition()-50<256){
-        if(turn){ */
-
-            lazySusan.setTargetPositionTolerance(45);
-            lazySusan.setTargetPosition((int) desiredPosition);
-            lazySusan.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            lazySusan.setPower(.4);
-            /*if(lazySusan.getCurrentPosition()+50>desiredPosition & lazySusan.getCurrentPosition()-50<desiredPosition){
-                down1 = true; turn = false;}
-        }
-
-
-        if(down1) { */
-            LinearSlideToStop2(0, 20,0);
-            //if(linearSlide.getCurrentPosition()<=20)
-              //  off = false;
-      //  }
-
-    }
-
-    @Override
     public boolean LinearSlideToStop(int stop, int conesUp, double power, int tolerance){ //TODO: Add recursion with a tolerance var to make this as accurate as possible, requires good rope tension for up and down.
         linearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftEncoder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -477,7 +424,6 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
             return false;
     }
 
-    @Override
     public boolean LinearSlideToStop2(int stop, int tolerance, int conesUp){
 
         //linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -541,21 +487,10 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
             return false;
     }
 
-    @Override
-    public void susanToEncoderPosition(int pos){
-        lazySusan.setTargetPositionTolerance(20);
-        lazySusan.setTargetPosition(target);
-        lazySusan.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        lazySusan.setPower(.4);
-    }
-
-
-    @Override
     public void penetrate(double pos){
         penetrationServo.setPosition(pos);
     }
 
-    @Override
     public int LinearSlidePos(){
         //Lpos = linearSlide.getCurrentPosition();
         //ctr = ctr+4;
@@ -569,22 +504,17 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
         //ctr = ctr +2;
 
     }
-    @Override
+
     public void LinearSlideResetEnc(){
         linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
-    @Override
     public void moveTestServo(double pos){
 
         clawServo.setPosition(pos);
     }
 
-    @Override
-    public void MoveSusan(double speed){
-        lazySusan.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        lazySusan.setPower(speed);
-    }
+
 
     /*@Override
     public void up(){

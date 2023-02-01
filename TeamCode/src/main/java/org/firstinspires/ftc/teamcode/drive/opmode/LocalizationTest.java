@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
-import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.drive.RobohawksMecanumDrive;
 
 /**
  * This is a simple teleop routine for testing localization. Drive the robot around like a normal
@@ -119,11 +119,11 @@ public class LocalizationTest extends LinearOpMode implements localinterface {
         boolean slideA = false;
         boolean slideB = false;
 
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        RobohawksMecanumDrive drive = new RobohawksMecanumDrive(hardwareMap);
 
         //drive.ResetSusan();
 
-        SampleMecanumDrive driveB = new SampleMecanumDrive(hardwareMap);
+        RobohawksMecanumDrive driveB = new RobohawksMecanumDrive(hardwareMap);
 
         driveB.LinearSlideResetEnc();
 

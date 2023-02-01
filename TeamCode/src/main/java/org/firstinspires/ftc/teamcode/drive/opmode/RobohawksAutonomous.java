@@ -1,12 +1,13 @@
 package org.firstinspires.ftc.teamcode.drive.opmode;
 
+import android.annotation.SuppressLint;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.AprilTagDetectionPipeline;
-import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.drive.RobohawksMecanumDrive;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -19,11 +20,11 @@ import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import java.util.ArrayList;
 
 @Autonomous
-public class AUTO extends LinearOpMode implements AUTOinterface {
+public class RobohawksAutonomous extends LinearOpMode {
     OpenCvCamera camera;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
 
-    SampleMecanumDrive drive = null;
+    RobohawksMecanumDrive drive = null;
 
     int ctr = 1;
 
@@ -57,7 +58,6 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
     Trajectory left = null;
     Trajectory right = null;
 
-    @Override
     public void LeftAndDump(){
         drive.followTrajectory(left); //TODO no comments!!!
         //drive.moveTestServo(1);
@@ -65,7 +65,6 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
         //drive.susanToEncoderPosition(0);
     }
 
-    @Override
     public void RightAndPickup(){
         drive.followTrajectory(right);
         //drive.moveTestServo(.5);
@@ -74,7 +73,6 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
         //conesUp++;
     }
 
-    @Override
     public void CenterOnTile(Pose2d position){
 
         double targetX = 0;
@@ -130,7 +128,6 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
 
     }
 
-    @Override
     public void Park(int location){
 
         drive.LinearSlideResetEnc();
@@ -167,7 +164,6 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
     }
 
 
-    @Override
     public void FirstCone(){
 
 
@@ -184,7 +180,7 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
     @Override
     public void runOpMode() {
 
-        drive = new SampleMecanumDrive(hardwareMap);
+        drive = new RobohawksMecanumDrive(hardwareMap);
 
 
         forwards = drive.trajectoryBuilder(new Pose2d(36, -60,Math.toRadians(90)))
@@ -364,6 +360,7 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
         while (opModeIsActive()) {sleep(20);}
     }
 
+    @SuppressLint("DefaultLocale")
     void tagToTelemetry(AprilTagDetection detection)
     {
         telemetry.addLine(String.format("\nDetected tag ID=%d", detection.id));

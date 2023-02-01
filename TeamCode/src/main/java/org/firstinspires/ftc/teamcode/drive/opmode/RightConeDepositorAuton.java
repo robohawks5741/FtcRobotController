@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.drive.opmode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.drive.RobohawksMecanumDrive;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
@@ -9,9 +9,9 @@ import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 @Autonomous
-public class RightConeDepositorAuton extends LinearOpMode implements RightConeDepositorAutonInterface {
+public class RightConeDepositorAuton extends LinearOpMode {
 
-    SampleMecanumDrive drive = null;
+    RobohawksMecanumDrive drive = null;
 
     public int conesUp = 0;
 
@@ -21,7 +21,6 @@ public class RightConeDepositorAuton extends LinearOpMode implements RightConeDe
     Trajectory right = null;
 
 
-    @Override
     public void LeftAndDump(){
         drive.followTrajectory(left);
         drive.moveTestServo(1);
@@ -29,7 +28,6 @@ public class RightConeDepositorAuton extends LinearOpMode implements RightConeDe
         drive.MoveSusan(0);
     }
 
-    @Override
     public void RightAndPickup(){
         drive.followTrajectory(right);
         drive.moveTestServo(.5);
@@ -38,7 +36,6 @@ public class RightConeDepositorAuton extends LinearOpMode implements RightConeDe
         conesUp++;
     }
 
-    @Override
     public void CenterOnTile(Pose2d position){
 
         double targetX = 0;
@@ -94,14 +91,11 @@ public class RightConeDepositorAuton extends LinearOpMode implements RightConeDe
 
     }
 
-    @Override
     public void Park(int location){
 
         drive.LinearSlideResetEnc();
 
-        Pose2d destination = null;
-
-
+        Pose2d destination;
 
         if(location == 1)
             destination = new Pose2d(24,24); //todo : fix coordinates
@@ -109,8 +103,7 @@ public class RightConeDepositorAuton extends LinearOpMode implements RightConeDe
             destination = new Pose2d(24,48);
         else if(location == 3)
             destination = new Pose2d(24,72);
-        else if(true)
-            destination = new Pose2d(24,48);
+        else destination = new Pose2d(24,48);
 
 
         Vector2d x = new Vector2d(destination.getX() , drive.getPoseEstimate().getY());
@@ -131,7 +124,6 @@ public class RightConeDepositorAuton extends LinearOpMode implements RightConeDe
     }
 
 
-    @Override
     public void FirstCone(){
         drive.susanToEncoderPosition(2000);
         drive.LinearSlideToStop(3,0,25,35);
@@ -145,7 +137,7 @@ public class RightConeDepositorAuton extends LinearOpMode implements RightConeDe
     @Override
     public void runOpMode() throws InterruptedException {
 
-        drive = new SampleMecanumDrive(hardwareMap);
+        drive = new RobohawksMecanumDrive(hardwareMap);
 
         Trajectory forwards = drive.trajectoryBuilder(new Pose2d()) //todo fix coordinates
                 .lineTo( new Vector2d(0,48))

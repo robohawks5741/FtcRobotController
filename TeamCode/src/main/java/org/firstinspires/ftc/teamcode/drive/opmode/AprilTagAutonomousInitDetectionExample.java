@@ -46,24 +46,18 @@ public class JamesAutoTest extends LinearOpMode{
 package org.firstinspires.ftc.teamcode.drive.opmode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.AprilTagDetectionPipeline;
-import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.drive.RobohawksMecanumDrive;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvInternalCamera;
 
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import java.util.ArrayList;
 
@@ -72,7 +66,7 @@ public class AprilTagAutonomousInitDetectionExample extends LinearOpMode {
     OpenCvCamera camera;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
 
-    SampleMecanumDrive drive = null;
+    RobohawksMecanumDrive drive = null;
 
     int ctr = 1;
 
@@ -112,7 +106,7 @@ public class AprilTagAutonomousInitDetectionExample extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        drive = new SampleMecanumDrive(hardwareMap);
+        drive = new RobohawksMecanumDrive(hardwareMap);
 
 
         Trajectory one = drive.trajectoryBuilder(new Pose2d())
