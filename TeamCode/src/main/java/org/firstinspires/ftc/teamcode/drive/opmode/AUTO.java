@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.AprilTagDetectionPipeline;
+import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -53,9 +54,10 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
     int conesUp = 0;
 
     Trajectory forwards = null;
-    Trajectory right1 = null;
+    //Trajectory right1 = null;
     Trajectory left = null;
     Trajectory right = null;
+    Trajectory onceUp = null;
 
     @Override
     public void LeftAndDump(){
@@ -168,11 +170,17 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
 
 
     @Override
-    public void FirstCone(){
+    public void FirstCone() throws InterruptedException {
 
-
+        drive.moveTestServo(.5);
+        Thread.sleep(500);
+        drive.LinearSlideToStop2(10,30,0);
         drive.followTrajectory(forwards);
-        //drive.LinearSlideToStop2(3,35,0);
+        drive.LinearSlideToStop2(3,35,0);
+        drive.susanToEncoderPosition(-190);
+        //Thread.sleep(1000);
+        drive.followTrajectory(onceUp);
+        drive.moveTestServo(.25);
         //drive.susanToEncoderPosition(2000);
         //Thread.sleep(x);
         //drive.moveTestServo(1);
@@ -182,24 +190,44 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
 
 
     @Override
-    public void runOpMode() {
+    public void runOpMode() throws InterruptedException {
 
         drive = new SampleMecanumDrive(hardwareMap);
 
+        drive.ResetSusan();
 
-        forwards = drive.trajectoryBuilder(new Pose2d(36, -60,Math.toRadians(90)))
-                .lineTo( new Vector2d(36,-12))
+        forwards = drive.trajectoryBuilder(new Pose2d())
+
+                .lineTo( new Vector2d(53.511,-1.64)/*,
+                        drive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        drive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)*/
+                )
                 .build();
-        right1 = drive.trajectoryBuilder(forwards.end())
-                .lineTo(new Vector2d(60,-12))
+        /*right1 = drive.trajectoryBuilder(forwards.end())
+                .lineTo( new Vector2d(60,-12),
+                        drive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        drive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+                )
+                .build();*/
+        onceUp = drive.trajectoryBuilder(forwards.end())
+                .lineTo(new Vector2d(55,-2.75),
+                        drive.getVelocityConstraint(2, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        drive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+                )
                 .build();
-        left = drive.trajectoryBuilder(right1.end())
-                .lineTo(new Vector2d(12,-12))
+
+        left = drive.trajectoryBuilder(new Pose2d(50,0,Math.toRadians(90)))
+                .lineTo( new Vector2d(50.0001,24),
+                        drive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        drive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+                )
                 .build();
         right = drive.trajectoryBuilder(left.end())
-                .lineTo(new Vector2d(60,-12))
+                .lineTo( new Vector2d(50,0),
+                        drive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        drive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+                )
                 .build();
-
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
@@ -336,14 +364,22 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
         if(tagOfInterest == null)
         {
             FirstCone();
+           /* drive.turn(Math.toRadians(90));
+            Thread.sleep(50);
             LeftAndDump();
+            Thread.sleep(50);
             RightAndPickup();
+            Thread.sleep(50);
             LeftAndDump();
+            Thread.sleep(50);
             RightAndPickup();
+            Thread.sleep(50);
             LeftAndDump();
+            Thread.sleep(50);
             RightAndPickup();
-            LeftAndDump();
-            Park(2);
+            Thread.sleep(50);
+            LeftAndDump();*/
+            //Park(2);
         }
         else {
             FirstCone();
@@ -354,14 +390,15 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
             LeftAndDump();
             RightAndPickup();
             LeftAndDump();
-            Park(NumberOfTag);
+            //Park(NumberOfTag);
 
 
         }
 
 
         /* You wouldn't have this in your autonomous, this is just to prevent the sample from ending */
-        while (opModeIsActive()) {sleep(20);}
+        //while (opModeIsActive()) {sleep(20);}
+
     }
 
     void tagToTelemetry(AprilTagDetection detection)

@@ -61,7 +61,7 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
     public int bottomStop = 15;//bottom, stop here
     public int lowStop = 1000;
     public int midStop = 1800;
-    public int tallStop= 2550;//placeholder value because8 slide isn't currently tall enough to reach the "tallStop"
+    public int tallStop= 2550;//placeholder value because slide isn't currently tall enough to reach the "tallStop"
     public int tooTall = 2970;//max height
     public int target = 0;//placeholder here, gets used in function LinearSlideToStop()
     public boolean slide = false;
@@ -70,8 +70,8 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
     public boolean turn = false;
     public boolean down1 = false;
 
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(3, 0, 1);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(3, 0, 1);
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(10, 0, 1);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(7, 0, 1);
 
     public static double LATERAL_MULTIPLIER = 1.66;
 

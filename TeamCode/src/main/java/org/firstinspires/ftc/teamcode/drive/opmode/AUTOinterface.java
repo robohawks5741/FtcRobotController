@@ -11,5 +11,5 @@ public interface AUTOinterface {
 
     void Park(int location);
 
-    void FirstCone();
+    void FirstCone() throws InterruptedException;
 }
