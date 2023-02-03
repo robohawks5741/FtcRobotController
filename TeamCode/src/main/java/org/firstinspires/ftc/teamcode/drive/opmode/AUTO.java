@@ -185,6 +185,7 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
         drive.followTrajectory(left);
         Thread.sleep(1000);
         drive.LinearSlideToStop2(9,35,0);
+        Thread.sleep(200);
         drive.moveTestServo(.25);
        /* drive.LinearSlideToStop2(10,20,0);
         drive.susanToEncoderPosition(0);
