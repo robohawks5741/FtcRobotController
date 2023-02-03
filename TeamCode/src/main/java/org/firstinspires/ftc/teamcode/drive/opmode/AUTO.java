@@ -58,6 +58,7 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
     Trajectory left = null;
     Trajectory right = null;
     Trajectory onceUp = null;
+    Trajectory toCones = null;
 
     @Override
     public void LeftAndDump(){
@@ -173,14 +174,26 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
     public void FirstCone() throws InterruptedException {
 
         drive.moveTestServo(.5);
-        Thread.sleep(500);
+        Thread.sleep(700);
         drive.LinearSlideToStop2(10,30,0);
         drive.followTrajectory(forwards);
+        drive.turn(Math.toRadians(90));
         drive.LinearSlideToStop2(3,35,0);
-        drive.susanToEncoderPosition(-190);
-        //Thread.sleep(1000);
-        drive.followTrajectory(onceUp);
+        drive.followTrajectory(right);
+        drive.susanToEncoderPosition(462);
+        Thread.sleep(1700);
+        drive.followTrajectory(left);
+        Thread.sleep(1000);
+        drive.LinearSlideToStop2(9,35,0);
         drive.moveTestServo(.25);
+       /* drive.LinearSlideToStop2(10,20,0);
+        drive.susanToEncoderPosition(0);
+        drive.followTrajectory(toCones);
+        Thread.sleep(250);
+        drive.moveTestServo(.5);
+        Thread.sleep(500); */
+
+
         //drive.susanToEncoderPosition(2000);
         //Thread.sleep(x);
         //drive.moveTestServo(1);
@@ -198,7 +211,7 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
 
         forwards = drive.trajectoryBuilder(new Pose2d())
 
-                .lineTo( new Vector2d(53.511,-1.64)/*,
+                .lineTo( new Vector2d(50,0)/*,
                         drive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         drive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)*/
                 )
@@ -209,25 +222,34 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
                         drive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
                 .build();*/
+
         onceUp = drive.trajectoryBuilder(forwards.end())
-                .lineTo(new Vector2d(55,-2.75),
+                .lineTo(new Vector2d(56,-3),
                         drive.getVelocityConstraint(2, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         drive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
                 .build();
 
-        left = drive.trajectoryBuilder(new Pose2d(50,0,Math.toRadians(90)))
-                .lineTo( new Vector2d(50.0001,24),
+        right = drive.trajectoryBuilder(forwards.end().plus(new Pose2d(0, 0, Math.toRadians(90))))
+                .lineTo( new Vector2d(50,-10.6),
                         drive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         drive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
                 .build();
-        right = drive.trajectoryBuilder(left.end())
-                .lineTo( new Vector2d(50,0),
+
+        left = drive.trajectoryBuilder(right.end())
+                .lineTo( new Vector2d(50.5,-9.6),
                         drive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         drive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
                 .build();
+        toCones = drive.trajectoryBuilder(left.end())
+                .lineTo( new Vector2d(48,22),
+                    drive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                    drive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+                )
+                .build();
+
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);

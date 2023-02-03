@@ -61,8 +61,9 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
     public int bottomStop = 15;//bottom, stop here
     public int lowStop = 1000;
     public int midStop = 1800;
-    public int tallStop= 2550;//placeholder value because slide isn't currently tall enough to reach the "tallStop"
+    public int tallStop= 2750;//placeholder value because slide isn't currently tall enough to reach the "tallStop"
     public int tooTall = 2970;//max height
+    public int insert = 2600;
     public int target = 0;//placeholder here, gets used in function LinearSlideToStop()
     public boolean slide = false;
     public int hopStop = 270;
@@ -518,6 +519,9 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
             else if(stop == 10){
                 target = hopStop;
             }
+            else if(stop == 9){
+                target = insert;
+            }
         }
         else if (conesUp != 0 && stop == 0){
             target = bottomStop-(25*conesUp);
@@ -544,7 +548,7 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
     @Override
     public void susanToEncoderPosition(int pos){
         lazySusan.setTargetPositionTolerance(20);
-        lazySusan.setTargetPosition(target);
+        lazySusan.setTargetPosition(pos);
         lazySusan.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         lazySusan.setPower(.4);
     }
