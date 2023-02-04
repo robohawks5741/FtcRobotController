@@ -77,10 +77,8 @@ public class RobohawksDriverControl extends OpMode {
         linearSlide.setPower(.7);
 
 
-        if(linearSlide.getCurrentPosition()<=target-tolerance||linearSlide.getCurrentPosition()>=target+tolerance) // This is how the program knows if it needs to call the function in the next loop to complete the move.
-            return false;
-        else
-            return true;
+        // This is how the program knows if it needs to call the function in the next loop to complete the move.
+        return linearSlide.getCurrentPosition() > target - tolerance && linearSlide.getCurrentPosition() < target + tolerance;
 
 
     }
@@ -195,7 +193,7 @@ public class RobohawksDriverControl extends OpMode {
 
             manualSusan = true; // Reports that LazySusan is operating manually, and requires stopping.
 
-            lazySusan.setPower((gamepad2.left_stick_x >= .05 ? -Math.pow(gamepad2.left_stick_x, 2)<=-.25 ? -.25 : -Math.pow(gamepad2.left_stick_x, 2) >= -.05 ? -.05 : -Math.pow(gamepad2.left_stick_x, 2) : Math.pow(gamepad2.left_stick_x, 2)>=.25 ? .25 : Math.pow(gamepad2.left_stick_x, 2)<=.05 ? .05 : Math.pow(gamepad2.left_stick_x, 2)));
+            lazySusan.setPower((gamepad2.left_stick_x >= .05 ? -Math.pow(gamepad2.left_stick_x, 2)<=-.25 ? -.25 : Math.min(-Math.pow(gamepad2.left_stick_x, 2), -.05) : Math.pow(gamepad2.left_stick_x, 2)>=.25 ? .25 : Math.max(Math.pow(gamepad2.left_stick_x, 2), .05)));
         }
         else if(manualSusan){ // If Susan was moved manually, stop when no longer receiving input.
 

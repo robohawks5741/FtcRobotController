@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.tests;
 
 import org.firstinspires.ftc.teamcode.gamepadyn.Gamepadyn;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
