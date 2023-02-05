@@ -59,6 +59,7 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
     Trajectory right = null;
     Trajectory onceUp = null;
     Trajectory toCones = null;
+    Trajectory toPole = null;
 
     @Override
     public void LeftAndDump(){
@@ -173,7 +174,7 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
     @Override
     public void FirstCone() throws InterruptedException {
 
-        drive.moveTestServo(.5);
+        drive.moveTestServo(.6);
         Thread.sleep(700);
         drive.LinearSlideToStop2(10,30,0);
         drive.followTrajectory(forwards);
@@ -187,12 +188,26 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
         drive.LinearSlideToStop2(9,35,0);
         Thread.sleep(200);
         drive.moveTestServo(.25);
-       /* drive.LinearSlideToStop2(10,20,0);
+        Thread.sleep(500);
+        drive.LinearSlideToStop2(7,10,conesUp);
+        conesUp++;
         drive.susanToEncoderPosition(0);
         drive.followTrajectory(toCones);
         Thread.sleep(250);
-        drive.moveTestServo(.5);
-        Thread.sleep(500); */
+        drive.moveTestServo(.6);
+        Thread.sleep(500);
+        drive.LinearSlideToStop2(1,20,conesUp);
+        Thread.sleep(500);
+        drive.followTrajectory(toPole);
+        drive.LinearSlideToStop2(3,30,0);
+        Thread.sleep(2000);
+        drive.susanToEncoderPosition(440);
+        Thread.sleep(750);
+        drive.LinearSlideToStop2(9,30,0);
+        Thread.sleep(250);
+        drive.moveTestServo(.25);
+
+
 
 
         //drive.susanToEncoderPosition(2000);
@@ -232,24 +247,31 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
                 .build();
 
         right = drive.trajectoryBuilder(forwards.end().plus(new Pose2d(0, 0, Math.toRadians(90))))
-                .lineTo( new Vector2d(50,-10.6),
+                .lineTo( new Vector2d(50,-7.2),
                         drive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         drive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
                 .build();
 
         left = drive.trajectoryBuilder(right.end())
-                .lineTo( new Vector2d(50.5,-9.6),
+                .lineTo( new Vector2d(51,-8.4),
                         drive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         drive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
                 .build();
         toCones = drive.trajectoryBuilder(left.end())
-                .lineTo( new Vector2d(48,22),
+                .lineTo( new Vector2d(46.8,25.5),
                     drive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                     drive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
                 .build();
+        toPole = drive.trajectoryBuilder(toCones.end())
+                .lineTo(new Vector2d(51,-8.4),
+                        drive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        drive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+                )
+                .build();
+
 
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
