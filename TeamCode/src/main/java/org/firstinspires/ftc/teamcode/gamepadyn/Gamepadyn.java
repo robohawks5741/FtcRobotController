@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.gamepadyn;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -38,7 +39,12 @@ public final class Gamepadyn {
         return gamepads[index].action(ua);
     }
 
-    @NonNull
+    /**
+     * Gets a reference to a gamepad.
+     * @param index The index of the gamepad. IMPORTANT! 0 is gamepad 1, 1 is gamepad 2!!!
+     * @return a reference to the gamepad
+     */
+    @Nullable
     @Contract(pure = true)
     public static Gamepad getGamepad(int index) {
         return gamepads[index];

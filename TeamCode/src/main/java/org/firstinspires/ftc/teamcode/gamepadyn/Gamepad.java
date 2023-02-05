@@ -7,13 +7,16 @@ import androidx.annotation.Nullable;
 
 import com.google.gson.Gson;
 
+import org.firstinspires.ftc.teamcode.R;
 import org.firstinspires.ftc.teamcode.gamepadyn.user.UserActions;
+import org.firstinspires.ftc.teamcode.gamepadyn.MappingObject;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.Arrays;
 import java.util.EnumMap;
+import java.util.Map;
 import java.util.Objects;
 
 // Returned by Gamepadyn.getGamepad()
@@ -24,34 +27,84 @@ public final class Gamepad {
         return Objects.requireNonNull(actionSources.get(ua));
     }
 
-    /**
-     * Loads a configuration from a JSON file.
-     * @param cfgName The configuration name.
-     */
-    public void loadFileConfiguration(@Nullable String cfgName) throws FileNotFoundException {
-        if (cfgName == null) {
-            configJson = null;
-            configName = null;
-        } else {
+    @SuppressWarnings("rawtypes")
+    public void loadConfigurationResource(String id) {
+        try {
             Context ctx = Gamepadyn.currentOpmode.hardwareMap.appContext;
-            File file = new File(ctx.getFilesDir(), cfgName);
-            FileReader fr = new FileReader(file);
+//        ctx.getResources().openRawResource()
             Gson gs = new Gson();
             MappingObject ic = gs.fromJson(fr, MappingObject.class);
+            System.out.println("Made it past creating a mapping object");
+            System.out.println(ic);
+            String json = gs.toJson(ic);
+            System.out.println(json);
+
+            for (Map.Entry<String, Map<String, Object>> e : ic.maps.entrySet()) {
+                Class c;
+                switch (e.getKey()) {
+                    case "fd":
+                    case "fr":
+                    case "fl":
+                    case "fu":
+                    case "du":
+                    case "dd":
+                    case "dl":
+                    case "dr":
+                    case "br":
+                    case "bl":
+                    case "slb":
+                    case "srb":
+                        c = MappingObject.DigitalMap.class;
+                        break;
+                    case "tr":
+                    case "tl":
+                    case "sl":
+                    case "sr":
+                        c = MappingObject.AnalogMap.class;
+                        break;
+                    default:
+                        // this is bad
+                        c = Object.class;
+                }
+
+                Object o;
+
+                // TODO: add cases for every mode
+                switch (c) {
+                    case MappingObject.DigitalMap.class: {
+                        MappingObject.DigitalMap dm = new MappingObject.DigitalMap();
+                        String mode = (String) e.getValue().get("mode");
+                        switch (Objects.requireNonNull(mode)) {
+                            case "TRIGGER": {
+                                String a = (String) e.getValue().get("action");
+                                o = new MappingActionDigital(
+                                        MappingActionDigital.Mode.TRIGGER,
+                                        UserActions.valueOf(a)
+                                );
+                                break;
+                            }
+                            case "ANALOG_MAP": {
+                                String a = Objects.requireNonNull((String) e.getValue().get("action"));
+                                String dv = Objects.requireNonNull((String) e.getValue().get("depressedValue"));
+                                String rv = (String) e.getValue().get("releasedValue");
+                                String ax = Objects.requireNonNull((String) e.getValue().get("axis"));
+                                o = new MappingActionDigital(
+                                        MappingActionDigital.Mode.ANALOG_MAP,
+                                        UserActions.valueOf(a)
+                                        Float.parseFloat() || null,
+                                        Integer.parseInt(ax)
+                                );
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                System.out.println(gs.toJson(c.cast(e.getValue())));
+            }
+        } catch (Exception e) {
+            System.err.println(e);
         }
-
-
-//        throw new FileNotFoundException();
-    }
-
-    /**
-     * Where {@link #loadFileConfiguration(String) loadFileConfiguration()} loads a configuration with a file,
-     * {@link #loadJsonConfiguration(MappingObject)  loadJsonConfiguration()} loads a configuration from a pre-parsed object.
-     * You probably won't find much use for this, {@link #loadJsonConfiguration(MappingObject)   loadJsonConfiguration()} uses it internally but that's about it.
-     * @param mo The mapping object.
-     */
-    @SuppressWarnings("JavaDoc")
-    public void loadJsonConfiguration(MappingObject mo) throws Exception {
     }
 
     /**

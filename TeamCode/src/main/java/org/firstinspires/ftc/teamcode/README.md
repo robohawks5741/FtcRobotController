@@ -8,20 +8,17 @@ To remedy this (besides some other stuff), I wanted to document a high-level ove
 
 ### Java Files
 
-Not packages, but classes/interfaces/enums that are our "real" code.
+Not packages, but classes/interfaces/enums that have the meat of our code.
 
 ```
 ───┐ org.firstinspires.ftc.teamcode
-   ├─── RobohawksDriveConstants
-   ├─── RobohawksMecanumDrive
-   ├─── RobohawksTeleOp
-   └─── ThreadDebug
+   └──┐ drive
+      ├─── RobohawksDriveConstants
+      ├─── RobohawksMecanumDrive
+      └──┐ opmode
+         ├─── RobohawksAutonomous
+         └─── RobohawksTeleOp
 ```
-
-- `RobohawksDriveConstants` contains our drive constants (wow)
-- `RobohawksMecanumDrive` contains some weird Roadrunner stuff similar to drive constants
-- `RobohawksTeleOp` is our actual TeleOp OpMode
-- `ThreadDebug` is just something I've been cooking up to debug some multi-threading issues.
 
 ### Roadrunner Packages
 
@@ -69,11 +66,11 @@ LSD stands for Linear Slide Driver. It's a wrapper around our linear slide.
    └─── lsd
 ```
 
-### Arbiter
+### HD
 
 The wrapper for the halo. Haven't done any work on it yet, but that's soon.
 
 ```
 ───┐ org.firstinspires.ftc.teamcode
-   └─── arbiter
+   └─── hd
 ```

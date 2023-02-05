@@ -2,7 +2,7 @@
     "$schema": "http://json-schema.org/schema",
     "$id": "gamepadyn-config",
     "title": "Gamepadyn Configuration Schema",
-    "description": "A configuration for an individual controller.",
+    "description": "A configuration for an individual controller. DO NOT modify!",
     "type": "object",
     "properties": {
         "description": {

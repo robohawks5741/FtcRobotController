@@ -32,21 +32,26 @@ public final class MappingActionDigital extends MappingAction {
 
     public Float offsetRate = null;
 
-    MappingActionDigital(MappingActionDigital.Mode modes, UserActions action, float depressedValue, float releasedValue, int axis) {
-        this(modes, action);
+    MappingActionDigital(MappingActionDigital.Mode mode, UserActions action, float depressedValue, @Nullable Float releasedValue, int axis) throws Exception {
+        if (mode != MappingActionDigital.Mode.ANALOG_MAP) throw new Exception("Mismatched mode, expected ANALOG_MAP!");
+        this.mode = mode;
+        this.action = action;
         this.depressedValue = depressedValue;
         this.releasedValue = releasedValue;
         this.axis = axis;
     }
 
-    MappingActionDigital(MappingActionDigital.Mode modes, UserActions action, float offsetRate, int axis) {
-        this(modes, action);
+    MappingActionDigital(MappingActionDigital.Mode mode, UserActions action, float offsetRate, int axis) throws Exception {
+        if (mode != MappingActionDigital.Mode.ANALOG_OFFSET) throw new Exception("Mismatched mode, expected ANALOG_OFFSET!");
+        this.mode = mode;
+        this.action = action;
         this.offsetRate = offsetRate;
         this.axis = axis;
     }
 
-    MappingActionDigital(MappingActionDigital.Mode modes, UserActions action) {
-        this.mode = modes;
+    MappingActionDigital(MappingActionDigital.Mode mode, UserActions action) throws Exception {
+        if (mode != MappingActionDigital.Mode.TRIGGER) throw new Exception("Mismatched mode, expected TRIGGER!");
+        this.mode = mode;
         this.action = action;
     }
 }

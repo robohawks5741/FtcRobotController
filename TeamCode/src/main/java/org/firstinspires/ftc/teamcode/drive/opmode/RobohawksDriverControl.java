@@ -11,6 +11,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.drive.RobohawksMecanumDrive;
+import org.firstinspires.ftc.teamcode.gamepadyn.Gamepad;
+import org.firstinspires.ftc.teamcode.gamepadyn.Gamepadyn;
 
 /**
  * This is a simple teleop routine for testing localization. Drive the robot around like a normal
@@ -131,6 +133,9 @@ public class RobohawksDriverControl extends OpMode {
 
         lazySusan.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE); //Sets HALO to brake mode.
         lazySusan.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        Gamepad gamepad1 = Gamepadyn.getGamepad(1);
+
     }
 
     @Override

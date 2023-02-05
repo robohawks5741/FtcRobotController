@@ -1,13 +1,5 @@
 package org.firstinspires.ftc.teamcode.gamepadyn;
 
-// import java.util.EnumMap;
-import android.util.Pair;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import org.firstinspires.ftc.teamcode.gamepadyn.user.UserActions;
-
 import java.util.Map;
 
 // RawGamepadInput MappingAction
@@ -26,7 +18,6 @@ class MappingObject {
         //    Analog Offset settings
         public Float offsetRate = null;
     }
-
     public static class AxisMap {
         public Float axisScale;
         // key is one of UserActions.name()
@@ -42,13 +33,13 @@ class MappingObject {
         //    Shared Settings
         public Float[] inputScale;
         public Float[] inputOffset;
-//    One to One Axis settings
-        public UserActions action;
-//    Split Axis settings
+        //    One to One Axis settings
+        public String action;
+        //    Split Axis settings
         public AxisMap[] axisMaps;
     }
 
     public String description;
-    public Map<DummyMap, String> maps;
+    public Map<String, Map<String, Object>> maps;
     // MappingObject() {}
 }
