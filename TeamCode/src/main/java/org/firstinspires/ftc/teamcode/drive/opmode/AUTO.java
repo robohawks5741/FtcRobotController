@@ -254,19 +254,19 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
                 .build();
 
         left = drive.trajectoryBuilder(right.end())
-                .lineTo( new Vector2d(51,-8.4),
+                .lineTo( new Vector2d(51,-10.4),
                         drive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         drive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
                 .build();
         toCones = drive.trajectoryBuilder(left.end())
-                .lineTo( new Vector2d(46.8,25.5),
+                .lineTo( new Vector2d(46.8,24.2),
                     drive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                     drive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
                 .build();
         toPole = drive.trajectoryBuilder(toCones.end())
-                .lineTo(new Vector2d(51,-8.4),
+                .lineTo(new Vector2d(51,-10.4),
                         drive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         drive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
