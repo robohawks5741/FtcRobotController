@@ -77,7 +77,7 @@ public class RobohawksAutonomous extends LinearOpMode {
 
         double targetX = 0;
         double targetY = 0;
-        double points[][] = {};
+        double[][] points = {};
         double centerX1 = 12 - position.getX();
         double centerX2 = 36 - position.getX();
         double centerX3 = 60 - position.getX();
@@ -141,8 +141,7 @@ public class RobohawksAutonomous extends LinearOpMode {
             destination = new Pose2d(36,-36);
         else if(location == 3)
             destination = new Pose2d(60 ,-36);
-        else if(true)
-            destination = new Pose2d(36,-36);
+        else destination = new Pose2d(36,-36);
 
 
         Vector2d x = new Vector2d(destination.getX() , drive.getPoseEstimate().getY()+.001);

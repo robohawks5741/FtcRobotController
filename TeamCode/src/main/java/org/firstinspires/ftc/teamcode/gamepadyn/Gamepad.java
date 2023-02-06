@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.gamepadyn;
 
 import android.content.Context;
+import android.content.res.Resources;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,10 +15,14 @@ import org.firstinspires.ftc.teamcode.gamepadyn.MappingObject;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 // Returned by Gamepadyn.getGamepad()
 public final class Gamepad {
@@ -31,9 +36,10 @@ public final class Gamepad {
     public void loadConfigurationResource(String id) {
         try {
             Context ctx = Gamepadyn.currentOpmode.hardwareMap.appContext;
-//        ctx.getResources().openRawResource()
+            //  R.raw.
+            InputStreamReader inStream = new InputStreamReader(ctx.getResources().openRawResource(R.raw.lower));
             Gson gs = new Gson();
-            MappingObject ic = gs.fromJson(fr, MappingObject.class);
+            MappingObject ic = gs.fromJson(inStream, MappingObject.class);
             System.out.println("Made it past creating a mapping object");
             System.out.println(ic);
             String json = gs.toJson(ic);
@@ -69,14 +75,16 @@ public final class Gamepad {
 
                 Object o;
 
-                // TODO: add cases for every mode
+                // TODO: add cases for every mode and change c to an enum
                 switch (c) {
+
                     case MappingObject.DigitalMap.class: {
                         MappingObject.DigitalMap dm = new MappingObject.DigitalMap();
-                        String mode = (String) e.getValue().get("mode");
+                        Map<String, Object> obj = e.getValue();
+                        String mode = (String) obj.get("mode");
                         switch (Objects.requireNonNull(mode)) {
                             case "TRIGGER": {
-                                String a = (String) e.getValue().get("action");
+                                String a = (String) obj.get("action");
                                 o = new MappingActionDigital(
                                         MappingActionDigital.Mode.TRIGGER,
                                         UserActions.valueOf(a)
@@ -84,14 +92,27 @@ public final class Gamepad {
                                 break;
                             }
                             case "ANALOG_MAP": {
-                                String a = Objects.requireNonNull((String) e.getValue().get("action"));
-                                String dv = Objects.requireNonNull((String) e.getValue().get("depressedValue"));
-                                String rv = (String) e.getValue().get("releasedValue");
-                                String ax = Objects.requireNonNull((String) e.getValue().get("axis"));
+                                String a = Objects.requireNonNull((String) obj.get("action"));
+                                String dv = Objects.requireNonNull((String) obj.get("depressedValue"));
+                                String rv = (String) obj.get("releasedValue");
+                                String ax = Objects.requireNonNull((String) obj.get("axis"));
                                 o = new MappingActionDigital(
                                         MappingActionDigital.Mode.ANALOG_MAP,
-                                        UserActions.valueOf(a)
-                                        Float.parseFloat() || null,
+                                        UserActions.valueOf(a),
+                                        Float.parseFloat(dv),
+                                        (rv == null ? null : Float.parseFloat(rv)),
+                                        Integer.parseInt(ax)
+                                );
+                                break;
+                            }
+                            case "ANALOG_OFFSET": {
+                                String a = Objects.requireNonNull((String) obj.get("action"));
+                                String or = Objects.requireNonNull((String) obj.get("offsetRate"));
+                                String ax = Objects.requireNonNull((String) obj.get("axis"));
+                                o = new MappingActionDigital(
+                                        MappingActionDigital.Mode.ANALOG_OFFSET,
+                                        UserActions.valueOf(a),
+                                        Float.parseFloat(or),
                                         Integer.parseInt(ax)
                                 );
                                 break;
@@ -100,10 +121,10 @@ public final class Gamepad {
                     }
                 }
 
-                System.out.println(gs.toJson(c.cast(e.getValue())));
+                System.out.println(gs.toJson(c.cast(obj)));
             }
         } catch (Exception e) {
-            System.err.println(e);
+            Logger.getAnonymousLogger().log(Level.SEVERE, "exception thrown when loading configuration from resource", e);
         }
     }
 

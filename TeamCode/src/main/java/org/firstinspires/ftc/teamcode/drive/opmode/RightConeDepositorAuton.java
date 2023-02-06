@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.drive.opmode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.drive.RobohawksMecanumDrive;
+import org.firstinspires.ftc.teamcode.hd.HD;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
@@ -25,14 +26,14 @@ public class RightConeDepositorAuton extends LinearOpMode {
         drive.followTrajectory(left);
         drive.moveTestServo(1);
         drive.LinearSlideToStop(0,conesUp,25,35);
-        drive.MoveSusan(0);
+        HD.setSpeed(0);
     }
 
     public void RightAndPickup(){
         drive.followTrajectory(right);
         drive.moveTestServo(.5);
         drive.LinearSlideToStop(3,conesUp,25,35);
-        drive.MoveSusan(60);
+        HD.setSpeed(60);
         conesUp++;
     }
 
@@ -123,21 +124,21 @@ public class RightConeDepositorAuton extends LinearOpMode {
         drive.followTrajectory(parkX);
     }
 
-
     public void FirstCone(){
-        drive.susanToEncoderPosition(2000);
+        HD.setTargetRotation(2000);
         drive.LinearSlideToStop(3,0,25,35);
         drive.followTrajectory(forwards);
         drive.moveTestServo(1);
-        drive.susanToEncoderPosition(0);
+        HD.setTargetRotation(0);
         drive.LinearSlideToStop(0,0,25,35);
     }
-
 
     @Override
     public void runOpMode() throws InterruptedException {
 
         drive = new RobohawksMecanumDrive(hardwareMap);
+
+        HD.init(this);
 
         Trajectory forwards = drive.trajectoryBuilder(new Pose2d()) //todo fix coordinates
                 .lineTo( new Vector2d(0,48))
@@ -152,11 +153,6 @@ public class RightConeDepositorAuton extends LinearOpMode {
                 .lineTo(new Vector2d(0,72))
                 .build();
 
-
-        while (!isStarted() && !isStopRequested()){
-
-        }
-
         while(opModeIsActive()) {
             FirstCone();
             LeftAndDump();
@@ -167,7 +163,8 @@ public class RightConeDepositorAuton extends LinearOpMode {
             RightAndPickup();
             LeftAndDump();
             Park(1);
-
         }
+
+        HD.cleanup();
     }
 }

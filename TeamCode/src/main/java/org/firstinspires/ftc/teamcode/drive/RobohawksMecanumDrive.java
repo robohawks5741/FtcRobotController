@@ -63,7 +63,7 @@ public class RobohawksMecanumDrive extends MecanumDrive {
     public int midStop = 1800;
     public int tallStop= 2550;//placeholder value because slide isn't currently tall enough to reach the "tallStop"
     public int tooTall = 2970;//max height
-    public int target = 0;//placeholder here, gets used in function LinearSlideToStop()
+    public int target = 0; //placeholder here, gets used in function LinearSlideToStop()
     public boolean slide = false;
     public int hopStop = 270;
     public boolean off = false;
@@ -86,10 +86,9 @@ public class RobohawksMecanumDrive extends MecanumDrive {
 
     public TrajectoryFollower follower;
 
-    private DcMotorEx lazySusan, leftRear, rightRear, rightFront, linearSlide, leftEncoder, rightEncoder, frontEncoder;
-    private List<DcMotorEx> motors;
-    private Servo clawServo, penetrationServo;
-
+    DcMotorEx motorRearLeft, motorRearRight, motorFrontRight, motorLinearSlide, motorEncoderLeft, motorEncoderRight, motorEncoderFront;
+    final ArrayList<DcMotorEx> motors;
+    private Servo servoClaw;
     private BNO055IMU imu;
     private VoltageSensor batteryVoltageSensor;
 
@@ -109,10 +108,12 @@ public class RobohawksMecanumDrive extends MecanumDrive {
         }
 
         // done: adjust the names of the following hardware devices to match your configuration
-        /*imu = hardwareMap.get(BNO055IMU.class, "imu");
+        /*
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
-        imu.initialize(parameters);*/
+        imu.initialize(parameters);
+        */
 
         // not needed: If the hub containing the IMU you are using is mounted so that the "REV" logo does
         // not face up, remap the IMU axes so that the z-axis points upward (normal to the floor.)
@@ -136,41 +137,35 @@ public class RobohawksMecanumDrive extends MecanumDrive {
         // For example, if +Y in this diagram faces downwards, you would use AxisDirection.NEG_Y.
         // BNO055IMUUtil.remapZAxis(imu, AxisDirection.NEG_Y);
 
-        lazySusan = hardwareMap.get(DcMotorEx.class, "lazySusan");
-        leftRear = hardwareMap.get(DcMotorEx.class, "leftRear");
-        rightRear = hardwareMap.get(DcMotorEx.class, "rightRear");
-        rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
+        // TODO: set the hardware map names to match the variable names
+        motorRearLeft = hardwareMap.get(DcMotorEx.class, "leftRear");
+        motorRearRight = hardwareMap.get(DcMotorEx.class, "rightRear");
+        motorFrontRight = hardwareMap.get(DcMotorEx.class, "rightFront");
 
-        linearSlide = hardwareMap.get(DcMotorEx.class, "linearSlide");
-        leftEncoder =  hardwareMap.get(DcMotorEx.class, "leftEncoder");
-        rightEncoder = hardwareMap.get(DcMotorEx.class, "rightEncoder");
-        frontEncoder = hardwareMap.get(DcMotorEx.class,"frontEncoder");
+        motorLinearSlide = hardwareMap.get(DcMotorEx.class, "linearSlide");
+        motorEncoderLeft =  hardwareMap.get(DcMotorEx.class, "leftEncoder");
+        motorEncoderRight = hardwareMap.get(DcMotorEx.class, "rightEncoder");
+        motorEncoderFront = hardwareMap.get(DcMotorEx.class,"frontEncoder");
 
-        clawServo = hardwareMap.get(Servo.class, "clawServo");
-        penetrationServo = hardwareMap.get(Servo.class,"penetrationServo");
+        servoClaw = hardwareMap.get(Servo.class, "clawServo");
 
-        //added, testing
-        motors = Arrays.asList(lazySusan, leftRear, rightRear, rightFront, linearSlide, leftEncoder, rightEncoder, frontEncoder);
-        //added linear slide to these.
+        // added, testing
+        motors = new ArrayList<>(Arrays.asList(motorRearLeft, motorRearRight, motorFrontRight, motorLinearSlide, motorEncoderLeft, motorEncoderRight, motorEncoderFront));
+
+        // added linear slide to these.
         for (DcMotorEx motor : motors) {
             MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
             motorConfigurationType.setAchieveableMaxRPMFraction(1.0);
             motor.setMotorType(motorConfigurationType);
         }
 
-        if (RUN_USING_ENCODER) {
-            setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        }
-        for (DcMotorEx motor :motors) {
-            setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        }
-        if (RUN_USING_ENCODER && MOTOR_VELO_PID != null) {
-            setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, MOTOR_VELO_PID);
-        }
+        if (RUN_USING_ENCODER) setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        for (DcMotorEx motor : motors) motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        if (RUN_USING_ENCODER && MOTOR_VELO_PID != null) setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, MOTOR_VELO_PID);
 
         // done: reverse any motors using DcMotor.setDirection()
-        frontEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
+        motorEncoderFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        motorRearLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // TODO: if desired, use setLocalizer() to change the localization method
         setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap));
@@ -233,10 +228,6 @@ public class RobohawksMecanumDrive extends MecanumDrive {
         waitForIdle();
     }
 
-    public Pose2d getLastError() {
-        return trajectorySequenceRunner.getLastPoseError();
-    }
-
     public void update() {
         updatePoseEstimate();
         DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
@@ -258,12 +249,6 @@ public class RobohawksMecanumDrive extends MecanumDrive {
         }
     }
 
-    public void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior zeroPowerBehavior) {
-        for (DcMotorEx motor : motors) {
-            motor.setZeroPowerBehavior(zeroPowerBehavior);
-        }
-    }
-
     public void setPIDFCoefficients(DcMotor.RunMode runMode, PIDFCoefficients coefficients) {
         PIDFCoefficients compensatedCoefficients = new PIDFCoefficients(
                 coefficients.p, coefficients.i, coefficients.d,
@@ -278,20 +263,21 @@ public class RobohawksMecanumDrive extends MecanumDrive {
     public void setWeightedDrivePower(Pose2d drivePower) {
         Pose2d vel = drivePower;
 
-        if (abs(drivePower.getX()) + abs(drivePower.getY())
-                + abs(drivePower.getHeading()) > 1) {
+        if (
+            abs(drivePower.getX()) + abs(drivePower.getY())
+            + abs(drivePower.getHeading()) > 1
+        ) {
             // re-normalize the powers according to the weights
             double denom = VX_WEIGHT * abs(drivePower.getX())
-                    + VY_WEIGHT * abs(drivePower.getY())
-                    + OMEGA_WEIGHT * abs(drivePower.getHeading());
+                + VY_WEIGHT * abs(drivePower.getY())
+                + OMEGA_WEIGHT * abs(drivePower.getHeading());
 
             vel = new Pose2d(
-                    VX_WEIGHT * drivePower.getX(),
-                    VY_WEIGHT * drivePower.getY(),
-                    OMEGA_WEIGHT * drivePower.getHeading()
+                VX_WEIGHT * drivePower.getX(),
+                VY_WEIGHT * drivePower.getY(),
+                OMEGA_WEIGHT * drivePower.getHeading()
             ).div(denom);
         }
-
         setDrivePower(vel);
     }
 
@@ -314,59 +300,47 @@ public class RobohawksMecanumDrive extends MecanumDrive {
         return wheelVelocities;
     }
 
+
     @Override
     public void setMotorPowers(double v, double v1, double v2, double v3) {
-        frontEncoder.setPower(v);
-        leftRear.setPower(v1);
-        rightRear.setPower(v2);
-        rightFront.setPower(v3);
-    }
-
-    public void holdSlides(){
-        if (LinearSlidePos()>512)
-            setLinearSlide(0.17);
-    }
-
-    public void setLinearSlide(double linearPower)  {
-        //double LSstartPosition = linearSlide.getCurrentPosition();
-        linearSlide.setPower(linearPower);
-        leftEncoder.setPower(-linearPower);
-
+        motorEncoderFront.setPower(v);
+        motorRearLeft.setPower(v1);
+        motorRearRight.setPower(v2);
+        motorFrontRight.setPower(v3);
     }
 
     public boolean LinearSlideToStop(int stop, int conesUp, double power, int tolerance){ //TODO: Add recursion with a tolerance var to make this as accurate as possible, requires good rope tension for up and down.
-        linearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftEncoder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        linearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftEncoder.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorLinearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorEncoderLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorLinearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorEncoderLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        double rawProximity = 0;
-        double proximityMultiplier1 = 0;
-        double proximityMultiplierCorrector = 0;
-        double velo = 0;
-        double calculatedPower =0;
-        double correctedVelocity = 0;
-        double LSspeed = 0;
+        double rawProximity;
+        double proximityMultiplier1;
+        double proximityMultiplierCorrector;
+        double velo;
+        double calculatedPower;
+        double correctedVelocity;
+        double LSspeed;
 
-        if (conesUp == 0 || stop !=0) {
-
-
-            if (stop == 1) {
-                target = lowStop;
-            }
-            else if (stop == 2) {
-                target = midStop;
-            }
-            else if (stop == 3) {
-                target = tallStop;
-            }
-            else if (stop == 0) {
+        if (conesUp == 0 || stop != 0) switch (stop) {
+            case 0: {
                 target = bottomStop;
+                break;
             }
-        }
-        else if (conesUp != 0 && stop == 0){
-            target = lowStop-(25*conesUp);
-        }
+            case 1: {
+                target = lowStop;
+                break;
+            }
+            case 2: {
+                target = midStop;
+                break;
+            }
+            case 3: {
+                target = tallStop;
+                break;
+            }
+        } else target = lowStop - (25 * conesUp);
         //above sets the target encoder position specified by the user input "stop"
         //----------------------------------------------------------------------------------------
         if(LinearSlidePos()<=target){
@@ -376,17 +350,14 @@ public class RobohawksMecanumDrive extends MecanumDrive {
                 calculatedPower = rawProximity/proximityMultiplier1; // If the slide is under 500 ticks to its destination, the variable calculatedPower is set to: the distance to the destination divided by 350. If the slide is not within 500 ticks, The value is just 1.
                 proximityMultiplierCorrector = (calculatedPower > 1 ? calculatedPower : 1); // This lets the next line know if the multiplier value is over 1, and sends the correct value to change it to exactly one if it is over one.
                 velo = calculatedPower/proximityMultiplierCorrector; // This turns multiplier values over 1 to one using the value provided by the above line.
-                correctedVelocity = (velo < .4 ? .4 : velo); // this makes sure that the multiplier value doesn't go below .4.
+                correctedVelocity = Math.max(velo, 0.4); // this makes sure that the multiplier value doesn't go below .4.
                 //velo = (proximityMultiplier1/proximityMultiplierCorrector)*power;
                 LSspeed = power*correctedVelocity;
                 //LSspeed = 1;
-                linearSlide.setPower(LSspeed);
+                motorLinearSlide.setPower(LSspeed);
                 //leftEncoder.setPower(-LSspeed);
 
-                if(LinearSlidePos()<=target-tolerance||LinearSlidePos()>=target+tolerance)
-                    slide = false;
-                else
-                    slide = true;
+                slide = LinearSlidePos() > target - tolerance && LinearSlidePos() < target + tolerance;
 
             }
         }
@@ -396,99 +367,18 @@ public class RobohawksMecanumDrive extends MecanumDrive {
                 proximityMultiplier1 = (rawProximity < 500 ? 350 : 1 );
                 calculatedPower = rawProximity/proximityMultiplier1;
                 proximityMultiplierCorrector = (calculatedPower > 1 ? calculatedPower : 1);
-                velo = calculatedPower/proximityMultiplierCorrector;
-                correctedVelocity = (velo < .4 ? .4 : velo);
+                correctedVelocity = Math.max(calculatedPower/proximityMultiplierCorrector, .4);
                 velo = (proximityMultiplier1/proximityMultiplierCorrector)*power;
                 LSspeed = power*correctedVelocity;
                 //LSspeed = 1;
-                linearSlide.setPower(-LSspeed);
+                motorLinearSlide.setPower(-LSspeed);
                 //leftEncoder.setPower(LSspeed);
 
-                if(LinearSlidePos()<=target-tolerance||LinearSlidePos()>=target+tolerance)
-                    slide = false;
-                else
-                    slide = true;
-
-
+                slide = LinearSlidePos() > target - tolerance && LinearSlidePos() < target + tolerance;
             }
         }
 
-        //--------------------------------------------------------------------------------------------
-     //   if (LinearSlidePos()+tolerance<target||LinearSlidePos()-tolerance>target){
-     //       LinearSlideToStop(stop, power/2,tolerance-2);
-     //   }
-     //   holdSlides();
-        if(slide)
-            return true;
-        else
-            return false;
-    }
-
-    public boolean LinearSlideToStop2(int stop, int tolerance, int conesUp){
-
-        //linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        /*if(stop == 1){
-            target = lowStop;
-        }
-        else if(stop == 2){
-            target = midStop;
-        }
-        else if(stop == 3){
-            target = tallStop;
-        }
-        else if(stop == 10){
-            target = hopStop;
-        }
-        else if(stop == 0){
-            target = bottomStop;
-        } */
-
-
-
-        if (conesUp == 0 || stop !=0) {
-
-
-            if (stop == 1) {
-                target = lowStop;
-            }
-            else if (stop == 2) {
-                target = midStop;
-            }
-            else if (stop == 3) {
-                target = tallStop;
-            }
-            else if (stop == 0) {
-                target = bottomStop;
-            }
-            else if(stop == 10){
-                target = hopStop;
-            }
-        }
-        else if (conesUp != 0 && stop == 0){
-            target = bottomStop-(25*conesUp);
-        }
-
-
-
-        linearSlide.setTargetPositionTolerance(tolerance);
-        linearSlide.setTargetPosition(target);
-        linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        linearSlide.setPower(.7);
-
-        if(LinearSlidePos()<=target-tolerance||LinearSlidePos()>=target+tolerance)
-            slide = false;
-        else
-            slide = true;
-
-        if(slide)
-            return true;
-        else
-            return false;
-    }
-
-    public void penetrate(double pos){
-        penetrationServo.setPosition(pos);
+        return slide;
     }
 
     public int LinearSlidePos(){
@@ -497,7 +387,7 @@ public class RobohawksMecanumDrive extends MecanumDrive {
         //return linearSlide.getCurrentPosition();  This does not return an accurate reading but rather seemingly arbitrary numbers.
         //I believe the physical encoder is not working or the connection is messed up.
 
-        return linearSlide.getCurrentPosition();
+        return motorLinearSlide.getCurrentPosition();
         //testing this to see if a different encoder will work in place of the the LinearSlide Motor.
 
         //couldn't get telemetry to work in this file, must be OpMode only.
@@ -506,68 +396,15 @@ public class RobohawksMecanumDrive extends MecanumDrive {
     }
 
     public void LinearSlideResetEnc(){
-        linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     public void moveTestServo(double pos){
-
-        clawServo.setPosition(pos);
-    }
-
-
-
-    /*@Override
-    public void up(){
-        boolean yes = false;
-        int wheel = 0;
-        if(SusanEncoderPosition()<-127 && SusanEncoderPosition()>-356)
-            yes = true;
-        else if(SusanEncoderPosition()>-569 || SusanEncoderPosition()<-846)
-            yes = true;
-        else if(SusanEncoderPosition()>-1013 || SusanEncoderPosition()<-1278)
-            yes = true;
-        else if(SusanEncoderPosition()>-1476 || SusanEncoderPosition()<-1756)
-            yes = true;
-
-        if(yes)
-            LinearSlideToStop(10,0,35,35);
-
-        yes=false;
-
-        if(SusanEncoderPosition()<-127 && SusanEncoderPosition()>-356){
-            yes = true; wheel = 1;}
-
-        else if(SusanEncoderPosition()>-569 || SusanEncoderPosition()<-846){
-            yes = true; wheel = 2;}
-
-        else if(SusanEncoderPosition()>-1013 || SusanEncoderPosition()<-1278){
-            yes = true; wheel = 3;}
-
-        else if(SusanEncoderPosition()>-1476 || SusanEncoderPosition()<-1756){
-            yes = true; wheel = 4;}
-
-
-
+        servoClaw.setPosition(pos);
     }
 
     @Override
-    public void zHopSusan(double input){
-
-        if(SusanEncoderPosition()<-127 && SusanEncoderPosition()>-356)
-            up
-
-
-        else if(SusanEncoderPosition()>-569 || SusanEncoderPosition()<-846)
-            MoveSusan();
-
-    }*/
-
-
-
-    @Override
-    public double getRawExternalHeading() {
-        return 0;
-    }
+    public double getRawExternalHeading() { return 0; }
 
     @Override
     public Double getExternalHeadingVelocity() {

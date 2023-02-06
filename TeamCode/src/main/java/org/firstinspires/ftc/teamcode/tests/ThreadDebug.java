@@ -13,20 +13,20 @@ public class ThreadDebug extends OpMode {
     Thread t = null;
 
     public void threadReport() {
-        String logcat = "!!! THREAD DEBUG REPORT !!!";
-        this.telemetry.addData(logcat, "Current Thread Name: " + Thread.currentThread().getName());
-        this.telemetry.addData(logcat, "Current Thread ID: " + Thread.currentThread().getId());
+        String logCategory = "!!! THREAD DEBUG REPORT !!!";
+        this.telemetry.addData(logCategory, "Current Thread Name: " + Thread.currentThread().getName());
+        this.telemetry.addData(logCategory, "Current Thread ID: " + Thread.currentThread().getId());
         ThreadGroup threadGroup = Thread.currentThread().getThreadGroup();
         if (threadGroup == null) {
-            this.telemetry.addData(logcat, "Not in a thread group.");
+            this.telemetry.addData(logCategory, "Not in a thread group.");
         } else {
-            this.telemetry.addData(logcat, "");
+            this.telemetry.addData(logCategory, "");
             Thread[] threads = new Thread[64];
             int s = threadGroup.enumerate(threads);
             threads = Arrays.copyOf(threads, s);
             for (int i = 0; i < threads.length; i++ ) {
                 String n = threads[i].getName();
-                this.telemetry.addData(logcat, "Child #" + i + " name: " + (n == null ? "<no name>" : n));
+                this.telemetry.addData(logCategory, "Child #" + i + " name: " + (n == null ? "<no name>" : n));
             }
         }
     }

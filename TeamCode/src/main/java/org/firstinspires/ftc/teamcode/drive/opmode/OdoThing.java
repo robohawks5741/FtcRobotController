@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.drive.RobohawksMecanumDrive;
  * encoder localizer heading may be significantly off if the track width has not been tuned).
  */
 @TeleOp(group = "drive")
-public class Odothing extends LinearOpMode {
+public class OdoThing extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         RobohawksMecanumDrive drive = new RobohawksMecanumDrive(hardwareMap);

@@ -1,5 +1,5 @@
 {
-    "$schema": "http://json-schema.org/schema",
+    "$schema": "https://json-schema.org/draft-07/schema",
     "$id": "gamepadyn-config",
     "title": "Gamepadyn Configuration Schema",
     "description": "A configuration for an individual controller. DO NOT modify!",
