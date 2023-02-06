@@ -60,6 +60,9 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
     Trajectory onceUp = null;
     Trajectory toCones = null;
     Trajectory toPole = null;
+    Trajectory parkPosition1 = null;
+    Trajectory parkPosition2 = null;
+    Trajectory parkPosition3 = null;
 
     @Override
     public void LeftAndDump(){
@@ -206,6 +209,14 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
         drive.LinearSlideToStop2(9,30,0);
         Thread.sleep(250);
         drive.moveTestServo(.25);
+        Thread.sleep(750);
+        if(NumberOfTag == 1)
+            drive.followTrajectory(parkPosition1);
+        else if(NumberOfTag == 2)
+            drive.followTrajectory(parkPosition2);
+        else if(NumberOfTag == 3)
+            drive.followTrajectory(parkPosition3);
+
 
 
 
@@ -232,12 +243,6 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
                         drive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)*/
                 )
                 .build();
-        /*right1 = drive.trajectoryBuilder(forwards.end())
-                .lineTo( new Vector2d(60,-12),
-                        drive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        drive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
-                )
-                .build();*/
 
         onceUp = drive.trajectoryBuilder(forwards.end())
                 .lineTo(new Vector2d(56,-3),
@@ -270,6 +275,15 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
                         drive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         drive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
+                .build();
+        parkPosition1 = drive.trajectoryBuilder(toPole.end())
+                .lineTo(new Vector2d(48,24))
+                .build();
+        parkPosition3 = drive.trajectoryBuilder(toPole.end())
+                .lineTo(new Vector2d(48,0))
+                .build();
+        parkPosition2 = drive.trajectoryBuilder(toPole.end())
+                .lineTo(new Vector2d(48,-24))
                 .build();
 
 
