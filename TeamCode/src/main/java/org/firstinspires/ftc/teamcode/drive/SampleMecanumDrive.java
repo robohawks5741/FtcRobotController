@@ -70,7 +70,7 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
     public int hopStop = 270;
     public boolean off = false;
     public boolean turn = false;
-    public boolean down1 = false;
+    public int AutoMove = 423;
 
     public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(10, 0, 1);
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(7, 0, 1);
@@ -525,6 +525,9 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
             }
             else if(stop == 9){
                 target = insert;
+            }
+            else if(stop == 6){
+                target = AutoMove;
             }
 
 
