@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.EnumMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Level;
@@ -32,12 +33,18 @@ public final class Gamepad {
         return Objects.requireNonNull(actionSources.get(ua));
     }
 
+    enum switchInput {
+        UNKNOWN,
+        DIGITAL,
+        ANALOG
+    }
+
     @SuppressWarnings("rawtypes")
-    public void loadConfigurationResource(String id) {
+    public void loadConfigurationResource(String id) throws Exception {
         try {
             Context ctx = Gamepadyn.currentOpmode.hardwareMap.appContext;
             //  R.raw.
-            InputStreamReader inStream = new InputStreamReader(ctx.getResources().openRawResource(R.raw.lower));
+            InputStreamReader inStream = new InputStreamReader(ctx.getAssets().open(id));
             Gson gs = new Gson();
             MappingObject ic = gs.fromJson(inStream, MappingObject.class);
             System.out.println("Made it past creating a mapping object");
@@ -46,7 +53,7 @@ public final class Gamepad {
             System.out.println(json);
 
             for (Map.Entry<String, Map<String, Object>> e : ic.maps.entrySet()) {
-                Class c;
+                switchInput c;
                 switch (e.getKey()) {
                     case "fd":
                     case "fr":
@@ -60,28 +67,26 @@ public final class Gamepad {
                     case "bl":
                     case "slb":
                     case "srb":
-                        c = MappingObject.DigitalMap.class;
+                        c = switchInput.DIGITAL;
                         break;
                     case "tr":
                     case "tl":
                     case "sl":
                     case "sr":
-                        c = MappingObject.AnalogMap.class;
+                        c = switchInput.ANALOG;
                         break;
                     default:
                         // this is bad
-                        c = Object.class;
+                        c = switchInput.UNKNOWN;
                 }
 
-                Object o;
+                MappingAction o = null;
+                Map<String, Object> obj = e.getValue();
+                String mode = (String) obj.get("mode");
 
                 // TODO: add cases for every mode and change c to an enum
                 switch (c) {
-
-                    case MappingObject.DigitalMap.class: {
-                        MappingObject.DigitalMap dm = new MappingObject.DigitalMap();
-                        Map<String, Object> obj = e.getValue();
-                        String mode = (String) obj.get("mode");
+                    case DIGITAL: {
                         switch (Objects.requireNonNull(mode)) {
                             case "TRIGGER": {
                                 String a = (String) obj.get("action");
@@ -119,9 +124,42 @@ public final class Gamepad {
                             }
                         }
                     }
+                    case ANALOG: {
+                        RawGamepadInput rgi = RawGamepadInput.valueOf(e.getKey().toUpperCase(Locale.ENGLISH));
+                        switch (Objects.requireNonNull(mode)) {
+                            case "ONE_TO_ONE_AXES": {
+                                String a = (String) obj.get("action");
+                                Float[] is = (Float[]) obj.get("inputScale");
+                                o = new MappingActionAnalog(
+                                    rgi.axes,
+                                    is,
+                                    UserActions.valueOf(a)
+                                );
+                                break;
+                            }
+                            case "SPLIT_AXES": {
+                                System.err("");
+//                                Float[] is = (Float[]) obj.get("inputScale");
+//                                MappingActionAnalog.AxisMap[] am = new MappingActionAnalog.AxisMap();
+//                                o = new MappingActionAnalog(
+//                                    rgi.axes
+//                                );
+                                break;
+                            }
+                            default: {
+                                throw new RuntimeException("Unknown analog input mode: " + mode);
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                    case UNKNOWN:
+                    default:
+                        Logger.getAnonymousLogger().log(Level.WARNING, "Bad map entry!");
+                        break;
                 }
 
-                System.out.println(gs.toJson(c.cast(obj)));
+                System.out.println(gs.toJson(o));
             }
         } catch (Exception e) {
             Logger.getAnonymousLogger().log(Level.SEVERE, "exception thrown when loading configuration from resource", e);

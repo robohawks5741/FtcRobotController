@@ -57,21 +57,28 @@ public class RobohawksDriverControl extends OpMode {
 
         manualSlide = false;
 
-        if(stop == 3)
-            target = tallStop;
-
-        else if(stop == 0)
-            target = bottomStop;
-
-        else if(stop == 10)
-            target = hopStop;
-
-        else if(stop == 2)
-            target = midStop;
-
-        else if(stop == 1)
-            target = lowStop;
-
+        switch (stop) {
+            case 0: {
+                target = bottomStop;
+                break;
+            }
+            case 1: {
+                target = lowStop;
+                break;
+            }
+            case 2: {
+                target = midStop;
+                break;
+            }
+            case 3: {
+                target = tallStop;
+                break;
+            }
+            case 10: {
+                target = hopStop;
+                break;
+            }
+        }
 
         linearSlide.setTargetPositionTolerance(tolerance); // This actually moves the motors.
         linearSlide.setTargetPosition(target);
