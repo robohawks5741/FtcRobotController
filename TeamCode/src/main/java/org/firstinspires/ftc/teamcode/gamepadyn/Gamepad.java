@@ -138,7 +138,7 @@ public final class Gamepad {
                                 break;
                             }
                             case "SPLIT_AXES": {
-                                System.err("");
+                                System.err.println("Split axes parsing not done yet");
 //                                Float[] is = (Float[]) obj.get("inputScale");
 //                                MappingActionAnalog.AxisMap[] am = new MappingActionAnalog.AxisMap();
 //                                o = new MappingActionAnalog(
@@ -146,10 +146,7 @@ public final class Gamepad {
 //                                );
                                 break;
                             }
-                            default: {
-                                throw new RuntimeException("Unknown analog input mode: " + mode);
-                                break;
-                            }
+                            default: throw new RuntimeException("Unknown analog input mode: " + mode);
                         }
                         break;
                     }

@@ -1,5 +1,5 @@
 {
-    "$schema": "config.schema.json",
+    "$schema": "config-schema.json",
     "description": "Configuration for movement controls",
     "maps": {
         "br": {

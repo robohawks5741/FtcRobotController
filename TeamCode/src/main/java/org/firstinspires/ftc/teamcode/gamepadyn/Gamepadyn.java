@@ -54,37 +54,38 @@ public final class Gamepadyn {
 
     private static void inputThreadLoop() {
 
-        // TODO: fill this in
-
-        for (Gamepad gp : gamepads) {
-            for (Map.Entry<RawGamepadInput, MappingAction> entry : gp.mapping.entrySet()) {
-                if (entry == null) continue;
-                RawGamepadInput key = entry.getKey();
-                // this could be an if statement but I like it better this way
-                switch (key.inputType) {
-                    case ANALOG: {
-                        MappingActionAnalog value = (MappingActionAnalog) entry.getValue();
-                        break;
-                    }
-                    case DIGITAL: {
-                        MappingActionDigital value = (MappingActionDigital) entry.getValue();
-                        switch (value.mode) {
-                            case TRIGGER: {
-                                gp.action(value.action).emitter.emit(true);
-                            }
-                            case ANALOG_MAP: {
-
-                            }
-                            case ANALOG_OFFSET: {
-
-                            }
-                        }
-                        break;
-                    }
-                }
-            }
-//            gp.stateCache
-        }
+//        while (true) {
+//        }
+          // TODO: fill this in
+//        for (Gamepad gp : gamepads) {
+//            for (Map.Entry<RawGamepadInput, MappingAction> entry : gp.mapping.entrySet()) {
+//                if (entry == null) continue;
+//                RawGamepadInput key = entry.getKey();
+//                // this could be an if statement but I like it better this way
+//                switch (key.inputType) {
+//                    case ANALOG: {
+//                        MappingActionAnalog value = (MappingActionAnalog) entry.getValue();
+//                        break;
+//                    }
+//                    case DIGITAL: {
+//                        MappingActionDigital value = (MappingActionDigital) entry.getValue();
+//                        switch (value.mode) {
+//                            case TRIGGER: {
+//                                gp.action(value.action).emitter.emit(true);
+//                            }
+//                            case ANALOG_MAP: {
+//
+//                            }
+//                            case ANALOG_OFFSET: {
+//
+//                            }
+//                        }
+//                        break;
+//                    }
+//                }
+//            }
+////            gp.stateCache
+//        }
 
     }
 
