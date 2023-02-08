@@ -53,6 +53,7 @@ import static java.lang.Math.abs;
 /*
  * Simple mecanum drive hardware implementation for REV hardware.
  */
+
 @Config
 public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDrive2testJames {
     //public int ctr = 0;
@@ -61,16 +62,15 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
     public int bottomStop = 15;//bottom, stop here
     public int lowStop = 1000;
     public int midStop = 1800;
-    public int tallStop= 2700;//placeholder value because slide isn't currently tall enough to reach the "tallStop"
-    public int tooTall = 2970;//max height
-    public int insert = 2525;
+    public int tallStop= 2750;//placeholder value because slide isn't currently tall enough to reach the "tallStop"
+    public int insert = 2500;
     public int target = 0;//placeholder here, gets used in function LinearSlideToStop()
     public int coneStack = 360;
     public boolean slide = false;
     public int hopStop = 270;
     public boolean off = false;
     public boolean turn = false;
-    public int AutoMove = 423;
+    public int AutoMove = 460;
 
     public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(10, 0, 1);
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(7, 0, 1);
@@ -482,29 +482,6 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
     @Override
     public boolean LinearSlideToStop2(int stop, int tolerance, int conesUp){
 
-        //linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        /*if(stop == 1){
-            target = lowStop;
-        }
-        else if(stop == 2){
-            target = midStop;
-        }
-        else if(stop == 3){
-            target = tallStop;
-        }
-        else if(stop == 10){
-            target = hopStop;
-        }
-        else if(stop == 0){
-            target = bottomStop;
-        } */
-
-
-
-
-
-
             if (stop == 1) {
                 target = lowStop;
             }
@@ -529,8 +506,6 @@ public class SampleMecanumDrive extends MecanumDrive implements SampleMecanumDri
             else if(stop == 6){
                 target = AutoMove;
             }
-
-
 
 
         linearSlide.setTargetPositionTolerance(tolerance);

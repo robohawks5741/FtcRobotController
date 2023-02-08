@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.drive.opmode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -16,6 +15,10 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import java.util.ArrayList;
 
@@ -25,6 +28,10 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
 
     SampleMecanumDrive drive = null;
+
+    private Servo clawServo;
+
+    private DcMotorEx linearSlide, lazySusan;
 
     int ctr = 1;
 
@@ -62,6 +69,64 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
     Trajectory parkPosition2 = null;
     Trajectory parkPosition3 = null;
     Trajectory returnus = null;
+
+    private int bottomStop = 0;//bottom, stop here
+    private int lowStop = 1150;
+    private int midStop = 1950;
+    private int tallStop= 2700;//placeholder value because slide isn't currently tall enough to reach the "tallStop"
+    private int tooTall = 2970;//max height
+    private int target =     0;//placeholder here, gets used in function LinearSlideToStop()
+    private boolean slide = false;
+    private int hopStop = 270;
+    public int AutoMove = 460;
+    public int coneStack = 360;
+    public int insert  = 2500;
+
+    @Override
+    public boolean LinearSlideToStop2(int stop, int tolerance, int conesUp){
+
+        if (stop == 1) {
+            target = lowStop;
+        }
+        else if (stop == 7){
+            target = coneStack-conesUp*75;
+        }
+        else if (stop == 2) {
+            target = midStop;
+        }
+        else if (stop == 3) {
+            target = tallStop;
+        }
+        else if (stop == 0) {
+            target = bottomStop;
+        }
+        else if(stop == 10){
+            target = hopStop;
+        }
+        else if(stop == 9){
+            target = insert;
+        }
+        else if(stop == 6){
+            target = AutoMove;
+        }
+
+
+        linearSlide.setTargetPositionTolerance(tolerance);
+        linearSlide.setTargetPosition(target);
+        linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        linearSlide.setPower(.7);
+
+        if(linearSlide.getCurrentPosition()<=target-tolerance||linearSlide.getCurrentPosition()>=target+tolerance)
+            slide = false;
+        else
+            slide = true;
+
+        if(slide)
+            return true;
+        else
+            return false;
+    }
+
 
     @Override
     public void LeftAndDump(){
@@ -233,9 +298,34 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
     @Override
     public void runOpMode() throws InterruptedException {
 
+
         drive = new SampleMecanumDrive(hardwareMap);
 
         drive.ResetSusan();
+
+        // Declare the used non-drive motors.
+
+        lazySusan = hardwareMap.get(DcMotorEx.class,"lazySusan");
+
+        linearSlide = hardwareMap.get(DcMotorEx.class, "linearSlide");
+
+        clawServo = hardwareMap.get(Servo.class, "clawServo");
+
+
+        double speed = .5; //Speed multiplier for the drivetrain.
+
+        boolean slideY = false; //state of movement (yes or no) for different target slide positions.
+        boolean slideX = false;
+        boolean slideA = false;
+        boolean slideB = false;
+
+        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap); //Instance of SampleMecanum drive to access methods in the file.
+
+        linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); //Start encoders at position 0.
+        lazySusan.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        lazySusan.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE); //Sets HALO to brake mode.
+        lazySusan.setDirection(DcMotorSimple.Direction.REVERSE);
 
         forwards = drive.trajectoryBuilder(new Pose2d())
 
