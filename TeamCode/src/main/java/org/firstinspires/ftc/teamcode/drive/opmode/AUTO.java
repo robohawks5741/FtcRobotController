@@ -50,7 +50,7 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
 
     int conesUp = 0;
 
-    //
+
     AprilTagDetection tagOfInterest = null;
     Trajectory forwards = null;
     Trajectory left = null;

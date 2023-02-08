@@ -194,6 +194,9 @@ public class DriverControl extends LinearOpMode implements localinterface {
 
 
             if(gamepad2.y || slideY){
+                slideB = false;
+                slideA = false;
+                slideX = false;
                 if(LinearSlideToStop2(3,35))
 
                     slideY = false;
@@ -202,8 +205,11 @@ public class DriverControl extends LinearOpMode implements localinterface {
             }
 
             else if(gamepad2.b || slideB){
-                lazySusan.setTargetPositionTolerance(50);
-                linearSlide.setTargetPosition(lazySusan.getCurrentPosition()+232 <= 462 ? 0 : lazySusan.getCurrentPosition()+232 <= 923 ? 462 : lazySusan.getCurrentPosition()+232 <= 1385 ? 923 : 1385);
+                //lazySusan.setTargetPositionTolerance(50);
+               //linearSlide.setTargetPosition(lazySusan.getCurrentPosition()+232 <= 462 ? 0 : lazySusan.getCurrentPosition()+232 <= 923 ? 462 : lazySusan.getCurrentPosition()+232 <= 1385 ? 923 : 1385);
+                slideY = false;
+                slideA = false;
+                slideX = false;
                 if(LinearSlideToStop2(0,35))
 
                     slideB = false;
@@ -212,6 +218,9 @@ public class DriverControl extends LinearOpMode implements localinterface {
             }
 
             else if(gamepad2.a || slideX){
+                slideB = false;
+                slideA = false;
+                slideY = false;
                 if(LinearSlideToStop2(1,35))
 
                     slideX = false;
@@ -220,6 +229,9 @@ public class DriverControl extends LinearOpMode implements localinterface {
             }
 
             else if(gamepad2.x || slideA){
+                slideB = false;
+                slideY = false;
+                slideX = false;
                 if(LinearSlideToStop2(2,35))
 
                     slideA = false;
