@@ -161,15 +161,17 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
         drive.susanToEncoderPosition(440);
         Thread.sleep(500);
         LinearSlideToStop2(9,30,0);
-        Thread.sleep(250);
+        Thread.sleep(750);
         drive.moveTestServo(.25);
         Thread.sleep(750);
-        if(NumberOfTag == 1)
+        if(NumberOfTag == 2)
             drive.followTrajectory(parkPosition1);
-        else if(NumberOfTag == 2)
+        else if(NumberOfTag == 1)
             drive.followTrajectory(parkPosition2);
         else if(NumberOfTag == 3)
             drive.followTrajectory(parkPosition3);
+        else
+            drive.followTrajectory(parkPosition2);
         Thread.sleep(250);
         drive.susanToEncoderPosition(0);
         Thread.sleep(1000);
