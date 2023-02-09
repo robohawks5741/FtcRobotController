@@ -70,7 +70,7 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
     private int tallStop= 2700;
     private int target =     0;
     private int hopStop =  270;
-    private int AutoMove = 460;
+    private int AutoMove = 523;
     private int coneStack= 360;
     private int insert  = 2500;
 
@@ -127,7 +127,10 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
 
         drive.moveTestServo(.6);
         Thread.sleep(700);
-        drive.susanToEncoderPosition(50);
+        drive.susanToEncoderPosition(80);
+        Thread.sleep(500);
+        drive.susanToEncoderPosition(0);
+        Thread.sleep(600);
         LinearSlideToStop2(6,30,0);
         drive.followTrajectory(forwards);
         Thread.sleep(100);
@@ -167,9 +170,13 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
             drive.followTrajectory(parkPosition2);
         else if(NumberOfTag == 3)
             drive.followTrajectory(parkPosition3);
+        Thread.sleep(250);
         drive.susanToEncoderPosition(0);
+        Thread.sleep(1000);
         LinearSlideToStop2(0,35,0);
+        Thread.sleep(1000);
         drive.moveTestServo(.32);
+        Thread.sleep(300);
 
     }
 
