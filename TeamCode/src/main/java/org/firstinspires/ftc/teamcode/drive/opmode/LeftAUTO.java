@@ -23,7 +23,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import java.util.ArrayList;
 
 @Autonomous
-public class AUTO extends LinearOpMode implements AUTOinterface {
+public class LeftAUTO extends LinearOpMode implements AUTOinterface {
 
     // Declare all the things...
 

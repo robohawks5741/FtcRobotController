@@ -20,7 +20,7 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
  * encoder localizer heading may be significantly off if the track width has not been tuned).
  */
 @TeleOp(group = "drive")
-public class DriverControl extends LinearOpMode implements localinterface {
+public class RightDriverControl extends LinearOpMode implements localinterface {
 
     private int bottomStop = 0;//bottom, stop here
     private int lowStop = 1150;
