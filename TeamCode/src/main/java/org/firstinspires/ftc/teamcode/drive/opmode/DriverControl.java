@@ -68,7 +68,7 @@ public class DriverControl extends LinearOpMode implements localinterface {
         linearSlide.setTargetPositionTolerance(tolerance); // This actually moves the motors.
         linearSlide.setTargetPosition(target);
         linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        linearSlide.setPower(.7);
+        linearSlide.setPower(.85);
 
 
         if(linearSlide.getCurrentPosition()<=target-tolerance||linearSlide.getCurrentPosition()>=target+tolerance) // This is how the program knows if it needs to call the function in the next loop to complete the move.
@@ -84,7 +84,6 @@ public class DriverControl extends LinearOpMode implements localinterface {
 
         int desiredPosition = targetPosition == 0 ? 0 : targetPosition == 1 ? 1385 : targetPosition == 2 ? 923 : 462; // Sets target encoder position.
 
-        // If
 
         if(linearSlide.getCurrentPosition()<=270){
             if(!(lazySusan.getCurrentPosition() + 50 > desiredPosition & lazySusan.getCurrentPosition() - 50 < desiredPosition)) {
@@ -94,11 +93,11 @@ public class DriverControl extends LinearOpMode implements localinterface {
         }
 
 
-
         lazySusan.setTargetPositionTolerance(35);
         lazySusan.setTargetPosition(desiredPosition);
         lazySusan.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        lazySusan.setPower(.4);
+        lazySusan.setPower(.5);
+
 
         if(down1) {
             if (lazySusan.getCurrentPosition() + 50 > desiredPosition & lazySusan.getCurrentPosition() - 50 < desiredPosition & linearSlide.getCurrentPosition() > 250) {
@@ -197,6 +196,7 @@ public class DriverControl extends LinearOpMode implements localinterface {
                 slideB = false;
                 slideA = false;
                 slideX = false;
+                down1 = false;
                 if(LinearSlideToStop2(3,35))
 
                     slideY = false;
@@ -210,6 +210,7 @@ public class DriverControl extends LinearOpMode implements localinterface {
                 slideY = false;
                 slideA = false;
                 slideX = false;
+                down1 = false;
                 if(LinearSlideToStop2(0,35))
 
                     slideB = false;
@@ -221,6 +222,7 @@ public class DriverControl extends LinearOpMode implements localinterface {
                 slideB = false;
                 slideA = false;
                 slideY = false;
+                down1 = false;
                 if(LinearSlideToStop2(1,35))
 
                     slideX = false;
@@ -232,6 +234,7 @@ public class DriverControl extends LinearOpMode implements localinterface {
                 slideB = false;
                 slideY = false;
                 slideX = false;
+                down1 = false;
                 if(LinearSlideToStop2(2,35))
 
                     slideA = false;
