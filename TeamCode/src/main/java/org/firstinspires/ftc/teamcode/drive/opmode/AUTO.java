@@ -127,36 +127,37 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
 
         drive.moveTestServo(.6);
         Thread.sleep(700);
-        drive.LinearSlideToStop2(6,30,0);
+        drive.susanToEncoderPosition(50);
+        LinearSlideToStop2(6,30,0);
         drive.followTrajectory(forwards);
         Thread.sleep(100);
         drive.followTrajectory(returnus);
         drive.turn(Math.toRadians(90));
-        drive.LinearSlideToStop2(3,35,0);
+        LinearSlideToStop2(3,35,0);
         drive.followTrajectory(right);
         drive.susanToEncoderPosition(462);
         Thread.sleep(1000);
         drive.followTrajectory(left);
         Thread.sleep(500);
-        drive.LinearSlideToStop2(9,35,0);
+        LinearSlideToStop2(9,35,0);
         Thread.sleep(200);
         drive.moveTestServo(.25);
         Thread.sleep(500);
-        drive.LinearSlideToStop2(7,10,conesUp);
+        LinearSlideToStop2(7,10,conesUp);
         conesUp++;
         drive.susanToEncoderPosition(0);
         drive.followTrajectory(toCones);
         Thread.sleep(250);
         drive.moveTestServo(.6);
         Thread.sleep(500);
-        drive.LinearSlideToStop2(1,20,conesUp);
+        LinearSlideToStop2(1,20,conesUp);
         Thread.sleep(500);
         drive.followTrajectory(toPole);
-        drive.LinearSlideToStop2(3,30,0);
+        LinearSlideToStop2(3,30,0);
         Thread.sleep(1500);
         drive.susanToEncoderPosition(440);
         Thread.sleep(500);
-        drive.LinearSlideToStop2(9,30,0);
+        LinearSlideToStop2(9,30,0);
         Thread.sleep(250);
         drive.moveTestServo(.25);
         Thread.sleep(750);
@@ -166,6 +167,10 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
             drive.followTrajectory(parkPosition2);
         else if(NumberOfTag == 3)
             drive.followTrajectory(parkPosition3);
+        drive.susanToEncoderPosition(0);
+        LinearSlideToStop2(0,35,0);
+        drive.moveTestServo(.32);
+
     }
 
 
@@ -233,11 +238,11 @@ public class AUTO extends LinearOpMode implements AUTOinterface {
                 .build();
 
         parkPosition3 = drive.trajectoryBuilder(toPole.end())
-                .lineTo(new Vector2d(48,0))
+                .lineTo(new Vector2d(48,-24))
                 .build();
 
         parkPosition2 = drive.trajectoryBuilder(toPole.end())
-                .lineTo(new Vector2d(48,-24))
+                .lineTo(new Vector2d(48,0))
                 .build();
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
