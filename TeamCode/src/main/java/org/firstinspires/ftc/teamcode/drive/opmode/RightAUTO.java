@@ -74,7 +74,18 @@ public class RightAUTO extends LinearOpMode implements AUTOinterface {
     private int insert  = 2500;
 
 
+    @Override
+    public void susan(int pos){
+        lazySusan.setTargetPositionTolerance(20);
+        lazySusan.setTargetPosition(pos);
+        lazySusan.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        lazySusan.setPower(.4);
+    }
 
+    @Override
+    public void claw(double pos){
+        clawServo.setPosition(pos);
+    }
 
     @Override
     public boolean LinearSlideToStop2(int stop, int tolerance, int conesUp){
@@ -124,11 +135,11 @@ public class RightAUTO extends LinearOpMode implements AUTOinterface {
     @Override
     public void FirstCone() throws InterruptedException {
 
-        drive.moveTestServo(.6);
+        claw(.6);
         Thread.sleep(700);
-        drive.susanToEncoderPosition(80);
+        susan(80);
         Thread.sleep(500);
-        drive.susanToEncoderPosition(0);
+        susan(0);
         Thread.sleep(600);
         LinearSlideToStop2(6,30,0);
         drive.followTrajectory(forwards);
@@ -137,35 +148,35 @@ public class RightAUTO extends LinearOpMode implements AUTOinterface {
         drive.turn(Math.toRadians(-90));
         LinearSlideToStop2(3,35,0);
         drive.followTrajectory(right);
-        drive.susanToEncoderPosition(-462);
-        Thread.sleep(1000);
+        susan(-462);
+        Thread.sleep(1400);
         drive.followTrajectory(left);
         Thread.sleep(500);
         LinearSlideToStop2(9,35,0);
         Thread.sleep(200);
-        drive.moveTestServo(.25);
+        claw(.25);
         Thread.sleep(500);
         LinearSlideToStop2(7,10,conesUp);
         conesUp++;
-        drive.susanToEncoderPosition(0);
+        susan(0);
         drive.followTrajectory(toCones);
         Thread.sleep(250);
-        drive.moveTestServo(.6);
+        claw(.6);
         Thread.sleep(500);
         LinearSlideToStop2(1,20,conesUp);
         Thread.sleep(500);
         drive.followTrajectory(toPole);
         LinearSlideToStop2(3,30,0);
         Thread.sleep(1500);
-        drive.susanToEncoderPosition(-410);
+        susan(-391);
         Thread.sleep(500);
         LinearSlideToStop2(9,30,0);
         Thread.sleep(750);
-        drive.moveTestServo(.25);
+        claw(.25);
         Thread.sleep(750);
-        drive.susanToEncoderPosition(0);
+        susan(0);
         LinearSlideToStop2(0,35,0);
-        drive.moveTestServo(.32);
+        claw(.32);
         if(NumberOfTag == 2)
             drive.followTrajectory(parkPosition1);
         else if(NumberOfTag == 1)
@@ -181,11 +192,9 @@ public class RightAUTO extends LinearOpMode implements AUTOinterface {
     @Override
     public void runOpMode() throws InterruptedException {
 
-
         drive = new SampleMecanumDrive(hardwareMap);
 
-        drive.ResetSusan();
-
+        lazySusan.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         lazySusan = hardwareMap.get(DcMotorEx.class,"lazySusan");
 
@@ -214,21 +223,21 @@ public class RightAUTO extends LinearOpMode implements AUTOinterface {
                 .build();
 
         right = drive.trajectoryBuilder(returnus.end().plus(new Pose2d(0, 0, Math.toRadians(-90))))
-                .lineTo( new Vector2d(51,8.6),
-                        drive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                .lineTo( new Vector2d(50,7.6),
+                        drive.getVelocityConstraint(13, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         drive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
                 .build();
 
         left = drive.trajectoryBuilder(right.end())
-                .lineTo( new Vector2d(52.6,9.2),
-                        drive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                .lineTo( new Vector2d(52.8,10.2),
+                        drive.getVelocityConstraint(16, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         drive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
                 .build();
 
         toCones = drive.trajectoryBuilder(left.end())
-                .lineTo( new Vector2d(47.8,-23.4),
+                .lineTo( new Vector2d(47.8,-24.7),
                         drive.getVelocityConstraint(24, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         drive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
@@ -242,15 +251,15 @@ public class RightAUTO extends LinearOpMode implements AUTOinterface {
                 .build();
 
         parkPosition1 = drive.trajectoryBuilder(toPole.end())
-                .lineToLinearHeading(new Pose2d(48,-24,3.14159))
+                .lineToLinearHeading(new Pose2d(48,-24,Math.toRadians(270)))
                 .build();
 
         parkPosition3 = drive.trajectoryBuilder(toPole.end())
-                .lineToLinearHeading(new Pose2d(48,24,3.14159))
+                .lineToLinearHeading(new Pose2d(48,24,Math.toRadians(270)))
                 .build();
 
         parkPosition2 = drive.trajectoryBuilder(toPole.end())
-                .lineToLinearHeading(new Pose2d(48,0,3.14159))
+                .lineToLinearHeading(new Pose2d(48,0,Math.toRadians(270)))
                 .build();
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());

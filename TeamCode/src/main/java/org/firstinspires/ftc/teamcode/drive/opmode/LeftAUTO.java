@@ -75,7 +75,18 @@ public class LeftAUTO extends LinearOpMode implements AUTOinterface {
     private int insert  = 2500;
 
 
+    @Override
+    public void susan(int pos) {
+        lazySusan.setTargetPositionTolerance(20);
+        lazySusan.setTargetPosition(pos);
+        lazySusan.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        lazySusan.setPower(.4);
+    }
 
+    @Override
+    public void claw(double pos) {
+        clawServo.setPosition(pos);
+    }
 
     @Override
     public boolean LinearSlideToStop2(int stop, int tolerance, int conesUp){
@@ -125,11 +136,11 @@ public class LeftAUTO extends LinearOpMode implements AUTOinterface {
     @Override
     public void FirstCone() throws InterruptedException {
 
-        drive.moveTestServo(.6);
+        claw(.6);
         Thread.sleep(700);
-        drive.susanToEncoderPosition(80);
+        susan(80);
         Thread.sleep(500);
-        drive.susanToEncoderPosition(0);
+        susan(0);
         Thread.sleep(600);
         LinearSlideToStop2(6,30,0);
         drive.followTrajectory(forwards);
@@ -138,31 +149,31 @@ public class LeftAUTO extends LinearOpMode implements AUTOinterface {
         drive.turn(Math.toRadians(90));
         LinearSlideToStop2(3,35,0);
         drive.followTrajectory(right);
-        drive.susanToEncoderPosition(462);
+        susan(462);
         Thread.sleep(1000);
         drive.followTrajectory(left);
         Thread.sleep(500);
         LinearSlideToStop2(9,35,0);
         Thread.sleep(200);
-        drive.moveTestServo(.25);
+        claw(.25);
         Thread.sleep(500);
         LinearSlideToStop2(7,10,conesUp);
         conesUp++;
-        drive.susanToEncoderPosition(0);
+        susan(0);
         drive.followTrajectory(toCones);
         Thread.sleep(250);
-        drive.moveTestServo(.6);
+        claw(.6);
         Thread.sleep(500);
         LinearSlideToStop2(1,20,conesUp);
         Thread.sleep(500);
         drive.followTrajectory(toPole);
         LinearSlideToStop2(3,30,0);
         Thread.sleep(1500);
-        drive.susanToEncoderPosition(440);
+        susan(440);
         Thread.sleep(500);
         LinearSlideToStop2(9,30,0);
         Thread.sleep(750);
-        drive.moveTestServo(.25);
+        claw(.25);
         Thread.sleep(750);
         if(NumberOfTag == 2)
             drive.followTrajectory(parkPosition1);
@@ -173,11 +184,11 @@ public class LeftAUTO extends LinearOpMode implements AUTOinterface {
         else
             drive.followTrajectory(parkPosition2);
         Thread.sleep(250);
-        drive.susanToEncoderPosition(0);
+        susan(0);
         Thread.sleep(1000);
         LinearSlideToStop2(0,35,0);
         Thread.sleep(1000);
-        drive.moveTestServo(.32);
+        claw(.32);
         Thread.sleep(300);
 
     }
