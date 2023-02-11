@@ -178,11 +178,11 @@ public class RightAUTO extends LinearOpMode implements AUTOinterface {
         LinearSlideToStop2(0,35,0);
         claw(.32);
         if(NumberOfTag == 2)
-            drive.followTrajectory(parkPosition1);
+            drive.followTrajectory(parkPosition3);
         else if(NumberOfTag == 1)
             drive.followTrajectory(parkPosition2);
         else if(NumberOfTag == 3)
-            drive.followTrajectory(parkPosition3);
+            drive.followTrajectory(parkPosition1);
         else
             drive.followTrajectory(parkPosition2);
         Thread.sleep(500);
@@ -194,12 +194,12 @@ public class RightAUTO extends LinearOpMode implements AUTOinterface {
 
         drive = new SampleMecanumDrive(hardwareMap);
 
-        lazySusan.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
 
         lazySusan = hardwareMap.get(DcMotorEx.class,"lazySusan");
 
         linearSlide = hardwareMap.get(DcMotorEx.class, "linearSlide");
-
+        lazySusan.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         clawServo = hardwareMap.get(Servo.class, "clawServo");
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
@@ -230,32 +230,32 @@ public class RightAUTO extends LinearOpMode implements AUTOinterface {
                 .build();
 
         left = drive.trajectoryBuilder(right.end())
-                .lineTo( new Vector2d(52.8,10.2),
-                        drive.getVelocityConstraint(16, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                .strafeTo( new Vector2d(52.75,11.2),
+                        drive.getVelocityConstraint(2, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         drive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
                 .build();
 
         toCones = drive.trajectoryBuilder(left.end())
-                .lineTo( new Vector2d(47.8,-24.7),
+                .lineTo( new Vector2d(49.8,-24.7),
                         drive.getVelocityConstraint(24, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         drive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
                 .build();
 
         toPole = drive.trajectoryBuilder(toCones.end())
-                .lineTo(new Vector2d(52.5,11.3),
-                        drive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                .lineTo(new Vector2d(52.5,11.9),
+                        drive.getVelocityConstraint(12, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         drive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
                 .build();
 
         parkPosition1 = drive.trajectoryBuilder(toPole.end())
-                .lineToLinearHeading(new Pose2d(48,-24,Math.toRadians(270)))
+                .lineToLinearHeading(new Pose2d(48,24,Math.toRadians(270)))
                 .build();
 
         parkPosition3 = drive.trajectoryBuilder(toPole.end())
-                .lineToLinearHeading(new Pose2d(48,24,Math.toRadians(270)))
+                .lineToLinearHeading(new Pose2d(48,-24,Math.toRadians(270)))
                 .build();
 
         parkPosition2 = drive.trajectoryBuilder(toPole.end())

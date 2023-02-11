@@ -240,14 +240,14 @@ public class LeftAUTO extends LinearOpMode implements AUTOinterface {
                 .build();
 
         toCones = drive.trajectoryBuilder(left.end())
-                .lineTo( new Vector2d(46.8,24.7),
+                .lineTo( new Vector2d(46.8,25.9),
                     drive.getVelocityConstraint(24, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                     drive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
                 .build();
 
         toPole = drive.trajectoryBuilder(toCones.end())
-                .lineTo(new Vector2d(51,-10.4),
+                .lineTo(new Vector2d(51,-9.4),
                         drive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         drive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
