@@ -153,7 +153,7 @@ public class RightAUTO extends LinearOpMode implements AUTOinterface {
         drive.followTrajectory(left);
         Thread.sleep(500);
         LinearSlideToStop2(9,35,0);
-        Thread.sleep(200);
+        Thread.sleep(700);
         claw(.25);
         Thread.sleep(500);
         LinearSlideToStop2(7,10,conesUp);
