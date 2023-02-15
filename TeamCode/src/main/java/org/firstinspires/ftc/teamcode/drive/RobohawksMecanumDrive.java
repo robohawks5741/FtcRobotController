@@ -18,16 +18,19 @@ import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationCon
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.hardware.lynx.LynxModule;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceRunner;
@@ -78,17 +81,19 @@ public class RobohawksMecanumDrive extends MecanumDrive {
     public static double VY_WEIGHT = 1;
     public static double OMEGA_WEIGHT = 1;
 
-    public TrajectorySequenceRunner trajectorySequenceRunner;
+    private TrajectorySequenceRunner trajectorySequenceRunner;
 
     private static final TrajectoryVelocityConstraint VEL_CONSTRAINT = getVelocityConstraint(MAX_VEL, MAX_ANG_VEL, TRACK_WIDTH);
     private static final TrajectoryAccelerationConstraint ACCEL_CONSTRAINT = getAccelerationConstraint(MAX_ACCEL);
 
-    public TrajectoryFollower follower;
+    private TrajectoryFollower follower;
 
     DcMotorEx motorRearLeft, motorRearRight, motorFrontRight, motorLinearSlide, motorEncoderLeft, motorEncoderRight, motorEncoderFront;
     final ArrayList<DcMotorEx> motors;
+    private DcMotorEx motorRearLeft, motorRearRight, motorFrontRight, motorLinearSlide, motorEncoderLeft, motorEncoderRight, motorEncoderFront;
     private Servo servoClaw;
-    private BNO055IMU imu;
+    final List<DcMotorEx> motors;
+    private IMU imu;
     private VoltageSensor batteryVoltageSensor;
 
     public RobohawksMecanumDrive(HardwareMap hardwareMap) {
@@ -148,8 +153,8 @@ public class RobohawksMecanumDrive extends MecanumDrive {
 
         servoClaw = hardwareMap.get(Servo.class, "clawServo");
 
-        // added, testing
-        motors = new ArrayList<>(Arrays.asList(motorRearLeft, motorRearRight, motorFrontRight, motorLinearSlide, motorEncoderLeft, motorEncoderRight, motorEncoderFront));
+        motors = Arrays.asList(motorRearLeft, motorRearRight, motorFrontRight, motorLinearSlide, motorEncoderLeft, motorEncoderRight, motorEncoderFront);
+
 
         // added linear slide to these.
         for (DcMotorEx motor : motors) {
@@ -159,17 +164,25 @@ public class RobohawksMecanumDrive extends MecanumDrive {
         }
 
         if (RUN_USING_ENCODER) setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        for (DcMotorEx motor : motors) motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         if (RUN_USING_ENCODER && MOTOR_VELO_PID != null) setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, MOTOR_VELO_PID);
 
         // done: reverse any motors using DcMotor.setDirection()
         motorEncoderFront.setDirection(DcMotorSimple.Direction.REVERSE);
         motorRearLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        // TODO: if desired, use setLocalizer() to change the localization method
-        setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap));
+        List<Integer> lastTrackingEncPositions = new ArrayList<>();
+        List<Integer> lastTrackingEncVels = new ArrayList<>();
 
-        trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
+        // TODO: if desired, use setLocalizer() to change the localization method
+        setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap, lastTrackingEncPositions, lastTrackingEncVels));
+
+        trajectorySequenceRunner = new TrajectorySequenceRunner(
+                follower, HEADING_PID, batteryVoltageSensor,
+                lastEncPositions, lastEncVels, lastTrackingEncPositions, lastTrackingEncVels
+        );
     }
 
     public TrajectoryBuilder trajectoryBuilder(Pose2d startPose) {
@@ -227,6 +240,10 @@ public class RobohawksMecanumDrive extends MecanumDrive {
         waitForIdle();
     }
 
+    public Pose2d getLastError() {
+        return trajectorySequenceRunner.getLastPoseError();
+    }
+
     public void update() {
         updatePoseEstimate();
         DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
@@ -248,6 +265,12 @@ public class RobohawksMecanumDrive extends MecanumDrive {
         }
     }
 
+    public void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior zeroPowerBehavior) {
+        for (DcMotorEx motor : motors) {
+            motor.setZeroPowerBehavior(zeroPowerBehavior);
+        }
+    }
+
     public void setPIDFCoefficients(DcMotor.RunMode runMode, PIDFCoefficients coefficients) {
         PIDFCoefficients compensatedCoefficients = new PIDFCoefficients(
                 coefficients.p, coefficients.i, coefficients.d,
@@ -262,43 +285,49 @@ public class RobohawksMecanumDrive extends MecanumDrive {
     public void setWeightedDrivePower(Pose2d drivePower) {
         Pose2d vel = drivePower;
 
-        if (
-            abs(drivePower.getX()) + abs(drivePower.getY())
-            + abs(drivePower.getHeading()) > 1
-        ) {
+        if (Math.abs(drivePower.getX()) + Math.abs(drivePower.getY())
+                + Math.abs(drivePower.getHeading()) > 1) {
             // re-normalize the powers according to the weights
-            double denom = VX_WEIGHT * abs(drivePower.getX())
-                + VY_WEIGHT * abs(drivePower.getY())
-                + OMEGA_WEIGHT * abs(drivePower.getHeading());
+            double denom = VX_WEIGHT * Math.abs(drivePower.getX())
+                    + VY_WEIGHT * Math.abs(drivePower.getY())
+                    + OMEGA_WEIGHT * Math.abs(drivePower.getHeading());
 
             vel = new Pose2d(
-                VX_WEIGHT * drivePower.getX(),
-                VY_WEIGHT * drivePower.getY(),
-                OMEGA_WEIGHT * drivePower.getHeading()
+                    VX_WEIGHT * drivePower.getX(),
+                    VY_WEIGHT * drivePower.getY(),
+                    OMEGA_WEIGHT * drivePower.getHeading()
             ).div(denom);
         }
+
         setDrivePower(vel);
     }
 
     @NonNull
     @Override
     public List<Double> getWheelPositions() {
+        lastEncPositions.clear();
+
         List<Double> wheelPositions = new ArrayList<>();
         for (DcMotorEx motor : motors) {
-            wheelPositions.add(encoderTicksToInches(motor.getCurrentPosition()));
+            int position = motor.getCurrentPosition();
+            lastEncPositions.add(position);
+            wheelPositions.add(encoderTicksToInches(position));
         }
         return wheelPositions;
     }
 
     @Override
     public List<Double> getWheelVelocities() {
+        lastEncVels.clear();
+
         List<Double> wheelVelocities = new ArrayList<>();
         for (DcMotorEx motor : motors) {
-            wheelVelocities.add(encoderTicksToInches(motor.getVelocity()));
+            int vel = (int) motor.getVelocity();
+            lastEncVels.add(vel);
+            wheelVelocities.add(encoderTicksToInches(vel));
         }
         return wheelVelocities;
     }
-
 
     @Override
     public void setMotorPowers(double v, double v1, double v2, double v3) {
@@ -403,16 +432,13 @@ public class RobohawksMecanumDrive extends MecanumDrive {
     }
 
     @Override
-    public double getRawExternalHeading() { return 0; }
+    public double getRawExternalHeading() {
+        return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+    }
 
     @Override
     public Double getExternalHeadingVelocity() {
-        // To work around an SDK bug, use -zRotationRate in place of xRotationRate
-        // and -xRotationRate in place of zRotationRate (yRotationRate behaves as 
-        // expected). This bug does NOT affect orientation. 
-        //
-        // See https://github.com/FIRST-Tech-Challenge/FtcRobotController/issues/251 for details.
-        return (double) -imu.getAngularVelocity().xRotationRate;
+        return (double) imu.getRobotAngularVelocity(AngleUnit.RADIANS).zRotationRate;
     }
 
     public static TrajectoryVelocityConstraint getVelocityConstraint(double maxVel, double maxAngularVel, double trackWidth) {
