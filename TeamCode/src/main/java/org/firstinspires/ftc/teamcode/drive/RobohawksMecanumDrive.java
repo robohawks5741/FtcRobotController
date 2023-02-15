@@ -88,13 +88,14 @@ public class RobohawksMecanumDrive extends MecanumDrive {
 
     private TrajectoryFollower follower;
 
-    DcMotorEx motorRearLeft, motorRearRight, motorFrontRight, motorLinearSlide, motorEncoderLeft, motorEncoderRight, motorEncoderFront;
-    final ArrayList<DcMotorEx> motors;
     private DcMotorEx motorRearLeft, motorRearRight, motorFrontRight, motorLinearSlide, motorEncoderLeft, motorEncoderRight, motorEncoderFront;
     private Servo servoClaw;
     final List<DcMotorEx> motors;
     private IMU imu;
     private VoltageSensor batteryVoltageSensor;
+
+    private List<Integer> lastEncPositions = new ArrayList<>();
+    private List<Integer> lastEncVels = new ArrayList<>();
 
     public RobohawksMecanumDrive(HardwareMap hardwareMap) {
         super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
