@@ -297,7 +297,7 @@ public class LeftAUTO extends LinearOpMode implements AUTOinterface {
             {
                 boolean tagFound = false;
 
-                for(AprilTagDetection tag : currentDetections)
+                for(AprilTagDetection tag : currentDetections) //TODO make a seperate function
                 {
                     if(tag.id == ID_TAG_OF_INTEREST)
                     {
