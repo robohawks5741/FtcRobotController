@@ -59,7 +59,7 @@ It's used by both Gamepadyn and LSD.
 
 ### LSD
 
-LSD stands for Linear Slide Driver. It's a wrapper around our linear slide.
+The Linear Slide Driver (LSD). Wrapper for the linear slide.
 
 ```
 ───┐ org.firstinspires.ftc.teamcode
@@ -68,7 +68,7 @@ LSD stands for Linear Slide Driver. It's a wrapper around our linear slide.
 
 ### HD
 
-The wrapper for the halo. Haven't done any work on it yet, but that's soon.
+The Halo Driver (HD). Wrapper for the halo.
 
 ```
 ───┐ org.firstinspires.ftc.teamcode
