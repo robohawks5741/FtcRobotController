@@ -34,8 +34,8 @@ public final class HD {
     /**
      * Sets
      */
-    public static void setTargetRotation(int rot) {
-        motorHalo.setTargetPositionTolerance(20);
+    public static void setTargetRotation(int rot, @Nullable Integer tolerance) {
+        motorHalo.setTargetPositionTolerance(((tolerance == null) ? 20 : tolerance));
         motorHalo.setTargetPosition(rot);
         targetRotation = rot;
         motorHalo.setMode(DcMotor.RunMode.RUN_TO_POSITION);
