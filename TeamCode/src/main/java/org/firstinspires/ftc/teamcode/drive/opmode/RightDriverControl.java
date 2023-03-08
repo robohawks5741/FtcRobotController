@@ -49,20 +49,15 @@ public class RightDriverControl extends LinearOpMode implements DriverControlInt
 
         manualSlide = false;
 
-        if(stop == 3)
-            target = tallStop;
+        if (stop == 3) target = tallStop;
 
-        else if(stop == 0)
-            target = bottomStop;
+        else if(stop == 0) target = bottomStop;
 
-        else if(stop == 10)
-            target = hopStop;
+        else if(stop == 10) target = hopStop;
 
-        else if(stop == 2)
-            target = midStop;
+        else if(stop == 2) target = midStop;
 
-        else if(stop == 1)
-            target = lowStop;
+        else if(stop == 1) target = lowStop;
 
 
         linearSlide.setTargetPositionTolerance(tolerance); // This actually moves the motors.

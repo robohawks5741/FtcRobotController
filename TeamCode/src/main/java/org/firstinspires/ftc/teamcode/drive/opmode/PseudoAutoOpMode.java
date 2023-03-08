@@ -89,46 +89,26 @@ public abstract class PseudoAutoOpMode extends LinearOpMode {
 
     public boolean LinearSlideToStop2(int stop, int tolerance, int conesUp){
 
-        if (stop == 1) {
-            target = lowStop;
+        switch (stop) {
+            case 0: { target = bottomStop; break; }
+            case 1: { target = lowStop; break; }
+            case 2: { target = midStop; break; }
+            case 3: { target = tallStop; break; }
+            case 6: { target = AutoMove; break; }
+            case 7: { target = coneStack - conesUp * 75; break; }
+            case 9: { target = insert; break; }
+            case 10: { target = hopStop; break; }
         }
-        else if (stop == 7){
-            target = coneStack-conesUp*75;
-        }
-        else if (stop == 2) {
-            target = midStop;
-        }
-        else if (stop == 3) {
-            target = tallStop;
-        }
-        else if (stop == 0) {
-            target = bottomStop;
-        }
-        else if(stop == 10){
-            target = hopStop;
-        }
-        else if(stop == 9){
-            target = insert;
-        }
-        else if(stop == 6){
-            target = AutoMove;
-        }
-
 
         linearSlide.setTargetPositionTolerance(tolerance);
         linearSlide.setTargetPosition(target);
         linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         linearSlide.setPower(.7);
 
-        if(linearSlide.getCurrentPosition()<=target-tolerance||linearSlide.getCurrentPosition()>=target+tolerance)
-            slide = false;
-        else
-            slide = true;
-
-        if(slide)
-            return true;
-        else
-            return false;
+        //        (pos + tolerance) leq target
+        //        (pos - tolerance) greq target
+        slide = ((linearSlide.getCurrentPosition() <= (target - tolerance)) || (linearSlide.getCurrentPosition() >= (target + tolerance)));
+        return slide;
     }
 
     protected abstract void FirstCone() throws InterruptedException;
