@@ -1,19 +1,15 @@
 package org.firstinspires.ftc.teamcode.drive.opmode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.AprilTagDetectionPipeline;
-import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.RobohawksMecanumDrive;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
-import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -26,7 +22,7 @@ import java.util.ArrayList;
  * [] Linear Slide (linearSlide) -> LSD
  */
 
-public abstract class PseudoAutoOpMode extends LinearOpMode {
+public abstract class AutoSuperOpMode extends LinearOpMode {
 
     OpenCvCamera camera;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
@@ -36,16 +32,16 @@ public abstract class PseudoAutoOpMode extends LinearOpMode {
 
     static final double FEET_PER_METER = 3.28084;
 
-    double fx = 578.272;
-    double fy = 578.272;
-    double cx = 402.145;
-    double cy = 221.506;
+    static final double fx = 578.272;
+    static final double fy = 578.272;
+    static final double cx = 402.145;
+    static final double cy = 221.506;
 
-    double tagsize = 0.166;
+    static final double tagSize = 0.166;
 
-    int ID_TAG_OF_INTEREST = 18;
-    int TAG2 = 2;
-    int TAG3 = 10;
+    static final int ID_TAG_OF_INTEREST = 18;
+    static final int TAG2 = 2;
+    static final int TAG3 = 10;
 
     public int NumberOfTag = 0;
 
@@ -66,15 +62,31 @@ public abstract class PseudoAutoOpMode extends LinearOpMode {
     protected boolean slide = false;
 
     // LinearSlide positions
-    protected static int bottomStop = 0;
-    protected static int lowStop = 1150;
-    protected static int midStop = 1950;
-    protected static int tallStop= 2700;
-    protected static int target =     0;
-    protected static int hopStop =  270;
-    protected static int AutoMove = 523;
-    protected static int coneStack= 360;
-    protected static int insert  = 2500;
+    enum SlidePosition {
+        BOTTOM (0),
+        LOW (1150),
+        MID (1950),
+        TALL (2700),
+        HOP (270),
+        AUTOMOVE (523),
+        CONESTACK (360),
+        INSERT (2500);
+
+
+        final int height;
+
+        SlidePosition(int i) { height = i; }
+    };
+    protected static final int bottomStop = 0;
+    protected static final int lowStop = 1150;
+    protected static final int midStop = 1950;
+    protected static final int tallStop= 2700;
+    protected static final int hopStop =  270;
+    protected static final int AutoMove = 523;
+    protected static final int coneStack= 360;
+    protected static final int insert  = 2500;
+
+    protected int target = 0;
 
     public void susan(int pos){
         lazySusan.setTargetPositionTolerance(20);
@@ -87,18 +99,11 @@ public abstract class PseudoAutoOpMode extends LinearOpMode {
         clawServo.setPosition(pos);
     }
 
-    public boolean LinearSlideToStop2(int stop, int tolerance, int conesUp){
+    public boolean linearSlideToStop(SlidePosition stop, int tolerance, int conesUp){
 
-        switch (stop) {
-            case 0: { target = bottomStop; break; }
-            case 1: { target = lowStop; break; }
-            case 2: { target = midStop; break; }
-            case 3: { target = tallStop; break; }
-            case 6: { target = AutoMove; break; }
-            case 7: { target = coneStack - conesUp * 75; break; }
-            case 9: { target = insert; break; }
-            case 10: { target = hopStop; break; }
-        }
+        if (stop == SlidePosition.CONESTACK) {
+            target = coneStack - conesUp * 75;
+        } else target = stop.height;
 
         linearSlide.setTargetPositionTolerance(tolerance);
         linearSlide.setTargetPosition(target);
@@ -111,8 +116,7 @@ public abstract class PseudoAutoOpMode extends LinearOpMode {
         return slide;
     }
 
-    protected abstract void FirstCone() throws InterruptedException;
-
+    protected abstract void firstCone() throws InterruptedException;
 
     protected abstract void setTrajectories();
 
@@ -120,8 +124,6 @@ public abstract class PseudoAutoOpMode extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
         drive = new RobohawksMecanumDrive(hardwareMap);
-
-
 
         lazySusan = hardwareMap.get(DcMotorEx.class,"lazySusan");
 
@@ -141,7 +143,7 @@ public abstract class PseudoAutoOpMode extends LinearOpMode {
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
-        aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
+        aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagSize, fx, fy, cx, cy);
 
         camera.setPipeline(aprilTagDetectionPipeline);
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
@@ -163,52 +165,34 @@ public abstract class PseudoAutoOpMode extends LinearOpMode {
 
         //Init loop!
 
-        while (!isStarted() && !isStopRequested())
-        {
+        while (!isStarted() && !isStopRequested()) {
             ArrayList<AprilTagDetection> currentDetections = aprilTagDetectionPipeline.getLatestDetections();
 
-            if(currentDetections.size() != 0)
-            {
+            if(currentDetections.size() != 0) {
                 boolean tagFound = false;
 
-                for(AprilTagDetection tag : currentDetections)
-                {
-                    if(tag.id == ID_TAG_OF_INTEREST)
-                    {
-                        tagOfInterest = tag;
-                        tagFound = true;
-                        NumberOfTag = 1;
-                        break;
+                for(AprilTagDetection tag : currentDetections)  {
+                    int tagNum = -1;
+                    switch (tag.id) {
+                        case ID_TAG_OF_INTEREST: tagNum = 1; break;
+                        case TAG2:               tagNum = 2; break;
+                        case TAG3:               tagNum = 3; break;
                     }
-                    if(tag.id == TAG2){
+                    if (tagNum != -1) {
                         tagOfInterest = tag;
+                        NumberOfTag = tagNum;
                         tagFound = true;
-                        NumberOfTag = 2;
-                        break;
-                    }
-                    if(tag.id == TAG3){
-                        tagOfInterest = tag;
-                        tagFound = true;
-                        NumberOfTag = 3;
-                        break;
                     }
                 }
 
-                if(tagFound)
-                {
+                if (tagFound) {
                     telemetry.addLine("Tag of interest is in sight!\n\nLocation data:");
                     tagToTelemetry(tagOfInterest);
-                }
-                else
-                {
+                } else {
                     telemetry.addLine("Don't see tag of interest :(");
-
-                    if(tagOfInterest == null)
-                    {
+                    if (tagOfInterest == null)
                         telemetry.addLine("(The tag has never been seen)");
-                    }
-                    else
-                    {
+                    else {
                         telemetry.addLine("\nBut we HAVE seen the tag before; last seen at:");
                         tagToTelemetry(tagOfInterest);
                     }
@@ -247,7 +231,7 @@ public abstract class PseudoAutoOpMode extends LinearOpMode {
             telemetry.update();
         }
 
-        FirstCone();
+        firstCone();
 
     }
 

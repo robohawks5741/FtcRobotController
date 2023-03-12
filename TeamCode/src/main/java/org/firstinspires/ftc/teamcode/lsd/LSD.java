@@ -29,7 +29,7 @@ public class LSD {
     public enum SlideHeight {
         UNKNOWN (0),
         PRECISE (1),
-        BOTTOM (-100), // bottom, stop here
+        BOTTOM (270), // bottom, stop here
         LOW (-1350),
         MIDDLE (-2133),
         HIGH (-2133), //placeholder value because slide isn't currently tall enough to reach this
