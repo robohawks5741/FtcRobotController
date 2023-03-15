@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.drive.opmode;
 
 import static java.lang.Math.abs;
 
+import android.transition.Slide;
+
 import androidx.annotation.Nullable;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
@@ -55,29 +57,37 @@ public abstract class DriverControlSuperOpMode extends OpMode {
 
     double speed = .5; // Speed multiplier for the drivetrain.
 
-    //state of movement (yes or no) for different target slide positions.
-    boolean slideY = false;
-    boolean slideX = false;
-    boolean slideA = false;
-    boolean slideB = false;
+    int slideTolerance = 35;
+    boolean slideActive = false;
 
    // @Override
    // public void susan90(int input)
 
-    public boolean linearSlideToStop(SlidePosition stop, @Nullable Integer tolerance){
+    public void linearSlideToStop(SlidePosition stop, int tolerance) {
 
         // These if statements set the target location for the slide based on user input.
-        if (tolerance == null) tolerance = 35;
         manualSlide = false;
-
+        slideActive = true;
+        slideTolerance = tolerance;
         target = stop.height;
-        linearSlide.setTargetPositionTolerance(tolerance); // This actually moves the motors.
-        linearSlide.setTargetPosition(target);
-        linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        linearSlide.setPower(.85);
 
         // This is how the program knows if it needs to call the function in the next loop to complete the move.
-        return linearSlide.getCurrentPosition() > target - tolerance && linearSlide.getCurrentPosition() < target + tolerance;
+    }
+
+    public void linearSlideToStop(SlidePosition stop) {
+        linearSlideToStop(stop, 35);
+    }
+
+    void linearSlideUpdate() {
+        if (slideActive) {
+            int cpos = linearSlide.getCurrentPosition();
+            if (cpos >= target - slideTolerance && cpos <= target + slideTolerance) {
+                linearSlide.setTargetPositionTolerance(slideTolerance); // This actually moves the motors.
+                linearSlide.setTargetPosition(target);
+                linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                linearSlide.setPower(.85);
+            } else slideActive = false;
+        }
     }
 
     abstract void susanToPosition(int targetPosition);
@@ -145,35 +155,24 @@ public abstract class DriverControlSuperOpMode extends OpMode {
             //Following if statements operate LinearSlide macros.
 
 
-            if (gamepad2.y || slideY) {
-                slideB = false;
-                slideA = false;
-                slideX = false;
+            if (gamepad2.y) {
                 down1 = false;
-                slideY = !linearSlideToStop(SlidePosition.TALL, 35);
-            } else if (gamepad2.b || slideB) {
-                //lazySusan.setTargetPositionTolerance(50);
-                //linearSlide.setTargetPosition(lazySusan.getCurrentPosition()+232 <= 462 ? 0 : lazySusan.getCurrentPosition()+232 <= 923 ? 462 : lazySusan.getCurrentPosition()+232 <= 1385 ? 923 : 1385);
-                slideY = false;
-                slideA = false;
-                slideX = false;
+                linearSlideToStop(SlidePosition.TALL);
+            }
+            if (gamepad2.b) {
                 down1 = false;
-                slideB = !linearSlideToStop(SlidePosition.BOTTOM, 35);
-            } else if (gamepad2.a || slideX) {
-                slideB = false;
-                slideA = false;
-                slideY = false;
+                linearSlideToStop(SlidePosition.BOTTOM);
+            }
+            if (gamepad2.a) {
                 down1 = false;
-                slideX = !linearSlideToStop(SlidePosition.LOW, 35);
-            } else if (gamepad2.x || slideA) {
-                slideB = false;
-                slideY = false;
-                slideX = false;
+                linearSlideToStop(SlidePosition.LOW);
+            }
+            if (gamepad2.x) {
                 down1 = false;
-                slideA = !linearSlideToStop(SlidePosition.MID, 35);
+                linearSlideToStop(SlidePosition.MID);
             }
 
-
+            linearSlideUpdate();
             // Code for manual operation of HALO device, the big long line with lots of "? :" statements is to curve the stick input to a controllable amount.
 
             if (gamepad2.left_stick_x >= .05 || gamepad2.left_stick_x <= -.05) {
@@ -191,14 +190,10 @@ public abstract class DriverControlSuperOpMode extends OpMode {
 
             // Macros for LazySusan positions.
 
-            if (gamepad2.dpad_up)
-                susanToPosition(0);
-            else if (gamepad2.dpad_left)
-                susanToPosition(3);
-            else if (gamepad2.dpad_down)
-                susanToPosition(2);
-            else if (gamepad2.dpad_right)
-                susanToPosition(1);
+            if (gamepad2.dpad_up)         susanToPosition(0);
+            else if (gamepad2.dpad_left)  susanToPosition(3);
+            else if (gamepad2.dpad_down)  susanToPosition(2);
+            else if (gamepad2.dpad_right) susanToPosition(1);
 
 
             //UPDATE stuff
