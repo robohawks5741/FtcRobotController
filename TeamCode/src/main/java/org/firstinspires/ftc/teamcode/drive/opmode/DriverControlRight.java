@@ -33,7 +33,7 @@ public class DriverControlRight extends DriverControlSuperOpMode {
             default: desiredPosition = 462; break;
         }
 
-        if(linearSlide.getCurrentPosition()<=270){
+        if (linearSlide.getCurrentPosition() <= 270) {
             if(!(lazySusan.getCurrentPosition() + 50 > desiredPosition & lazySusan.getCurrentPosition() - 50 < desiredPosition)) {
                 LinearSlideToStop2(10, 30);
                 down1 = true;
@@ -46,11 +46,10 @@ public class DriverControlRight extends DriverControlSuperOpMode {
         lazySusan.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         lazySusan.setPower(.5);
 
-
-        if(down1) {
+        if (down1) {
             if (lazySusan.getCurrentPosition() + 50 > desiredPosition & lazySusan.getCurrentPosition() - 50 < desiredPosition & linearSlide.getCurrentPosition() > 250) {
                 LinearSlideToStop2(0, 20);
-                if(linearSlide.getCurrentPosition()<25) {
+                if (linearSlide.getCurrentPosition() < 25) {
                     down1 = false;
                 }
             }

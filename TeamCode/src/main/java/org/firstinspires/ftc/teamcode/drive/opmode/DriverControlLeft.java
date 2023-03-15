@@ -49,7 +49,7 @@ public class DriverControlLeft extends DriverControlSuperOpMode {
         if (down1) {
             if (lazySusan.getCurrentPosition() + 50 > desiredPosition & lazySusan.getCurrentPosition() - 50 < desiredPosition & linearSlide.getCurrentPosition() > 250) {
                 LinearSlideToStop2(0, 20);
-                if(linearSlide.getCurrentPosition()<25) {
+                if (linearSlide.getCurrentPosition() < 25)   {
                     down1 = false;
                 }
             }

@@ -55,11 +55,11 @@ public class AutonomousRight extends AutoSuperOpMode {
         susan(0);
         linearSlideToStop(SlidePosition.BOTTOM,35,0);
         claw(.32);
-        if(NumberOfTag == 2)
+        if(numberOfTag == 2)
             drive.followTrajectory(parkPosition1);
-        else if(NumberOfTag == 1)
+        else if(numberOfTag == 1)
             drive.followTrajectory(parkPosition2);
-        else if(NumberOfTag == 3)
+        else if(numberOfTag == 3)
             drive.followTrajectory(parkPosition3);
         else
             drive.followTrajectory(parkPosition2);

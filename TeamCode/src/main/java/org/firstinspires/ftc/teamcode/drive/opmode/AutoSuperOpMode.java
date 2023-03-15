@@ -43,7 +43,7 @@ public abstract class AutoSuperOpMode extends LinearOpMode {
     static final int TAG2 = 2;
     static final int TAG3 = 10;
 
-    public int NumberOfTag = 0;
+    public int numberOfTag = 0;
 
     int conesUp = 0;
 
@@ -72,19 +72,10 @@ public abstract class AutoSuperOpMode extends LinearOpMode {
         CONESTACK (360),
         INSERT (2500);
 
-
         final int height;
 
         SlidePosition(int i) { height = i; }
     };
-    protected static final int bottomStop = 0;
-    protected static final int lowStop = 1150;
-    protected static final int midStop = 1950;
-    protected static final int tallStop= 2700;
-    protected static final int hopStop =  270;
-    protected static final int AutoMove = 523;
-    protected static final int coneStack= 360;
-    protected static final int insert  = 2500;
 
     protected int target = 0;
 
@@ -102,7 +93,7 @@ public abstract class AutoSuperOpMode extends LinearOpMode {
     public boolean linearSlideToStop(SlidePosition stop, int tolerance, int conesUp){
 
         if (stop == SlidePosition.CONESTACK) {
-            target = coneStack - conesUp * 75;
+            target = SlidePosition.CONESTACK.height - conesUp * 75;
         } else target = stop.height;
 
         linearSlide.setTargetPositionTolerance(tolerance);
@@ -139,7 +130,6 @@ public abstract class AutoSuperOpMode extends LinearOpMode {
         lazySusan.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE); //Sets HALO to brake mode.
 
         setTrajectories();
-
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
@@ -180,7 +170,7 @@ public abstract class AutoSuperOpMode extends LinearOpMode {
                     }
                     if (tagNum != -1) {
                         tagOfInterest = tag;
-                        NumberOfTag = tagNum;
+                        numberOfTag = tagNum;
                         tagFound = true;
                     }
                 }
