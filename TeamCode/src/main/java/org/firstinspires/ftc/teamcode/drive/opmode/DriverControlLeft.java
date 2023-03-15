@@ -2,15 +2,8 @@ package org.firstinspires.ftc.teamcode.drive.opmode;
 
 import static java.lang.Math.abs;
 
-import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Servo;
-
-import org.firstinspires.ftc.teamcode.drive.RobohawksMecanumDrive;
 
 /**
  * This is a simple teleop routine for testing localization. Drive the robot around like a normal
@@ -35,7 +28,7 @@ public class DriverControlLeft extends DriverControlSuperOpMode {
 
         if (linearSlide.getCurrentPosition() <= 270) {
             if(!(lazySusan.getCurrentPosition() + 50 > desiredPosition & lazySusan.getCurrentPosition() - 50 < desiredPosition)) {
-                LinearSlideToStop2(10, 30);
+                linearSlideToStop(SlidePosition.HOP, 30);
                 down1 = true;
             }
         }
@@ -48,7 +41,7 @@ public class DriverControlLeft extends DriverControlSuperOpMode {
 
         if (down1) {
             if (lazySusan.getCurrentPosition() + 50 > desiredPosition & lazySusan.getCurrentPosition() - 50 < desiredPosition & linearSlide.getCurrentPosition() > 250) {
-                LinearSlideToStop2(0, 20);
+                linearSlideToStop(SlidePosition.BOTTOM, 20);
                 if (linearSlide.getCurrentPosition() < 25)   {
                     down1 = false;
                 }

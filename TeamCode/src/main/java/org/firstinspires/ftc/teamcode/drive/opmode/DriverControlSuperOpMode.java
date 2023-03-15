@@ -2,8 +2,10 @@ package org.firstinspires.ftc.teamcode.drive.opmode;
 
 import static java.lang.Math.abs;
 
+import androidx.annotation.Nullable;
+
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -20,15 +22,9 @@ import org.firstinspires.ftc.teamcode.drive.RobohawksMecanumDrive;
  * encoder localizer heading may be significantly off if the track width has not been tuned).
  */
 @TeleOp(group = "drive")
-public abstract class DriverControlSuperOpMode extends LinearOpMode {
+public abstract class DriverControlSuperOpMode extends OpMode {
 
-    protected static int bottomStop = 0;//bottom, stop here
-    protected static int lowStop = 1150;
-    protected static int midStop = 1950;
-    protected static int tallStop= 2700;//placeholder value because slide isn't currently tall enough to reach the "tallStop"
-    protected static int tooTall = 2970;//max height
-    protected static int target =     0;//placeholder here, gets used in function LinearSlideToStop()
-    protected static boolean slide = false;
+    protected int target = 0;//placeholder here, gets used in function LinearSlideToStop()
     protected static int hopStop = 270;
     protected static boolean off = false;
     protected static boolean turn = false;
@@ -37,28 +33,48 @@ public abstract class DriverControlSuperOpMode extends LinearOpMode {
     protected static boolean manualSusan = false;
     protected static Servo clawServo;
 
+
+    // LinearSlide positions
+    enum SlidePosition {
+        BOTTOM (0),
+        LOW (1150),
+        MID (1950),
+        TALL (2700),
+        MAX (2970),
+        HOP (270),
+        INSERT (2500);
+
+        final int height;
+
+        SlidePosition(int i) { height = i; }
+    };
+
     protected static DcMotorEx linearSlide, lazySusan;
+
+    protected RobohawksMecanumDrive drive;
+
+    double speed = .5; // Speed multiplier for the drivetrain.
+
+    //state of movement (yes or no) for different target slide positions.
+    boolean slideY = false;
+    boolean slideX = false;
+    boolean slideA = false;
+    boolean slideB = false;
 
    // @Override
    // public void susan90(int input)
 
-    public boolean LinearSlideToStop2(int stop, int tolerance){
+    public boolean linearSlideToStop(SlidePosition stop, @Nullable Integer tolerance){
 
         // These if statements set the target location for the slide based on user input.
-
+        if (tolerance == null) tolerance = 35;
         manualSlide = false;
 
-        if (stop == 3) target = tallStop;
-        else if(stop == 0) target = bottomStop;
-        else if(stop == 10) target = hopStop;
-        else if(stop == 2) target = midStop;
-        else if(stop == 1) target = lowStop;
-
+        target = stop.height;
         linearSlide.setTargetPositionTolerance(tolerance); // This actually moves the motors.
         linearSlide.setTargetPosition(target);
         linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         linearSlide.setPower(.85);
-
 
         // This is how the program knows if it needs to call the function in the next loop to complete the move.
         return linearSlide.getCurrentPosition() > target - tolerance && linearSlide.getCurrentPosition() < target + tolerance;
@@ -66,38 +82,25 @@ public abstract class DriverControlSuperOpMode extends LinearOpMode {
 
     abstract void susanToPosition(int targetPosition);
 
-    @Override
-    public void runOpMode() throws InterruptedException {
-
+    public void init() {
         // Declare the used non-drive motors.
 
         lazySusan = hardwareMap.get(DcMotorEx.class, "lazySusan");
-
         linearSlide = hardwareMap.get(DcMotorEx.class, "linearSlide");
-
         clawServo = hardwareMap.get(Servo.class, "clawServo");
+        drive = new RobohawksMecanumDrive(hardwareMap); //Instance of SampleMecanum drive to access methods in the file.
+    }
 
-
-        double speed = .5; //Speed multiplier for the drivetrain.
-
-        boolean slideY = false; //state of movement (yes or no) for different target slide positions.
-        boolean slideX = false;
-        boolean slideA = false;
-        boolean slideB = false;
-
-        RobohawksMecanumDrive drive = new RobohawksMecanumDrive(hardwareMap); //Instance of SampleMecanum drive to access methods in the file.
-
+    @Override
+    public void start() {
         linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); //Start encoders at position 0.
         lazySusan.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         lazySusan.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE); //Sets HALO to brake mode.
         lazySusan.setDirection(DcMotorSimple.Direction.REVERSE);
+    }
 
-
-        waitForStart();
-
-
-        while (opModeIsActive()) { //!!Main loop!!
+    public void loop() { //!!Main loop!!
 
             if (linearSlide.getCurrentPosition() >= 1500) speed = .25;
                 // Change drive speed coefficient.
@@ -147,11 +150,7 @@ public abstract class DriverControlSuperOpMode extends LinearOpMode {
                 slideA = false;
                 slideX = false;
                 down1 = false;
-                if (LinearSlideToStop2(3, 35))
-
-                    slideY = false;
-                else
-                    slideY = true;
+                slideY = !linearSlideToStop(SlidePosition.TALL, 35);
             } else if (gamepad2.b || slideB) {
                 //lazySusan.setTargetPositionTolerance(50);
                 //linearSlide.setTargetPosition(lazySusan.getCurrentPosition()+232 <= 462 ? 0 : lazySusan.getCurrentPosition()+232 <= 923 ? 462 : lazySusan.getCurrentPosition()+232 <= 1385 ? 923 : 1385);
@@ -159,31 +158,19 @@ public abstract class DriverControlSuperOpMode extends LinearOpMode {
                 slideA = false;
                 slideX = false;
                 down1 = false;
-                if (LinearSlideToStop2(0, 35))
-
-                    slideB = false;
-                else
-                    slideB = true;
+                slideB = !linearSlideToStop(SlidePosition.BOTTOM, 35);
             } else if (gamepad2.a || slideX) {
                 slideB = false;
                 slideA = false;
                 slideY = false;
                 down1 = false;
-                if (LinearSlideToStop2(1, 35))
-
-                    slideX = false;
-                else
-                    slideX = true;
+                slideX = !linearSlideToStop(SlidePosition.LOW, 35);
             } else if (gamepad2.x || slideA) {
                 slideB = false;
                 slideY = false;
                 slideX = false;
                 down1 = false;
-                if (LinearSlideToStop2(2, 35))
-
-                    slideA = false;
-                else
-                    slideA = true;
+                slideA = !linearSlideToStop(SlidePosition.MID, 35);
             }
 
 
@@ -238,6 +225,5 @@ public abstract class DriverControlSuperOpMode extends LinearOpMode {
             telemetry.addData("susan", lazySusan.getCurrentPosition());
 
             telemetry.update();
-        }
     }
 }

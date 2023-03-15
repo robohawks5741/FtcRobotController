@@ -32,7 +32,7 @@ public class LSD {
         BOTTOM (270), // bottom, stop here
         LOW (-1350),
         MIDDLE (-2133),
-        HIGH (-2133), //placeholder value because slide isn't currently tall enough to reach this
+        HIGH (-2133), // placeholder value because slide isn't currently tall enough to reach this
         TOP (-2375);
 
         private final double stopPower;

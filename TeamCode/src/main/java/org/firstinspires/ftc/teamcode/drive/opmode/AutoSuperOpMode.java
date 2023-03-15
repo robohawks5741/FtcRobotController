@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.drive.opmode;
 
+import android.annotation.SuppressLint;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -75,7 +77,7 @@ public abstract class AutoSuperOpMode extends LinearOpMode {
         final int height;
 
         SlidePosition(int i) { height = i; }
-    };
+    }
 
     protected int target = 0;
 
@@ -117,7 +119,6 @@ public abstract class AutoSuperOpMode extends LinearOpMode {
         drive = new RobohawksMecanumDrive(hardwareMap);
 
         lazySusan = hardwareMap.get(DcMotorEx.class,"lazySusan");
-
         linearSlide = hardwareMap.get(DcMotorEx.class, "linearSlide");
         lazySusan.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         clawServo = hardwareMap.get(Servo.class, "clawServo");
@@ -136,8 +137,7 @@ public abstract class AutoSuperOpMode extends LinearOpMode {
         aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagSize, fx, fy, cx, cy);
 
         camera.setPipeline(aprilTagDetectionPipeline);
-        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
-        {
+        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened()
             {
@@ -145,10 +145,7 @@ public abstract class AutoSuperOpMode extends LinearOpMode {
             }
 
             @Override
-            public void onError(int errorCode)
-            {
-
-            }
+            public void onError(int errorCode) { telemetry.addLine("CAMERA DEVICE ERROR!"); }
         });
 
         telemetry.setMsTransmissionInterval(50);
@@ -225,6 +222,7 @@ public abstract class AutoSuperOpMode extends LinearOpMode {
 
     }
 
+    @SuppressLint("DefaultLocale")
     void tagToTelemetry(AprilTagDetection detection)
     {
         telemetry.addLine(String.format("\nDetected tag ID=%d", detection.id));
