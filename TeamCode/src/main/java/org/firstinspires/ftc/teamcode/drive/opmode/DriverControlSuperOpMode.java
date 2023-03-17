@@ -1,10 +1,7 @@
 package org.firstinspires.ftc.teamcode.drive.opmode;
 
 import static java.lang.Math.abs;
-
-import android.transition.Slide;
-
-import androidx.annotation.Nullable;
+import static java.lang.Math.signum;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -59,9 +56,7 @@ public abstract class DriverControlSuperOpMode extends OpMode {
 
     int slideTolerance = 35;
     boolean slideActive = false;
-
-   // @Override
-   // public void susan90(int input)
+    static double analogInputThreshold = 0.05;
 
     public void linearSlideToStop(SlidePosition stop, int tolerance) {
 
@@ -74,9 +69,10 @@ public abstract class DriverControlSuperOpMode extends OpMode {
         // This is how the program knows if it needs to call the function in the next loop to complete the move.
     }
 
-    public void linearSlideToStop(SlidePosition stop) {
-        linearSlideToStop(stop, 35);
-    }
+    /**
+     * Different signature of {@link DriverControlSuperOpMode#linearSlideToStop(SlidePosition stop, int tolerance)}
+     */
+    public void linearSlideToStop(SlidePosition stop) { linearSlideToStop(stop, 35); }
 
     void linearSlideUpdate() {
         if (slideActive) {
@@ -110,33 +106,45 @@ public abstract class DriverControlSuperOpMode extends OpMode {
         lazySusan.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
-    public void loop() { //!!Main loop!!
-
+    public void loop() {
             if (linearSlide.getCurrentPosition() >= 1500) speed = .25;
-                // Change drive speed coefficient.
+            // Change drive speed coefficient.
             else if (gamepad1.a) speed = .25;
             else if (gamepad1.b) speed = .5;
             else if (gamepad1.y) speed = .75;
 
-            drive.setWeightedDrivePower(
-                    new Pose2d(
 
-                            -(gamepad1.left_stick_y >= 0 ? 1 : -1) * Math.pow(abs((double) gamepad1.left_stick_y), 1.7) * (speed) + (abs(gamepad1.left_stick_y) > .05 ? (gamepad1.left_stick_y >= 0 ? .05 : -.05) : 0), // These lines translate the raw code from the sticks into
-                            -(gamepad1.left_stick_x >= 0 ? 1 : -1) * Math.pow(abs((double) gamepad1.left_stick_x), 1.7) * (speed) + (abs(gamepad1.left_stick_x) > .05 ? (gamepad1.left_stick_x >= 0 ? .05 : -.05) : 0),   //  a curved +/- input for the motors. It sends the values to a
-                            (gamepad1.right_stick_x >= 0 ? -1 : 1) * Math.pow(abs((double) gamepad1.right_stick_x), 1.7) * (speed) + (abs(gamepad1.right_stick_x) > .05 ? (gamepad1.right_stick_x >= 0 ? .05 : -.05) : 0)       // function in roadrunner.
-                    )
+            // These lines translate the raw code from the sticks into
+            // a curved +/- input for the motors. It sends the values to a
+            // function in roadrunner.
+
+            // Desmos (LATeX)
+            /*
+             * -1\le x\le1
+             * g=x\left\{-1\le x\le1\right\}
+             * s=0.5
+             * t=0.05
+             * <NOTE: 0 <= t <= 0.99, step 0.01>
+             * p=1.7
+             * <NOTE: 0 <= p <= 10>
+             * o=\left\{\left|g\right|>t:\operatorname{sign}\left(g\right)t,0\right\}
+             * y=s\cdot\operatorname{sign}\left(g\right)\cdot\left|g\right|^{p}+o
+             */
+            Pose2d drivePower = new Pose2d(
+                speed * -signum(gamepad1.left_stick_y ) * Math.pow(abs((double) gamepad1.left_stick_y ), 1.7) + (abs(gamepad1.left_stick_y ) > analogInputThreshold ? signum(gamepad1.left_stick_y ) * analogInputThreshold : 0 ),
+                speed * -signum(gamepad1.left_stick_x ) * Math.pow(abs((double) gamepad1.left_stick_x ), 1.7) + (abs(gamepad1.left_stick_x ) > analogInputThreshold ? signum(gamepad1.left_stick_x ) * analogInputThreshold : 0 ),
+                speed * -signum(gamepad1.right_stick_x) * Math.pow(abs((double) gamepad1.right_stick_x), 1.7) + (abs(gamepad1.right_stick_x) > analogInputThreshold ? signum(gamepad1.right_stick_x) * analogInputThreshold : 0 )
             );
 
+            drive.setWeightedDrivePower(drivePower);
 
-            if (gamepad2.left_trigger >= .05 || gamepad2.right_trigger >= .05) {  //manual LinearSlide controls via triggers.
+            if (gamepad2.left_trigger >= analogInputThreshold || gamepad2.right_trigger >= analogInputThreshold) {  // manual LinearSlide controls via triggers.
                 linearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-                manualSlide = true; //Reports that slide is operating manually, not via a macro.
+                manualSlide = true; // Reports that slide is operating manually, not via a macro.
 
-                if (gamepad2.right_trigger >= .05)
-                    linearSlide.setPower(gamepad2.right_trigger);
-                else
-                    linearSlide.setPower(-gamepad2.left_trigger);
+
+                linearSlide.setPower(((gamepad2.right_trigger >= gamepad2.left_trigger) ? gamepad2.right_trigger : -gamepad2.left_trigger));
             } else if (manualSlide) { //Tests to see if its operating via a macro, doesn't interrupt macro if the test is positive.
 
                 linearSlide.setPower(0); //todo PROBLEM (might be resolved)
@@ -144,17 +152,13 @@ public abstract class DriverControlSuperOpMode extends OpMode {
 
             }
 
-
-            if (gamepad2.right_bumper) //Operate end effector (claw)
-                clawServo.setPosition(.5);
-
-            if (gamepad2.left_bumper)
-                clawServo.setPosition(.25);
+            // Operate end effector (claw)
+            if (gamepad2.right_bumper) clawServo.setPosition(.5);
+            if (gamepad2.left_bumper ) clawServo.setPosition(.25);
 
 
-            //Following if statements operate LinearSlide macros.
-
-
+            // Following if statements operate LinearSlide macros.
+            // TODO: this will always cause priority issues because changes in state are ignored
             if (gamepad2.y) {
                 down1 = false;
                 linearSlideToStop(SlidePosition.TALL);
@@ -175,12 +179,18 @@ public abstract class DriverControlSuperOpMode extends OpMode {
             linearSlideUpdate();
             // Code for manual operation of HALO device, the big long line with lots of "? :" statements is to curve the stick input to a controllable amount.
 
-            if (gamepad2.left_stick_x >= .05 || gamepad2.left_stick_x <= -.05) {
+            if (abs(gamepad2.left_stick_x) >= .05) {
                 lazySusan.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
                 manualSusan = true; // Reports that LazySusan is operating manually, and requires stopping.
 
-                lazySusan.setPower((gamepad2.left_stick_x >= .05 ? -Math.pow(gamepad2.left_stick_x, 2) <= -.25 ? -.25 : -Math.pow(gamepad2.left_stick_x, 2) >= -.05 ? -.05 : -Math.pow(gamepad2.left_stick_x, 2) : Math.pow(gamepad2.left_stick_x, 2) >= .25 ? .25 : Math.pow(gamepad2.left_stick_x, 2) <= .05 ? .05 : Math.pow(gamepad2.left_stick_x, 2)));
+                lazySusan.setPower(
+                    signum(gamepad2.left_stick_x) *
+                    ((Math.pow(gamepad2.left_stick_x, 2) >= .25) ?
+                        .25 :
+                        Math.max(Math.pow(gamepad2.left_stick_x, 2), .05)
+                    )
+                );
             } else if (manualSusan) { // If Susan was moved manually, stop when no longer receiving input.
 
                 lazySusan.setPower(0);
