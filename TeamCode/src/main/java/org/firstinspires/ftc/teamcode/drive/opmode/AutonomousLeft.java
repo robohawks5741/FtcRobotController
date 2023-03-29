@@ -14,57 +14,74 @@ public class AutonomousLeft extends AutoSuperOpMode {
     @Override
     public void firstCone() throws InterruptedException {
         claw(.6);
-        Thread.sleep(700);
+        sleep(700);
+
         susan(80);
-        Thread.sleep(500);
+        sleep(500);
+
         susan(0);
-        Thread.sleep(600);
+        sleep(600);
+
         linearSlideToStop(SlidePosition.AUTOMOVE, 30, 0);
         drive.followTrajectory(forwards);
-        Thread.sleep(100);
+        sleep(100);
+
         drive.followTrajectory(returnus);
         drive.turn(Math.toRadians(90));
         linearSlideToStop(SlidePosition.TALL, 35, 0);
         drive.followTrajectory(right);
         susan(462);
-        Thread.sleep(1000);
+        sleep(1000);
+
         drive.followTrajectory(left);
-        Thread.sleep(500);
+        sleep(500);
+
         linearSlideToStop(SlidePosition.INSERT, 35, 0);
-        Thread.sleep(200);
+        sleep(200);
+
         claw(.25);
-        Thread.sleep(500);
-        linearSlideToStop(SlidePosition.CONESTACK, 10, conesUp);
-        conesUp++;
+        sleep(500);
+
+        linearSlideToStop(SlidePosition.CONESTACK, 10, conesUp++);
         susan(0);
         drive.followTrajectory(toCones);
-        Thread.sleep(250);
+        sleep(250);
+
         claw(.6);
-        Thread.sleep(500);
+        sleep(500);
+
         linearSlideToStop(SlidePosition.LOW, 20, conesUp);
-        Thread.sleep(500);
+        sleep(500);
+
         drive.followTrajectory(toPole);
         linearSlideToStop(SlidePosition.TALL, 30, 0);
-        Thread.sleep(1500);
+        sleep(1500);
+
         susan(440);
-        Thread.sleep(500);
+        sleep(500);
+
         linearSlideToStop(SlidePosition.INSERT, 30, 0);
-        Thread.sleep(750);
+        sleep(750);
+
         claw(.25);
-        Thread.sleep(750);
+        sleep(750);
+
         switch (numberOfTag) {
-            case 2: { drive.followTrajectory(parkPosition1); }
-            case 3: { drive.followTrajectory(parkPosition3); }
+            case 2: drive.followTrajectory(parkPosition1); break;
+            case 3: drive.followTrajectory(parkPosition3); break;
             default:
-            case 1: { drive.followTrajectory(parkPosition2); }
+            case 1: drive.followTrajectory(parkPosition2); break;
         }
-        Thread.sleep(250);
+        sleep(250);
+
         susan(0);
-        Thread.sleep(1000);
+        sleep(1000);
+
         linearSlideToStop(SlidePosition.BOTTOM, 35, 0);
-        Thread.sleep(1000);
+        sleep(1000);
+
         claw(.32);
-        Thread.sleep(300);
+        sleep(300);
 
     }
 

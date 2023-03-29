@@ -15,15 +15,16 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 @TeleOp(group = "drive")
 public class DriverControlRight extends DriverControlSuperOpMode {
 
+    // TODO: replace w/ enum
     void susanToPosition(int targetPosition) { // TODO cleanup
 
         int desiredPosition;
         // Sets target encoder position.
         switch (targetPosition) {
-            case 0: desiredPosition = 0; break;
-            case 1: desiredPosition = 1385; break;
-            case 2: desiredPosition = 923; break;
-            default: desiredPosition = 462; break;
+            case 0: desiredPosition = 0; break; // forward
+            case 1: desiredPosition = 1385; break; // right
+            case 2: desiredPosition = 923; break; // back
+            default: desiredPosition = 462; break; // left
         }
 
         if (linearSlide.getCurrentPosition() <= 270) {

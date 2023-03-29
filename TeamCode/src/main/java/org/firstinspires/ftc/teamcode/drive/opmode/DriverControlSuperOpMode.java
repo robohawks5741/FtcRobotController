@@ -23,7 +23,7 @@ import org.firstinspires.ftc.teamcode.drive.RobohawksMecanumDrive;
 @TeleOp(group = "drive")
 public abstract class DriverControlSuperOpMode extends OpMode {
 
-    protected int target = 0;//placeholder here, gets used in function LinearSlideToStop()
+    protected int slideTarget = 0;//placeholder here, gets used in function LinearSlideToStop()
     protected static int hopStop = 270;
     protected static boolean off = false;
     protected static boolean turn = false;
@@ -46,7 +46,18 @@ public abstract class DriverControlSuperOpMode extends OpMode {
         final int height;
 
         SlidePosition(int i) { height = i; }
-    };
+    }
+
+//    enum SusanPosition {
+//        FRONT (0),
+//        RIGHT (1150),
+//        BACK (1950),
+//        LEFT (1950);
+//
+//        int position;
+//
+//        SusanPosition(int i) { position = i; }
+//    }
 
     protected static DcMotorEx linearSlide, lazySusan;
 
@@ -64,7 +75,7 @@ public abstract class DriverControlSuperOpMode extends OpMode {
         manualSlide = false;
         slideActive = true;
         slideTolerance = tolerance;
-        target = stop.height;
+        slideTarget = stop.height;
 
         // This is how the program knows if it needs to call the function in the next loop to complete the move.
     }
@@ -77,9 +88,10 @@ public abstract class DriverControlSuperOpMode extends OpMode {
     void linearSlideUpdate() {
         if (slideActive) {
             int cpos = linearSlide.getCurrentPosition();
-            if (cpos >= target - slideTolerance && cpos <= target + slideTolerance) {
+            int v = abs(slideTarget - cpos);
+            if (v >= slideTolerance) {
                 linearSlide.setTargetPositionTolerance(slideTolerance); // This actually moves the motors.
-                linearSlide.setTargetPosition(target);
+                linearSlide.setTargetPosition(slideTarget);
                 linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 linearSlide.setPower(.85);
             } else slideActive = false;
@@ -160,19 +172,19 @@ public abstract class DriverControlSuperOpMode extends OpMode {
             // Following if statements operate LinearSlide macros.
             // TODO: this will always cause priority issues because changes in state are ignored
             if (gamepad2.y) {
-                down1 = false;
+//                down1 = false;
                 linearSlideToStop(SlidePosition.TALL);
             }
             if (gamepad2.b) {
-                down1 = false;
+//                down1 = false;
                 linearSlideToStop(SlidePosition.BOTTOM);
             }
             if (gamepad2.a) {
-                down1 = false;
+//                down1 = false;
                 linearSlideToStop(SlidePosition.LOW);
             }
             if (gamepad2.x) {
-                down1 = false;
+//                down1 = false;
                 linearSlideToStop(SlidePosition.MID);
             }
 
@@ -220,14 +232,15 @@ public abstract class DriverControlSuperOpMode extends OpMode {
 
             // Telemetry for gamepad input.
 
-            telemetry.addData("leftX", gamepad1.left_stick_x);
-            telemetry.addData("leftY", gamepad1.left_stick_y);
-            telemetry.addData("rightX", gamepad1.right_stick_x);
+            telemetry.addData("Gamepad LeftX", gamepad1.left_stick_x);
+            telemetry.addData("Gamepad LeftY", gamepad1.left_stick_y);
+            telemetry.addData("Gamepad RightX", gamepad1.right_stick_x);
 
             // Telemetry for LazySusan and LinearSlide positions/
 
-            telemetry.addData("RawLsPos", linearSlide.getCurrentPosition());
-            telemetry.addData("susan", lazySusan.getCurrentPosition());
+            telemetry.addData("Current Slide Pos", linearSlide.getCurrentPosition());
+            telemetry.addData("TargetSlidePos", slideTarget);
+            telemetry.addData("Susan Position", lazySusan.getCurrentPosition());
 
             telemetry.update();
     }
