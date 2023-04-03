@@ -17,6 +17,10 @@ import java.util.Map;
 @SuppressWarnings("rawtypes")
 public final class Gamepadyn {
 
+    static {
+//        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.TIRAMISU) throw new RuntimeException("Android SDK level not high enough for Gamepadyn to function!");
+    }
+
     public static void opmodeInit(@NonNull OpMode op) {
         inputThread = null;
         inputThread = new Thread(Gamepadyn::inputThreadLoop);

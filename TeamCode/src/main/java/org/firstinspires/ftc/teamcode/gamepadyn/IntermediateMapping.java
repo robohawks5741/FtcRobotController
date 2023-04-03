@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.gamepadyn;
 
 // RawGamepadInput MappingAction
-class MappingIm {
+class IntermediateMapping {
     static class DigitalMap {
         // one of MappingActionDigital.name()
         String mode;
@@ -37,22 +37,38 @@ class MappingIm {
     }
 
     static class MapsField {
-        DigitalMap fd;
-        DigitalMap fr;
-        DigitalMap fl;
-        DigitalMap fu;
-        DigitalMap du;
-        DigitalMap dd;
-        DigitalMap dl;
-        DigitalMap dr;
-        AnalogMap tr;
-        AnalogMap tl;
-        DigitalMap br;
-        DigitalMap bl;
-        AnalogMap sr;
-        DigitalMap srb;
-        AnalogMap sl;
-        DigitalMap slb;
+        MappingActionDigital fd;
+        MappingActionDigital fr;
+        MappingActionDigital fl;
+        MappingActionDigital fu;
+        MappingActionDigital du;
+        MappingActionDigital dd;
+        MappingActionDigital dl;
+        MappingActionDigital dr;
+        MappingActionAnalog tr;
+        MappingActionAnalog tl;
+        MappingActionDigital br;
+        MappingActionDigital bl;
+        MappingActionAnalog sr;
+        MappingActionDigital srb;
+        MappingActionAnalog sl;
+        MappingActionDigital slb;
+//        DigitalMap fd;
+//        DigitalMap fr;
+//        DigitalMap fl;
+//        DigitalMap fu;
+//        DigitalMap du;
+//        DigitalMap dd;
+//        DigitalMap dl;
+//        DigitalMap dr;
+//        AnalogMap tr;
+//        AnalogMap tl;
+//        DigitalMap br;
+//        DigitalMap bl;
+//        AnalogMap sr;
+//        DigitalMap srb;
+//        AnalogMap sl;
+//        DigitalMap slb;
     }
 
     String description;

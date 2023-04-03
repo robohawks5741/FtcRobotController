@@ -7,38 +7,34 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.reflect.Field;
+import java.util.Arrays;
 
 class ConfigLoader {
     @SuppressWarnings("rawtypes")
     static void loadConfigurationResource(OpMode opmode, String id) throws Exception {
         Context ctx = opmode.hardwareMap.appContext;
         InputStream inputStream;
-        InputStreamReader inputStreamReader;
-        byte[] buffer = null;
+        byte[] buffer;
         String json;
         try {
-            inputStream = ctx.getAssets().open("gamepadyn/lower.json");
-            inputStreamReader = new InputStreamReader(inputStream);
+            inputStream = ctx.getAssets().open(id);
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU)
                 buffer = inputStream.readAllBytes();
+            else {
+                buffer = new byte[0];
+                while (true) {
+                    buffer = Arrays.copyOf(buffer, buffer.length + inputStream.available());
+                    int l = inputStream.read(buffer);
+                    if (l < buffer.length) break;
+                }
+            }
             json = new String(buffer);
             opmode.telemetry.addData("JSON config", json);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         Gson gs = new Gson();
-        MappingIm configObject1 = gs.fromJson(json, MappingIm.class);
-        logger.info("Made it past creating a mapping object");
-        //            TypeToken ctypet = new TypeToken<
-//                Map<
-//                    String, ArrayList<
-//                        Map<String, PlayerObject>
-//                    >
-//                >
-//            >();
-        logger.info(configObject1.description);
-        logger.info(gs.toJson(configObject1.maps, MappingIm.MapsField.class));
+        IntermediateMapping configObject1 = gs.fromJson(json, IntermediateMapping.class);
+        opmode.telemetry.addData("Parsed Config", gs.toJson(configObject1, IntermediateMapping.class));
     }
 }
