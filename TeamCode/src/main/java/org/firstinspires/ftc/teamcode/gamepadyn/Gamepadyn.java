@@ -41,7 +41,7 @@ public final class Gamepadyn {
 
     /**
      * Gets a reference to a gamepad.
-     * @param index The index of the gamepad. IMPORTANT! 0 is gamepad 1, 1 is gamepad 2!!!
+     * @param index The 0-based index of the gamepad. 0 is gamepad 1, 1 is gamepad 2.
      * @return a reference to the gamepad
      */
     @Nullable

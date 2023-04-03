@@ -62,6 +62,16 @@ public final class MappingActionAnalog extends MappingAction {
         // Pair of the action and the axis of that action.
         final Pair<UserActions, Integer> target;
         final AnalogMode mode;
+
+        @NonNull
+        public String toString() {
+            return ("{AxisMap}" +
+                "\nAxisScale: " + axisScale +
+                "\nTarget: " + target +
+                "\nMode: " + mode
+            );
+        }
+
         AxisMap(@Nullable Float axisScale, @NonNull Pair<UserActions, Integer> target, AnalogMode mode) {
             this.axisScale = (axisScale == null) ? 1 : axisScale;
             this.target = target;
@@ -90,6 +100,19 @@ public final class MappingActionAnalog extends MappingAction {
 //    }
 //
 //    PositionMap[] positionMaps;
+
+    @NonNull
+    public String toString() {
+        return ("{MappingActionAnalog}" +
+            "\nAxes: " + axes +
+            "\nMode: " + mode +
+            "\n----- one to one axis -----" +
+            "\nAction: " + action +
+            "\nInput Scale: " + Arrays.toString(inputScale) +
+            "\n----- split axis -----" +
+            "\nAxis Maps: " + Arrays.toString(axisMaps)
+        );
+    }
 
     /**
      * THIS IS THE CONSTRUCTOR FOR THE ONE TO ONE AXES MODE.
