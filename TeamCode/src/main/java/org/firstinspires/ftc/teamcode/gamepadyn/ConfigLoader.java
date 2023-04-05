@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
+@SuppressWarnings("RedundantSuppression")
 class ConfigLoader {
     @SuppressWarnings("rawtypes")
     static void loadConfigurationResource(OpMode opmode, String id) throws Exception {
@@ -22,11 +23,10 @@ class ConfigLoader {
                 buffer = inputStream.readAllBytes();
             else {
                 buffer = new byte[0];
-                while (true) {
+                do {
                     buffer = Arrays.copyOf(buffer, buffer.length + inputStream.available());
                     int l = inputStream.read(buffer);
-                    if (l < buffer.length) break;
-                }
+                } while (inputStream.available() > 0);
             }
             json = new String(buffer);
             opmode.telemetry.addData("JSON config", json);
