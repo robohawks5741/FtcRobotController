@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.drive.RobohawksMecanumDrive;
 
 /**
@@ -241,6 +242,7 @@ public abstract class DriverControlSuperOpMode extends OpMode {
             telemetry.addData("Current Slide Pos", linearSlide.getCurrentPosition());
             telemetry.addData("TargetSlidePos", slideTarget);
             telemetry.addData("Susan Position", lazySusan.getCurrentPosition());
+            telemetry.addData("Slide Macro Status", (slideActive ? "active" : "inactive"));
 
             telemetry.update();
     }

@@ -12,58 +12,81 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 public class AutonomousLeft extends AutoSuperOpMode {
 
     @Override
-    public void firstCone() throws InterruptedException {
+    public void runAuto() throws InterruptedException {
         claw(.6);
+        debugSplit("claw");
         sleep(700);
 
         susan(80);
+        debugSplit("susan");
         sleep(500);
 
         susan(0);
+        debugSplit("susan");
         sleep(600);
 
         linearSlideToStop(SlidePosition.AUTOMOVE, 30, 0);
+        debugSplit("slide");
         drive.followTrajectory(forwards);
+        debugSplit("followTrajectory");
         sleep(100);
 
         drive.followTrajectory(returnus);
+        debugSplit("followTrajectory");
         drive.turn(Math.toRadians(90));
+        debugSplit("turn");
         linearSlideToStop(SlidePosition.TALL, 35, 0);
+        debugSplit("slide");
         drive.followTrajectory(right);
+        debugSplit("followTrajectory");
         susan(462);
+        debugSplit("susan");
         sleep(1000);
 
         drive.followTrajectory(left);
+        debugSplit("followTrajectory");
         sleep(500);
 
         linearSlideToStop(SlidePosition.INSERT, 35, 0);
+        debugSplit("slide");
         sleep(200);
 
         claw(.25);
+        debugSplit("claw");
         sleep(500);
 
         linearSlideToStop(SlidePosition.CONESTACK, 10, conesUp++);
+        debugSplit("slide");
         susan(0);
+        debugSplit("susan");
         drive.followTrajectory(toCones);
+        debugSplit("followTrajectory");
         sleep(250);
 
         claw(.6);
+        debugSplit("claw");
         sleep(500);
 
         linearSlideToStop(SlidePosition.LOW, 20, conesUp);
+        debugSplit("slide");
         sleep(500);
 
         drive.followTrajectory(toPole);
+        debugSplit("followTrajectory");
         linearSlideToStop(SlidePosition.TALL, 30, 0);
+        debugSplit("slide");
         sleep(1500);
 
         susan(440);
+        debugSplit("susan");
         sleep(500);
 
         linearSlideToStop(SlidePosition.INSERT, 30, 0);
+        debugSplit("slide");
         sleep(750);
 
         claw(.25);
+        debugSplit("claw");
         sleep(750);
 
         switch (numberOfTag) {
@@ -72,15 +95,19 @@ public class AutonomousLeft extends AutoSuperOpMode {
             default:
             case 1: drive.followTrajectory(parkPosition2); break;
         }
+        debugSplit("followTrajectory");
         sleep(250);
 
         susan(0);
+        debugSplit("susan");
         sleep(1000);
 
         linearSlideToStop(SlidePosition.BOTTOM, 35, 0);
+        debugSplit("slide");
         sleep(1000);
 
         claw(.32);
+        debugSplit("claw");
         sleep(300);
 
     }
