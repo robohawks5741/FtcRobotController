@@ -12,7 +12,7 @@ import java.util.Arrays;
 @SuppressWarnings("RedundantSuppression")
 class ConfigLoader {
     @SuppressWarnings("rawtypes")
-    static void loadConfigurationResource(OpMode opmode, String id) throws Exception {
+    static void loadConfigurationResource(OpMode opmode, String id) {
         Context ctx = opmode.hardwareMap.appContext;
         InputStream inputStream;
         byte[] buffer;
