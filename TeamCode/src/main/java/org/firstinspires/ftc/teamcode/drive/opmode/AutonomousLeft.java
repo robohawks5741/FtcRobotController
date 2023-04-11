@@ -97,21 +97,21 @@ public class AutonomousLeft extends AutoSuperOpMode {
                 .build();
 
         right = drive.trajectoryBuilder(returnus.end().plus(new Pose2d(0, 0, Math.toRadians(90))))
-                .lineTo(new Vector2d(50, -7.2),
+                .lineTo(new Vector2d(50, -8.2),
                         RobohawksMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         RobohawksMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
                 .build();
 
         left = drive.trajectoryBuilder(right.end())
-                .lineTo(new Vector2d(51, -9.9),
+                .lineTo(new Vector2d(50, -9.3),
                         RobohawksMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         RobohawksMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
                 .build();
 
         toCones = drive.trajectoryBuilder(left.end())
-                .lineTo(new Vector2d(46.8, 25.9),
+                .lineTo(new Vector2d(46.4, 26.2),
                         RobohawksMecanumDrive.getVelocityConstraint(24, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         RobohawksMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )

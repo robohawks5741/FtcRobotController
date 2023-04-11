@@ -217,6 +217,8 @@ public abstract class DriverControlSuperOpMode extends OpMode {
             else if (gamepad2.dpad_down)  susanToPosition(2);
             else if (gamepad2.dpad_right) susanToPosition(1);
 
+            if(gamepad2.right_stick_x>=.75) lazySusan.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
 
             //UPDATE stuff
 
