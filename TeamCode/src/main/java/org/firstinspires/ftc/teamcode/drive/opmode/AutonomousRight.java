@@ -26,7 +26,7 @@ public class AutonomousRight extends AutoSuperOpMode {
         sleep(100);
 
         drive.followTrajectory(returnus);
-        drive.turn(Math.toRadians(-90));
+        drive.turn(Math.toRadians(-90)); //todo bing chilling
         linearSlideToStop(SlidePosition.TALL,35,0);
         drive.followTrajectory(right);
         susan(-462);
@@ -36,13 +36,15 @@ public class AutonomousRight extends AutoSuperOpMode {
         sleep(500);
 
         linearSlideToStop(SlidePosition.INSERT,35,0);
-        sleep(700);
+        //sleep(700);
 
         claw(.25);
-        sleep(500);
+        sleep(250);
 
-        linearSlideToStop(SlidePosition.CONESTACK,10,conesUp++);
         susan(0);
+        sleep(500);
+        linearSlideToStop(SlidePosition.CONESTACK,10,conesUp++);
+
         drive.followTrajectory(toCones);
         sleep(250);
 
