@@ -13,27 +13,27 @@ public class AutonomousRight extends AutoSuperOpMode {
 
     protected void firstCone() throws InterruptedException {
         claw(.6);
-        sleep(700);
+        sleep(400);
 
         susan(80);
-        sleep(500);
+        sleep(100);
 
         susan(0);
-        sleep(600);
+        sleep(200);
 
         linearSlideToStop(SlidePosition.AUTOMOVE,30,0);
         drive.followTrajectory(forwards);
-        sleep(100);
+        //sleep(100);
 
         drive.followTrajectory(returnus);
         drive.turn(Math.toRadians(-84)); //todo bing chilling
         linearSlideToStop(SlidePosition.TALL,35,0);
         drive.followTrajectory(right);
         susan(-462);
-        sleep(1400);
+        //sleep(1400);
 
         drive.followTrajectory(left);
-        sleep(500);
+        sleep(100);
 
         linearSlideToStop(SlidePosition.INSERT,35,0);
         //sleep(700);
@@ -42,7 +42,7 @@ public class AutonomousRight extends AutoSuperOpMode {
         sleep(250);
 
         susan(0);
-        sleep(500);
+        //sleep(500);
         linearSlideToStop(SlidePosition.CONESTACK,10,conesUp++);
 
         drive.followTrajectory(toCones);
@@ -56,13 +56,13 @@ public class AutonomousRight extends AutoSuperOpMode {
 
         drive.followTrajectory(toPole);
         linearSlideToStop(SlidePosition.TALL,30,0);
-        sleep(1500);
+        //sleep(1500);
 
         susan(-462);
         sleep(500);
 
         linearSlideToStop(SlidePosition.INSERT,30,0);
-        sleep(750);
+        sleep(450);
 
         claw(.25);
         sleep(750);
@@ -116,7 +116,7 @@ public class AutonomousRight extends AutoSuperOpMode {
                 .build();
 
         toPole = drive.trajectoryBuilder(toCones.end())
-                .lineTo(new Vector2d(51.75,11.8),
+                .lineTo(new Vector2d(50,12.1),
 
                         RobohawksMecanumDrive.getVelocityConstraint(12, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         RobohawksMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)

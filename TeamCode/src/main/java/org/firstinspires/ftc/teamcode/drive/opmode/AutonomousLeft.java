@@ -17,10 +17,10 @@ public class AutonomousLeft extends AutoSuperOpMode {
         sleep(700);
 
         susan(80);
-        sleep(500);
+        sleep(200);
 
         susan(0);
-        sleep(600);
+        sleep(300);
 
         linearSlideToStop(SlidePosition.AUTOMOVE, 30, 0);
         drive.followTrajectory(forwards);
@@ -31,42 +31,42 @@ public class AutonomousLeft extends AutoSuperOpMode {
         linearSlideToStop(SlidePosition.TALL, 35, 0);
         drive.followTrajectory(right);
         susan(462);
-        sleep(1000);
+        //sleep(1000);
 
         drive.followTrajectory(left);
-        sleep(500);
+        sleep(250);
 
         linearSlideToStop(SlidePosition.INSERT, 35, 0);
         sleep(200);
 
         claw(.25);
-        sleep(237);
+        sleep(500);
 
         susan(0);
-        sleep(500);
+        sleep(100);
         linearSlideToStop(SlidePosition.CONESTACK, 10, conesUp++);
 
         drive.followTrajectory(toCones);
         sleep(250);
 
         claw(.6);
-        sleep(500);
+        sleep(300);
 
         linearSlideToStop(SlidePosition.LOW, 20, conesUp);
         sleep(500);
 
         drive.followTrajectory(toPole);
         linearSlideToStop(SlidePosition.TALL, 30, 0);
-        sleep(1500);
+        //sleep(1500);
 
         susan(440);
-        sleep(500);
+        sleep(750);
 
         linearSlideToStop(SlidePosition.INSERT, 30, 0);
         sleep(750);
 
         claw(.25);
-        sleep(750);
+        sleep(250);
 
         switch (numberOfTag) {
             case 2: drive.followTrajectory(parkPosition1); break;
@@ -113,14 +113,14 @@ public class AutonomousLeft extends AutoSuperOpMode {
                 .build();
 
         toCones = drive.trajectoryBuilder(left.end())
-                .lineTo(new Vector2d(46.4, 26.2),
+                .lineTo(new Vector2d(46.4, 25.8),
                         RobohawksMecanumDrive.getVelocityConstraint(24, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         RobohawksMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
                 .build();
 
         toPole = drive.trajectoryBuilder(toCones.end())
-                .lineTo(new Vector2d(51, -9.4),
+                .lineTo(new Vector2d(51, -9.8),
                         RobohawksMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         RobohawksMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
