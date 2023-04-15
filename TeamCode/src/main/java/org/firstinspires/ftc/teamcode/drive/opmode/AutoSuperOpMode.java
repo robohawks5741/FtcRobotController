@@ -72,7 +72,7 @@ public abstract class AutoSuperOpMode extends LinearOpMode {
         HOP (270),
         AUTOMOVE (523),
         CONESTACK (360),
-        INSERT (2350);
+        INSERT (2250);
 
         final int height;
 

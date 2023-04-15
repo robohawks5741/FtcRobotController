@@ -33,7 +33,7 @@ public class AutonomousRight extends AutoSuperOpMode {
         //sleep(1400);
 
         drive.followTrajectory(left);
-        sleep(100);
+        sleep(10);
 
         linearSlideToStop(SlidePosition.INSERT,35,0);
         //sleep(700);
@@ -42,7 +42,7 @@ public class AutonomousRight extends AutoSuperOpMode {
         sleep(250);
 
         susan(0);
-        //sleep(500);
+        sleep(450);
         linearSlideToStop(SlidePosition.CONESTACK,10,conesUp++);
 
         drive.followTrajectory(toCones);
@@ -59,10 +59,10 @@ public class AutonomousRight extends AutoSuperOpMode {
         //sleep(1500);
 
         susan(-462);
-        sleep(500);
+        sleep(950);
 
         linearSlideToStop(SlidePosition.INSERT,30,0);
-        sleep(450);
+        sleep(400);
 
         claw(.25);
         sleep(750);
@@ -109,7 +109,7 @@ public class AutonomousRight extends AutoSuperOpMode {
                 .build();
 
         toCones = drive.trajectoryBuilder(left.end())
-                .lineTo( new Vector2d(54.25,-24.85),
+                .lineTo( new Vector2d(54.25,-25.17),
                         RobohawksMecanumDrive.getVelocityConstraint(24, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         RobohawksMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
