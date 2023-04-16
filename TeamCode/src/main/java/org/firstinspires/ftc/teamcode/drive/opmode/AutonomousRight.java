@@ -109,7 +109,7 @@ public class AutonomousRight extends AutoSuperOpMode {
                 .build();
 
         toCones = drive.trajectoryBuilder(left.end())
-                .lineTo( new Vector2d(54.25,-25.17),
+                .lineTo( new Vector2d(54.25,-24.2),
                         RobohawksMecanumDrive.getVelocityConstraint(24, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         RobohawksMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
