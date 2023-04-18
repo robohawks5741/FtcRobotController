@@ -11,7 +11,6 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.drive.RobohawksMecanumDrive;
 
 /**
@@ -99,15 +98,59 @@ public abstract class DriverControlSuperOpMode extends OpMode {
         }
     }
 
-    abstract void susanToPosition(int targetPosition);
+    enum HaloPosition {
+        FRONT,
+        BACK,
+        LEFT,
+        RIGHT
+    }
+
+    int haloConstantFront = 0, haloConstantBack, haloConstantLeft, haloConstantRight;
+
+    /**
+     * Virtual
+     */
+    abstract void setHaloConstants();
+
+    void haloToPosition(HaloPosition targetPosition) {
+
+        int desiredPosition;
+        // Sets target encoder position.
+        switch (targetPosition) {
+            case FRONT: desiredPosition = haloConstantFront; break;
+            case BACK:  desiredPosition = haloConstantBack;  break;
+            case LEFT:  desiredPosition = haloConstantLeft;  break;
+            case RIGHT: desiredPosition = haloConstantRight; break;
+            default: return;
+        }
+
+        // Apparently, "this works." These are *BITWISE* ANDs, not *LOGICAL* ANDs. I'm a bit scared to change this since I'm not sure what we were going for.
+        // TODO: Rewrite this.
+        // NOTE: Operator precedence
+
+        if(linearSlide.getCurrentPosition() <= 270 && !(lazySusan.getCurrentPosition() + 50 > desiredPosition & lazySusan.getCurrentPosition() - 50 < desiredPosition)) {
+            linearSlideToStop(SlidePosition.HOP, 30);
+            down1 = true;
+        }
+
+        lazySusan.setTargetPositionTolerance(35);
+        lazySusan.setTargetPosition(desiredPosition);
+        lazySusan.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        lazySusan.setPower(.5);
+
+        if (down1 && (lazySusan.getCurrentPosition() + 50 > desiredPosition & lazySusan.getCurrentPosition() - 50 < desiredPosition & linearSlide.getCurrentPosition() > 250)) {
+            linearSlideToStop(SlidePosition.BOTTOM, 20);
+            if (linearSlide.getCurrentPosition() < 25) down1 = false;
+        }
+    }
 
     public void init() {
         // Declare the used non-drive motors.
-
         lazySusan = hardwareMap.get(DcMotorEx.class, "lazySusan");
         linearSlide = hardwareMap.get(DcMotorEx.class, "linearSlide");
         clawServo = hardwareMap.get(Servo.class, "clawServo");
         drive = new RobohawksMecanumDrive(hardwareMap); //Instance of SampleMecanum drive to access methods in the file.
+        setHaloConstants(); // virtualize variables
     }
 
     @Override
@@ -169,25 +212,12 @@ public abstract class DriverControlSuperOpMode extends OpMode {
             if (gamepad2.right_bumper) clawServo.setPosition(.5);
             if (gamepad2.left_bumper ) clawServo.setPosition(.25);
 
-
-            // Following if statements operate LinearSlide macros.
+            // Linear slide macros
             // TODO: this will always cause priority issues because changes in state are ignored
-            if (gamepad2.y) {
-//                down1 = false;
-                linearSlideToStop(SlidePosition.TALL);
-            }
-            if (gamepad2.b) {
-//                down1 = false;
-                linearSlideToStop(SlidePosition.BOTTOM);
-            }
-            if (gamepad2.a) {
-//                down1 = false;
-                linearSlideToStop(SlidePosition.LOW);
-            }
-            if (gamepad2.x) {
-//                down1 = false;
-                linearSlideToStop(SlidePosition.MID);
-            }
+            if (gamepad2.y) linearSlideToStop(SlidePosition.TALL);
+            if (gamepad2.b) linearSlideToStop(SlidePosition.BOTTOM);
+            if (gamepad2.a) linearSlideToStop(SlidePosition.LOW);
+            if (gamepad2.x) linearSlideToStop(SlidePosition.MID);
 
             linearSlideUpdate();
             // Code for manual operation of HALO device, the big long line with lots of "? :" statements is to curve the stick input to a controllable amount.
@@ -205,21 +235,18 @@ public abstract class DriverControlSuperOpMode extends OpMode {
                     )
                 );
             } else if (manualSusan) { // If Susan was moved manually, stop when no longer receiving input.
-
                 lazySusan.setPower(0);
                 manualSusan = false;
             }
 
-
             // Macros for LazySusan positions.
 
-            if (gamepad2.dpad_up)         susanToPosition(0);
-            else if (gamepad2.dpad_left)  susanToPosition(3);
-            else if (gamepad2.dpad_down)  susanToPosition(2);
-            else if (gamepad2.dpad_right) susanToPosition(1);
+            if      (gamepad2.dpad_up)    haloToPosition(HaloPosition.FRONT);
+            else if (gamepad2.dpad_left)  haloToPosition(HaloPosition.LEFT);
+            else if (gamepad2.dpad_down)  haloToPosition(HaloPosition.BACK);
+            else if (gamepad2.dpad_right) haloToPosition(HaloPosition.RIGHT);
 
-
-            //UPDATE stuff
+            // UPDATE stuff
 
             drive.update();
             telemetry.update();
@@ -233,11 +260,12 @@ public abstract class DriverControlSuperOpMode extends OpMode {
 
             // Telemetry for gamepad input.
 
-            telemetry.addData("Gamepad LeftX", gamepad1.left_stick_x);
-            telemetry.addData("Gamepad LeftY", gamepad1.left_stick_y);
-            telemetry.addData("Gamepad RightX", gamepad1.right_stick_x);
+            telemetry.addData("Gamepad Left X", gamepad1.left_stick_x);
+            telemetry.addData("Gamepad Left Y", gamepad1.left_stick_y);
+            telemetry.addData("Gamepad Right X", gamepad1.right_stick_x);
+            telemetry.addData("Gamepad Right Y", gamepad1.right_stick_x);
 
-            // Telemetry for LazySusan and LinearSlide positions/
+            // Telemetry for HALO and linear slide positions
 
             telemetry.addData("Current Slide Pos", linearSlide.getCurrentPosition());
             telemetry.addData("TargetSlidePos", slideTarget);
