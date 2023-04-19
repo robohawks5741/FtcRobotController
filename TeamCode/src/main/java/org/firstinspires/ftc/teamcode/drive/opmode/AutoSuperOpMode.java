@@ -59,6 +59,9 @@ public abstract class AutoSuperOpMode extends LinearOpMode {
     Trajectory right = null;
     Trajectory toCones = null;
     Trajectory toPole = null;
+
+    Trajectory toCones2 = null;
+    Trajectory toPole2 = null;
     Trajectory parkPosition1 = null;
     Trajectory parkPosition2 = null;
     Trajectory parkPosition3 = null;
@@ -74,7 +77,7 @@ public abstract class AutoSuperOpMode extends LinearOpMode {
         HOP (270),
         AUTOMOVE (523),
         CONESTACK (360),
-        INSERT (2500);
+        INSERT (2250);
 
         final int height;
 
@@ -103,7 +106,7 @@ public abstract class AutoSuperOpMode extends LinearOpMode {
         linearSlide.setTargetPositionTolerance(tolerance);
         linearSlide.setTargetPosition(target);
         linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        linearSlide.setPower(.7);
+        linearSlide.setPower(1);
 
         //        (pos + tolerance) leq target
         //        (pos - tolerance) greq target
