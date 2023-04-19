@@ -4,11 +4,10 @@ import org.firstinspires.ftc.teamcode.eventd.EventEmitter;
 // ""emitter""
 public final class ActionSource {
     public final EventEmitter<Object> emitter = new EventEmitter<>();
-
-    public Object getValue() { return _value; }
+    public Object getValue() { return internalValue; }
 
     @SuppressWarnings("FieldMayBeFinal")
-    private Object _value = null;
+    Object internalValue = null;
     public final InputType type;
 
     public ActionSource(InputType t) {

@@ -6,8 +6,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.HardwareMap;
-
 import org.firstinspires.ftc.teamcode.gamepadyn.user.UserActions;
 import org.jetbrains.annotations.Contract;
 
@@ -53,38 +51,50 @@ public final class Gamepadyn {
 
     private static void inputThreadLoop() {
 
-//        while (true) {
-//        }
-          // TODO: fill this in
-//        for (Gamepad gp : gamepads) {
-//            for (Map.Entry<RawGamepadInput, MappingAction> entry : gp.mapping.entrySet()) {
-//                if (entry == null) continue;
-//                RawGamepadInput key = entry.getKey();
-//                // this could be an if statement but I like it better this way
-//                switch (key.inputType) {
-//                    case ANALOG: {
-//                        MappingActionAnalog value = (MappingActionAnalog) entry.getValue();
-//                        break;
-//                    }
-//                    case DIGITAL: {
-//                        MappingActionDigital value = (MappingActionDigital) entry.getValue();
-//                        switch (value.mode) {
-//                            case TRIGGER: {
-//                                gp.action(value.action).emitter.emit(true);
-//                            }
-//                            case ANALOG_MAP: {
-//
-//                            }
-//                            case ANALOG_OFFSET: {
-//
-//                            }
-//                        }
-//                        break;
-//                    }
-//                }
-//            }
-////            gp.stateCache
-//        }
+        // TODO: fill this in
+        for (Gamepad gp : gamepads) {
+            if (!gp.hasConfiguration()) continue;
+            for (Map.Entry<RawGamepadInput, MappingAction> entry : gp.mapping.entrySet()) {
+                if (entry == null) continue;
+                RawGamepadInput key = entry.getKey();
+                switch (key.inputType) {
+                    case ANALOG: {
+                        MappingActionAnalog value = (MappingActionAnalog) entry.getValue();
+                        switch (value.mode) {
+                            case ONE_TO_ONE_AXES: {
+                                // TODO
+                            }
+                            case SPLIT_AXES: {
+                                // TODO
+                            }
+                        }
+                        break;
+                    }
+                    case DIGITAL: {
+                        MappingActionDigital value = (MappingActionDigital) entry.getValue();
+                        switch (value.mode) {
+                            case TRIGGER: {
+                                // TODO: test this
+                                boolean current = RawGamepadInput.getDigitalValueFromGamepad(gp.ftcGamepad, key);
+                                boolean last = (boolean) gp.stateCache.get(key);
+                                if (current != last) {
+                                    gp.action(value.action).internalValue = current;
+                                    gp.action(value.action).emitter.emit(current);
+                                }
+                            }
+                            case ANALOG_MAP: {
+                                // TODO
+                            }
+                            case ANALOG_OFFSET: {
+                                // TODO
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+            gp.updateCache();
+        }
 
     }
 

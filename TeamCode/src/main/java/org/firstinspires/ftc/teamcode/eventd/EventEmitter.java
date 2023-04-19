@@ -15,10 +15,8 @@ public final class EventEmitter<T> {
     public void off(Listener<T> f) { _listeners.remove(f); }
 
     public void emit(T data) {
-        Log.d("Opticon", "Emit event, remove me later");
-        for (Listener<T> listener : _listeners) {
-            listener.run(data);
-        }
+        Log.d("eventd", "Emit event, remove me later");
+        for (Listener<T> listener : _listeners) listener.run(data);
     }
 
     private final ArrayList<Listener<T>> _listeners = new ArrayList<>();

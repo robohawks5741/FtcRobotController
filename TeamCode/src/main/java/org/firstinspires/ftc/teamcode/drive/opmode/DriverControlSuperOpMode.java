@@ -149,7 +149,7 @@ public abstract class DriverControlSuperOpMode extends OpMode {
         haloMotor.setTargetPositionTolerance(35);
         haloMotor.setTargetPosition(desiredPosition);
         haloMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        haloMotor.setPower(.5);
+        haloMotor.setPower(0.5);
 
         if (down1 && (
                 ((haloMotor.getCurrentPosition() + 50) > desiredPosition)

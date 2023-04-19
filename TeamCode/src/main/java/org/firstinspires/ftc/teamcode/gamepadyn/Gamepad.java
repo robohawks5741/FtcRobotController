@@ -17,20 +17,31 @@ public final class Gamepad {
         return Objects.requireNonNull(actionSources.get(ua));
     }
 
+    public boolean hasConfiguration() { return (configName != null); }
+
+    /**
+     * @return The name/path/identifier of the configuration file.
+     */
+    @Nullable
+    public String getConfigurationName() { return configName; }
+
     enum switchInput {
         UNKNOWN,
         DIGITAL,
         ANALOG
     }
 
-    /**
-     * @return The name/path/identifier of the configuration file.
-     */
-    @Nullable
-    public String getConfiguration() { return configName; }
+    void updateCache() {
+        for (RawGamepadInput i : RawGamepadInput.values()) {
+            switch (i.inputType) {
+                case ANALOG:  { stateCache.put(i, RawGamepadInput.getAnalogValueFromGamepad (ftcGamepad, i)); break; }
+                case DIGITAL: { stateCache.put(i, RawGamepadInput.getDigitalValueFromGamepad(ftcGamepad, i)); break; }
+            }
+        }
+    }
 
     // ActionSources (emitters + values) for each of the actions.
-    private final EnumMap<UserActions, ActionSource> actionSources = new EnumMap<>(UserActions.class);
+    final EnumMap<UserActions, ActionSource> actionSources = new EnumMap<>(UserActions.class);
 
     /**
      * Map of buttons -> mapping actions
@@ -50,7 +61,7 @@ public final class Gamepad {
     public final int index;
 
     @SuppressWarnings("FieldMayBeFinal")
-    private com.qualcomm.robotcore.hardware.Gamepad ftcGamepad;
+    com.qualcomm.robotcore.hardware.Gamepad ftcGamepad;
 
     Gamepad(int index, com.qualcomm.robotcore.hardware.Gamepad ftcGamepad) {
         this.index = index;
