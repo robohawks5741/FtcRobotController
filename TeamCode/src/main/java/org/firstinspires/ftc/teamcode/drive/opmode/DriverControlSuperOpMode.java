@@ -23,7 +23,7 @@ import org.firstinspires.ftc.teamcode.drive.RobohawksMecanumDrive;
 @TeleOp(group = "drive")
 public abstract class DriverControlSuperOpMode extends OpMode {
 
-    /** @see DriverControlSuperOpMode#linearSlideToStop(SlidePosition) */
+    /** @see DriverControlSuperOpMode#linearSlideToStop(SlidePositionMacro) */
     protected int slideTarget = 0;
     // what do these do?
     protected static boolean off = false;
@@ -37,7 +37,7 @@ public abstract class DriverControlSuperOpMode extends OpMode {
 
 
     // LinearSlide positions
-    enum SlidePosition {
+    enum SlidePositionMacro {
         // The lowest possible position for the motor
         BOTTOM (0),
         // Minimum height required to rotate the HALO freely without colliding with the wheels/sides
@@ -53,9 +53,10 @@ public abstract class DriverControlSuperOpMode extends OpMode {
         // Maximum (?) motor encoder tick
         MAX (2970);
 
+        // Encoder Tick
         final int height;
 
-        SlidePosition(int i) { height = i; }
+        SlidePositionMacro(int i) { height = i; }
     }
 
     protected static DcMotorEx linearSlideMotor, haloMotor;
@@ -70,7 +71,7 @@ public abstract class DriverControlSuperOpMode extends OpMode {
     static double analogInputThreshold = 0.05;
 
     // Move the linear slide
-    public void linearSlideToStop(SlidePosition stop, int tolerance) {
+    public void linearSlideToStop(SlidePositionMacro stop, int tolerance) {
         // disable manual operation (this is the macro call)
         useSlideManualControls = false;
         // enable the slide (will be checked on next update)
@@ -82,13 +83,15 @@ public abstract class DriverControlSuperOpMode extends OpMode {
     }
 
     /**
-     * Different signature of {@link DriverControlSuperOpMode#linearSlideToStop(SlidePosition stop, int tolerance)}
+     * Different signature of {@link DriverControlSuperOpMode#linearSlideToStop(SlidePositionMacro stop, int tolerance)}
      */
-    public void linearSlideToStop(SlidePosition stop) { linearSlideToStop(stop, 35); }
+    public void linearSlideToStop(SlidePositionMacro stop) { linearSlideToStop(stop, 35); }
 
     // Updates the linear slide movement
     void linearSlideUpdate() {
+        // If the slide is supposed to be moving,
         if (slideActive) {
+            // check if it is where it's supposed to be
             int cpos = linearSlideMotor.getCurrentPosition();
             int v = abs(slideTarget - cpos);
             if (v >= slideTolerance) {
@@ -100,7 +103,7 @@ public abstract class DriverControlSuperOpMode extends OpMode {
         }
     }
 
-    enum HaloPosition {
+    enum HaloPositionMacro {
         FRONT,
         BACK,
         LEFT,
@@ -118,7 +121,7 @@ public abstract class DriverControlSuperOpMode extends OpMode {
      */
     abstract void setAbstractConstants();
 
-    void haloToPosition(HaloPosition targetPosition) {
+    void haloToPosition(HaloPositionMacro targetPosition) {
 
         int desiredPosition;
         switch (targetPosition) {
@@ -129,19 +132,17 @@ public abstract class DriverControlSuperOpMode extends OpMode {
             default: return;
         }
 
-        // Apparently, "this works." These are *BITWISE* ANDs, not *LOGICAL* ANDs. I'm a bit scared to change this since I'm not sure what we were going for.
         // TODO: Rewrite this.
-        // NOTE: Operator precedence: "+" > "-" > ">" > "&"
-
-        if(linearSlideMotor.getCurrentPosition() <= SlidePosition.HOP.height &&
-                !(
-                        (( haloMotor.getCurrentPosition() + 50) > desiredPosition)
-                        & (haloMotor.getCurrentPosition() - 50  < desiredPosition)
-                        // is this a tolerance check? below is an easily-readible version (if so)
-                        // abs(lazySusan.getCurrentPosition() - desiredPosition) < 50
-                )
+        // The claw will collide with the wheels and sides while rotating the HALO if the slide is not raised enough.
+        if(linearSlideMotor.getCurrentPosition() <= SlidePositionMacro.HOP.height &&
+            !(
+                (( haloMotor.getCurrentPosition() + 50) > desiredPosition)
+                & (haloMotor.getCurrentPosition() - 50  < desiredPosition)
+                // is this a tolerance check? below is an easily-readable version (if so)
+                // abs(lazySusan.getCurrentPosition() - desiredPosition) < 50
+            )
         ) {
-            linearSlideToStop(SlidePosition.HOP, 30);
+            linearSlideToStop(SlidePositionMacro.HOP, 30);
             down1 = true;
         }
 
@@ -155,7 +156,7 @@ public abstract class DriverControlSuperOpMode extends OpMode {
                 & (haloMotor.getCurrentPosition() - 50 < desiredPosition)
                 & (linearSlideMotor.getCurrentPosition() > 250))
         ) {
-            linearSlideToStop(SlidePosition.BOTTOM, 20);
+            linearSlideToStop(SlidePositionMacro.BOTTOM, 20);
             if (linearSlideMotor.getCurrentPosition() < 25) down1 = false;
         }
     }
@@ -191,7 +192,7 @@ public abstract class DriverControlSuperOpMode extends OpMode {
             // a curved +/- input for the motors. It sends the values to a
             // function in roadrunner.
 
-            // Desmos (LATeX)
+            // Desmos (LaTeX)
             /*
              * -1\le x\le1
              * g=x\left\{-1\le x\le1\right\}
@@ -216,14 +217,12 @@ public abstract class DriverControlSuperOpMode extends OpMode {
 
                 useSlideManualControls = true; // Reports that slide is operating manually, not via a macro.
 
-
                 linearSlideMotor.setPower(((gamepad2.right_trigger >= gamepad2.left_trigger) ? gamepad2.right_trigger : -gamepad2.left_trigger));
-            } else if (useSlideManualControls) { //Tests to see if its operating via a macro, doesn't interrupt macro if the test is positive.
-
-                linearSlideMotor.setPower(0); //todo PROBLEM (might be resolved)
-                useSlideManualControls = false;
-
             }
+            // else if (useSlideManualControls) { // Tests to see if its operating via a macro, doesn't interrupt macro if the test is positive.
+            //     linearSlideMotor.setPower(0); // todo PROBLEM (might be resolved)
+            //     useSlideManualControls = false;
+            // }
 
             // Operate end effector (claw)
             if (gamepad2.right_bumper) clawServo.setPosition(.5);
@@ -231,18 +230,18 @@ public abstract class DriverControlSuperOpMode extends OpMode {
 
             // Linear slide macros
             // TODO: this will always cause priority issues because changes in state are ignored
-            if (gamepad2.y) linearSlideToStop(SlidePosition.TALL);
-            if (gamepad2.b) linearSlideToStop(SlidePosition.BOTTOM);
-            if (gamepad2.a) linearSlideToStop(SlidePosition.LOW);
-            if (gamepad2.x) linearSlideToStop(SlidePosition.MID);
+            if (gamepad2.y) linearSlideToStop(SlidePositionMacro.TALL);
+            if (gamepad2.b) linearSlideToStop(SlidePositionMacro.BOTTOM);
+            if (gamepad2.a) linearSlideToStop(SlidePositionMacro.LOW);
+            if (gamepad2.x) linearSlideToStop(SlidePositionMacro.MID);
 
             linearSlideUpdate();
-            // Code for manual operation of HALO device, the big long line with lots of "? :" statements is to curve the stick input to a controllable amount.
+            // Code for manual operation of the HALO, the big long line with lots of "? :" statements is to curve the stick input to a controllable amount.
 
             if (abs(gamepad2.left_stick_x) >= .05) {
                 haloMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-                useHaloManualControls = true; // Reports that LazySusan is operating manually, and requires stopping.
+                useHaloManualControls = true; // Reports that the HALO is operating manually, and requires stopping.
 
                 haloMotor.setPower(
                     signum(gamepad2.left_stick_x) *
@@ -251,20 +250,19 @@ public abstract class DriverControlSuperOpMode extends OpMode {
                         Math.max(Math.pow(gamepad2.left_stick_x, 2), .05)
                     )
                 );
-            } else if (useHaloManualControls) { // If Susan was moved manually, stop when no longer receiving input.
+            } else if (useHaloManualControls) { // If the HALO is moving manually, stop when no longer receiving input.
                 haloMotor.setPower(0);
                 useHaloManualControls = false;
             }
 
             // Macros for LazySusan positions.
 
-            if      (gamepad2.dpad_up)    haloToPosition(HaloPosition.FRONT);
-            else if (gamepad2.dpad_left)  haloToPosition(HaloPosition.LEFT);
-            else if (gamepad2.dpad_down)  haloToPosition(HaloPosition.BACK);
-            else if (gamepad2.dpad_right) haloToPosition(HaloPosition.RIGHT);
+            if      (gamepad2.dpad_up)    haloToPosition(HaloPositionMacro.FRONT);
+            else if (gamepad2.dpad_down)  haloToPosition(HaloPositionMacro.BACK);
+            else if (gamepad2.dpad_left)  haloToPosition(HaloPositionMacro.LEFT);
+            else if (gamepad2.dpad_right) haloToPosition(HaloPositionMacro.RIGHT);
 
-            // UPDATE stuff
-
+            // Update stuff
             drive.update();
             telemetry.update();
 

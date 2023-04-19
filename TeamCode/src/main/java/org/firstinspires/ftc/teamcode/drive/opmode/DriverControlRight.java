@@ -7,8 +7,9 @@ public class DriverControlRight extends DriverControlSuperOpMode {
 
     @Override
     void setAbstractConstants() {
-        haloConstantBack = 923;
-        haloConstantLeft = 462;
+        // front is always 0
+        haloConstantBack  = 923;
+        haloConstantLeft  = 462;
         haloConstantRight = 1385;
     }
 
