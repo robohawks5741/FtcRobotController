@@ -14,47 +14,49 @@ public class AutonomousRight extends AutoSuperOpMode {
     protected void runAuto() throws InterruptedException {
         claw(.6);
         debugSplit("claw");
-        sleep(700);
+        sleep(400);
 
-        susan(80);
+        susan(100);
         debugSplit("susan");
-        sleep(500);
+        sleep(300);
 
         susan(0);
         debugSplit("susan");
-        sleep(600);
+        sleep(200);
 
         linearSlideToStop(SlidePosition.AUTOMOVE,30,0);
         debugSplit("slide");
         drive.followTrajectory(forwards);
         debugSplit("followTrajectory");
-        sleep(100);
+        //sleep(100);
 
         drive.followTrajectory(returnus);
         debugSplit("followTrajectory");
-        drive.turn(Math.toRadians(-90));
+        drive.turn(Math.toRadians(-84)); // TODO
+        debugSplit("turn");
         linearSlideToStop(SlidePosition.TALL,35,0);
         drive.followTrajectory(right);
         debugSplit("followTrajectory");
         susan(-462);
         debugSplit("susan");
-        sleep(1400);
+        //sleep(1400);
 
         drive.followTrajectory(left);
-        sleep(500);
+        sleep(10);
 
         linearSlideToStop(SlidePosition.INSERT,35,0);
         debugSplit("slide");
-        sleep(700);
+        //sleep(700);
 
         claw(.25);
         debugSplit("claw");
-        sleep(500);
+        sleep(250);
 
-        linearSlideToStop(SlidePosition.CONESTACK,10,conesUp++);
-        debugSplit("slide");
         susan(0);
         debugSplit("susan");
+        sleep(450);
+        linearSlideToStop(SlidePosition.CONESTACK,10,conesUp++);
+        debugSplit("slide");
         drive.followTrajectory(toCones);
         debugSplit("followTrajectory");
         sleep(250);
@@ -69,17 +71,16 @@ public class AutonomousRight extends AutoSuperOpMode {
 
         drive.followTrajectory(toPole);
         debugSplit("followTrajectory");
-        linearSlideToStop(SlidePosition.TALL,30,0);
+        linearSlideToStop(SlidePosition.TALL,35,0);
         debugSplit("slide");
+        //sleep(1500);
+
+        susan(-462);
+        debugSplit("susan");
         sleep(1500);
 
-        susan(-391);
-        debugSplit("susan");
-        sleep(500);
-
-        linearSlideToStop(SlidePosition.INSERT,30,0);
-        debugSplit("slide");
-        sleep(750);
+        //linearSlideToStop(SlidePosition.INSERT,30,0);
+        //sleep(400);
 
         claw(.25);
         debugSplit("claw");
@@ -87,6 +88,7 @@ public class AutonomousRight extends AutoSuperOpMode {
 
         susan(0);
         debugSplit("susan");
+        sleep(250);
         linearSlideToStop(SlidePosition.BOTTOM,35,0);
         debugSplit("slide");
         claw(.32);
@@ -115,7 +117,7 @@ public class AutonomousRight extends AutoSuperOpMode {
                         RobohawksMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
 
-        right = drive.trajectoryBuilder(returnus.end().plus(new Pose2d(0, 0, Math.toRadians(-90))))
+        right = drive.trajectoryBuilder(returnus.end().plus(new Pose2d(0, 0, Math.toRadians(-84))))
                 .lineTo( new Vector2d(50,7.6),
                         RobohawksMecanumDrive.getVelocityConstraint(13, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         RobohawksMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
@@ -123,26 +125,40 @@ public class AutonomousRight extends AutoSuperOpMode {
                 .build();
 
         left = drive.trajectoryBuilder(right.end())
-                .strafeTo( new Vector2d(52.75,12.2),
+                .strafeTo( new Vector2d(50,12.9),
                         RobohawksMecanumDrive.getVelocityConstraint(4, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         RobohawksMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
                 .build();
 
         toCones = drive.trajectoryBuilder(left.end())
-                .lineTo( new Vector2d(49.8,-24.4),
+                .lineTo( new Vector2d(54.25,-24.2),
                         RobohawksMecanumDrive.getVelocityConstraint(24, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         RobohawksMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
                 .build();
 
         toPole = drive.trajectoryBuilder(toCones.end())
-                .lineTo(new Vector2d(52.5,12.4),
+                .lineTo(new Vector2d(50,12.1),
 
                         RobohawksMecanumDrive.getVelocityConstraint(12, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         RobohawksMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
                 .build();
+        /*toCones2 = drive.trajectoryBuilder(toPole.end())
+                .lineTo( new Vector2d(54.25,-24.2),
+                        RobohawksMecanumDrive.getVelocityConstraint(24, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        RobohawksMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+                )
+                .build();
+        toPole2 = drive.trajectoryBuilder(toCones.end())
+                .lineTo(new Vector2d(50,12.1),
+
+                        RobohawksMecanumDrive.getVelocityConstraint(12, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        RobohawksMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+                )
+                .build();*/
+
 
         parkPosition1 = drive.trajectoryBuilder(toPole.end())
                 .lineToLinearHeading(new Pose2d(48,24,Math.toRadians(270)))

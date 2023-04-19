@@ -146,16 +146,14 @@ public abstract class DriverControlSuperOpMode extends OpMode {
             down1 = true;
         }
 
-        haloMotor.setTargetPositionTolerance(35);
-        haloMotor.setTargetPosition(desiredPosition);
-        haloMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        haloMotor.setPower(0.5);
+        if (linearSlideMotor.getCurrentPosition() >= 200) {
+            haloMotor.setTargetPositionTolerance(35);
+            haloMotor.setTargetPosition(desiredPosition);
+            haloMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            haloMotor.setPower(0.69);
+        }
 
-        if (down1 && (
-                ((haloMotor.getCurrentPosition() + 50) > desiredPosition)
-                & (haloMotor.getCurrentPosition() - 50 < desiredPosition)
-                & (linearSlideMotor.getCurrentPosition() > 250))
-        ) {
+        if (haloMotor.getCurrentPosition() + 50 > desiredPosition && haloMotor.getCurrentPosition() - 50 < desiredPosition && linearSlideMotor.getCurrentPosition() > 250) {
             linearSlideToStop(SlidePositionMacro.BOTTOM, 20);
             if (linearSlideMotor.getCurrentPosition() < 25) down1 = false;
         }
@@ -174,14 +172,14 @@ public abstract class DriverControlSuperOpMode extends OpMode {
     public void start() {
         setAbstractConstants(); // virtualize variables
         linearSlideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); //Start encoders at position 0.
-        haloMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
+        haloMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         haloMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE); //Sets HALO to brake mode.
         haloMotor.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
     public void loop() {
-            if (linearSlideMotor.getCurrentPosition() >= 1500) speed = .25;
+            if (linearSlideMotor.getCurrentPosition() >= 1500) speed = 0.25;
             // Change drive speed coefficient.
             else if (gamepad1.a) speed = .25;
             else if (gamepad1.b) speed = .5;
@@ -218,15 +216,14 @@ public abstract class DriverControlSuperOpMode extends OpMode {
                 useSlideManualControls = true; // Reports that slide is operating manually, not via a macro.
 
                 linearSlideMotor.setPower(((gamepad2.right_trigger >= gamepad2.left_trigger) ? gamepad2.right_trigger : -gamepad2.left_trigger));
+            } else if (useSlideManualControls) { // Tests to see if its operating via a macro, doesn't interrupt macro if the test is positive.
+                 linearSlideMotor.setPower(0); // todo PROBLEM (might be resolved)
+                 useSlideManualControls = false;
             }
-            // else if (useSlideManualControls) { // Tests to see if its operating via a macro, doesn't interrupt macro if the test is positive.
-            //     linearSlideMotor.setPower(0); // todo PROBLEM (might be resolved)
-            //     useSlideManualControls = false;
-            // }
 
             // Operate end effector (claw)
-            if (gamepad2.right_bumper) clawServo.setPosition(.5);
-            if (gamepad2.left_bumper ) clawServo.setPosition(.25);
+            if (gamepad2.right_bumper) clawServo.setPosition(0.5);
+            if (gamepad2.left_bumper ) clawServo.setPosition(0.25);
 
             // Linear slide macros
             // TODO: this will always cause priority issues because changes in state are ignored
@@ -236,9 +233,10 @@ public abstract class DriverControlSuperOpMode extends OpMode {
             if (gamepad2.x) linearSlideToStop(SlidePositionMacro.MID);
 
             linearSlideUpdate();
+
             // Code for manual operation of the HALO, the big long line with lots of "? :" statements is to curve the stick input to a controllable amount.
 
-            if (abs(gamepad2.left_stick_x) >= .05) {
+            if (abs(gamepad2.left_stick_x) >= analogInputThreshold) {
                 haloMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
                 useHaloManualControls = true; // Reports that the HALO is operating manually, and requires stopping.
@@ -261,6 +259,8 @@ public abstract class DriverControlSuperOpMode extends OpMode {
             else if (gamepad2.dpad_down)  haloToPosition(HaloPositionMacro.BACK);
             else if (gamepad2.dpad_left)  haloToPosition(HaloPositionMacro.LEFT);
             else if (gamepad2.dpad_right) haloToPosition(HaloPositionMacro.RIGHT);
+
+            if(gamepad2.right_stick_x >= .75) haloMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
             // Update stuff
             drive.update();
