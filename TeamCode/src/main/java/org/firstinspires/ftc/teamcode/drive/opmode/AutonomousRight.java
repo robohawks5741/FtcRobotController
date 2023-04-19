@@ -122,6 +122,20 @@ public class AutonomousRight extends AutoSuperOpMode {
                         RobohawksMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
                 .build();
+        /*toCones2 = drive.trajectoryBuilder(toPole.end())
+                .lineTo( new Vector2d(54.25,-24.2),
+                        RobohawksMecanumDrive.getVelocityConstraint(24, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        RobohawksMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+                )
+                .build();
+        toPole2 = drive.trajectoryBuilder(toCones.end())
+                .lineTo(new Vector2d(50,12.1),
+
+                        RobohawksMecanumDrive.getVelocityConstraint(12, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        RobohawksMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+                )
+                .build();*/
+
 
         parkPosition1 = drive.trajectoryBuilder(toPole.end())
                 .lineToLinearHeading(new Pose2d(48,24,Math.toRadians(270)))

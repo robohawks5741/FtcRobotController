@@ -38,10 +38,10 @@ public class DriverControlRight extends DriverControlSuperOpMode {
         lazySusan.setTargetPositionTolerance(35);
         lazySusan.setTargetPosition(desiredPosition);
         lazySusan.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        lazySusan.setPower(.5);
+        lazySusan.setPower(.69);
 
         if (down1) {
-            if (lazySusan.getCurrentPosition() + 50 > desiredPosition & lazySusan.getCurrentPosition() - 50 < desiredPosition & linearSlide.getCurrentPosition() > 250) {
+            if (lazySusan.getCurrentPosition() + 50 > desiredPosition && lazySusan.getCurrentPosition() - 50 < desiredPosition && linearSlide.getCurrentPosition() > 250) {
                 linearSlideToStop(SlidePosition.BOTTOM, 20);
                 if (linearSlide.getCurrentPosition() < 25) {
                     down1 = false;
