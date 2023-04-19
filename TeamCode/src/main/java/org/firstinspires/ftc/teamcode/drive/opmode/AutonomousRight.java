@@ -11,7 +11,7 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 @Autonomous
 public class AutonomousRight extends AutoSuperOpMode {
 
-    protected void runAuto() throws InterruptedException {
+    protected void runAuto() {
         claw(.6);
         debugSplit("claw");
         sleep(400);
@@ -44,7 +44,7 @@ public class AutonomousRight extends AutoSuperOpMode {
         drive.followTrajectory(left);
         sleep(10);
 
-        linearSlideToStop(SlidePosition.INSERT,35,0);
+        linearSlideToStop(SlidePosition.INSERT, 35, 0);
         debugSplit("slide");
         //sleep(700);
 
@@ -55,7 +55,7 @@ public class AutonomousRight extends AutoSuperOpMode {
         susan(0);
         debugSplit("susan");
         sleep(450);
-        linearSlideToStop(SlidePosition.CONESTACK,10,conesUp++);
+        linearSlideToStop(SlidePosition.CONESTACK, 10, conesUp++);
         debugSplit("slide");
         drive.followTrajectory(toCones);
         debugSplit("followTrajectory");
@@ -100,7 +100,7 @@ public class AutonomousRight extends AutoSuperOpMode {
             default: drive.followTrajectory(parkPosition2); break;
         }
         debugSplit("followTrajectory");
-        Thread.sleep(500);
+        sleep(1000);
     }
 
     protected void setTrajectories() {
@@ -113,48 +113,49 @@ public class AutonomousRight extends AutoSuperOpMode {
 
         returnus = drive.trajectoryBuilder(forwards.end())
                 .lineTo(new Vector2d(50,0),
-                        RobohawksMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        RobohawksMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         RobohawksMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
 
         right = drive.trajectoryBuilder(returnus.end().plus(new Pose2d(0, 0, Math.toRadians(-84))))
                 .lineTo( new Vector2d(50,7.6),
-                        RobohawksMecanumDrive.getVelocityConstraint(13, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        RobohawksMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         RobohawksMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
                 .build();
 
+        // first cone
         left = drive.trajectoryBuilder(right.end())
-                .strafeTo( new Vector2d(50,12.9),
-                        RobohawksMecanumDrive.getVelocityConstraint(4, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                .strafeTo(new Vector2d(50, 11.9),
+                        RobohawksMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         RobohawksMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
                 .build();
 
         toCones = drive.trajectoryBuilder(left.end())
-                .lineTo( new Vector2d(54.25,-24.2),
-                        RobohawksMecanumDrive.getVelocityConstraint(24, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                .lineTo(new Vector2d(54.25,-24.2),
+                        RobohawksMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         RobohawksMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
                 .build();
 
+        //
         toPole = drive.trajectoryBuilder(toCones.end())
-                .lineTo(new Vector2d(50,12.1),
-
-                        RobohawksMecanumDrive.getVelocityConstraint(12, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                .lineTo(new Vector2d(50.5, 12.1),
+                        RobohawksMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         RobohawksMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
                 .build();
         /*toCones2 = drive.trajectoryBuilder(toPole.end())
                 .lineTo( new Vector2d(54.25,-24.2),
-                        RobohawksMecanumDrive.getVelocityConstraint(24, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        RobohawksMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         RobohawksMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
                 .build();
         toPole2 = drive.trajectoryBuilder(toCones.end())
                 .lineTo(new Vector2d(50,12.1),
 
-                        RobohawksMecanumDrive.getVelocityConstraint(12, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        RobohawksMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         RobohawksMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
                 .build();*/

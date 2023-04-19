@@ -3,8 +3,6 @@ package org.firstinspires.ftc.teamcode.gamepadyn;
 import static org.firstinspires.ftc.teamcode.gamepadyn.InputType.*;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.checker.nullness.qual.Raw;
-import org.checkerframework.checker.units.qual.A;
 
 import java.util.Locale;
 
@@ -45,7 +43,9 @@ public enum RawGamepadInput {
     /// Right Stick Button
     SRB (DIGITAL);
 
+    // Analog or digital
     public final InputType inputType;
+    // Amount of analog axes
     public final int axes;
 
     // Returns the JSON key for the enum as used in configuration files

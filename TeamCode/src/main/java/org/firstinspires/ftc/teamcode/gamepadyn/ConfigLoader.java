@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.logging.Logger;
 
 @SuppressWarnings("RedundantSuppression")
 class ConfigLoader {
@@ -30,11 +31,13 @@ class ConfigLoader {
             }
             json = new String(buffer);
             opmode.telemetry.addData("JSON config", json);
+            Logger.getLogger("Gamepadyn").info("JSON config:\n " +  json);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         Gson gs = new Gson();
-        IntermediateMapping configObject1 = gs.fromJson(json, IntermediateMapping.class);
-        opmode.telemetry.addData("Parsed Config", gs.toJson(configObject1, IntermediateMapping.class));
+        Mapping configObject1 = gs.fromJson(json, Mapping.class);
+        opmode.telemetry.addData("Parsed Config", gs.toJson(configObject1, Mapping.class));
+        Logger.getLogger("Gamepadyn").info(gs.toJson(configObject1, Mapping.class));
     }
 }

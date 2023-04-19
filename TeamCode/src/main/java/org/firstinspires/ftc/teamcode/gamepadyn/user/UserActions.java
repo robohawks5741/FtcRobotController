@@ -11,6 +11,7 @@ import static org.firstinspires.ftc.teamcode.gamepadyn.InputType.*;
  */
 public enum UserActions {
     // Change these to fit your needs
+    DEBUG               (DIGITAL),
     LINEAR_SLIDE        (ANALOG, 1),
     LINEAR_SLIDE_BOTTOM (DIGITAL),
     LINEAR_SLIDE_LOW    (DIGITAL),
@@ -27,6 +28,16 @@ public enum UserActions {
     // DON'T CHANGE ANYTHING BELOW HERE!
     public final InputType type;
     public final int axes;
-    UserActions(InputType type) { this.type = type; this.axes = 0; }
-    UserActions(InputType type, int axes) { this.type = type; this.axes = axes; }
+    UserActions(InputType type) {
+        if (type == ANALOG) throw new IllegalArgumentException("Analog actions cannot have 0 axes!");
+        this.type = type;
+        this.axes = 0;
+    }
+
+    UserActions(InputType type, int axes) {
+        if (axes < 0) throw new IllegalArgumentException("Axes cannot be negative!");
+        if (type == DIGITAL && axes != 0) throw new IllegalArgumentException("Digital inputs cannot be multi-dimensional!");
+        this.type = type;
+        this.axes = axes;
+    }
 }

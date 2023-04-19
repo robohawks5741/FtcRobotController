@@ -15,15 +15,32 @@ import java.util.Map;
 @SuppressWarnings("rawtypes")
 public final class Gamepadyn {
     public static void opmodeInit(@NonNull OpMode op) {
-        inputThread = null;
-        inputThread = new Thread(Gamepadyn::inputThreadLoop);
-        inputThread.setUncaughtExceptionHandler(_threadExceptionHandler);
+//        inputThread = null;
         currentOpmode = op;
-        gamepads = null;
+//        gamepads = null;
         gamepads = new Gamepad[]{ new Gamepad(0, op.gamepad1), new Gamepad(1, op.gamepad2) };
     }
 
+    public static void opmodeStart() {
+        if (currentOpmode != null) throw new NullPointerException("opmodeStart was run without calling opmodeInit");
+        isRunning = true;
+        inputThread = new Thread(() -> {
+            while (isRunning) Gamepadyn.inputThreadLoop();
+        });
+        inputThread.setUncaughtExceptionHandler(_threadExceptionHandler);
+    }
+
+    public static void opmodeStart(OpMode op) {
+        if (currentOpmode != null) {
+            if (op == null) throw new NullPointerException("opmodeStart was run without calling opmodeInit, and an OpMode was not provided to opmodeStart");
+            opmodeInit(op);
+        }
+        opmodeStart();
+    }
+
+
     public static void cleanup() {
+        isRunning = false;
         inputThread.interrupt();
         currentOpmode = null;
         gamepads = null;
@@ -43,9 +60,7 @@ public final class Gamepadyn {
      */
     @Nullable
     @Contract(pure = true)
-    public static Gamepad getGamepad(int index) {
-        return gamepads[index];
-    }
+    public static Gamepad getGamepad(int index) { return gamepads[index]; }
 
     private static final Thread.UncaughtExceptionHandler _threadExceptionHandler = (Thread t, Throwable e) -> { inputThread = null; };
 
@@ -81,6 +96,7 @@ public final class Gamepadyn {
                                     gp.action(value.action).internalValue = current;
                                     gp.action(value.action).emitter.emit(current);
                                 }
+                                break;
                             }
                             case ANALOG_MAP: {
                                 // TODO
@@ -98,11 +114,16 @@ public final class Gamepadyn {
 
     }
 
+    // The worker thread
     private static Thread inputThread;
 
+    // The currently active opmode
     static OpMode currentOpmode;
 
+    // Array of Gamepadyn gamepads
     private static Gamepad[] gamepads;
+
+    static boolean isRunning = false;
 
     // Singleton constructor. Should never be called.
     private Gamepadyn() throws IllegalAccessException {
