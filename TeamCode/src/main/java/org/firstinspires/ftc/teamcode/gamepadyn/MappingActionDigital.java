@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.gamepadyn;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.firstinspires.ftc.teamcode.gamepadyn.user.UserActions;
@@ -31,6 +32,21 @@ public final class MappingActionDigital extends MappingAction {
 //    Analog Offset settings
 
     public Float offsetRate = null;
+
+    @NonNull
+    public String toString() {
+        return (
+            "Mode: " + mode +
+            "\nAction: " + action +
+            "\n----- shared -----" +
+            "\nAxis: " + axis.toString() +
+            "\n----- analog map -----" +
+            "\nDepressed Value: " + depressedValue.toString() +
+            "\nReleased Value: " + releasedValue.toString() +
+            "\n----- analog offset -----" +
+            "\nOffset Rate: " + offsetRate.toString()
+        );
+    }
 
     MappingActionDigital(MappingActionDigital.Mode mode, UserActions action, float depressedValue, @Nullable Float releasedValue, int axis) throws Exception {
         if (mode != MappingActionDigital.Mode.ANALOG_MAP) throw new Exception("Mismatched mode, expected ANALOG_MAP!");

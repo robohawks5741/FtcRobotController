@@ -18,6 +18,8 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /* TODO: Replace old stuff with the wrapped stuff
  * [] Halo (lazySuasan) -> HD
@@ -112,13 +114,13 @@ public abstract class AutoSuperOpMode extends LinearOpMode {
         return slide;
     }
 
-    protected abstract void firstCone() throws InterruptedException;
+    protected abstract void runAuto() throws InterruptedException;
 
     protected abstract void setTrajectories();
 
     @Override
     public void runOpMode() throws InterruptedException {
-
+        counter = 0;
         drive = new RobohawksMecanumDrive(hardwareMap);
 
         lazySusan = hardwareMap.get(DcMotorEx.class,"lazySusan");
@@ -207,27 +209,22 @@ public abstract class AutoSuperOpMode extends LinearOpMode {
             sleep(20);
         }
 
-        //start here!!
+        // start here!!
 
-        if(tagOfInterest != null)
-        {
+        if(tagOfInterest != null) {
             telemetry.addLine("Tag snapshot:\n");
             tagToTelemetry(tagOfInterest);
             telemetry.update();
-        }
-        else
-        {
+        } else {
             telemetry.addLine("No tag snapshot available, it was never sighted during the init loop :(");
             telemetry.update();
         }
 
-        firstCone();
-
+        runAuto();
     }
 
     @SuppressLint("DefaultLocale")
-    void tagToTelemetry(AprilTagDetection detection)
-    {
+    void tagToTelemetry(AprilTagDetection detection) {
         telemetry.addLine(String.format("\nDetected tag ID=%d", detection.id));
         telemetry.addLine(String.format("Translation X: %.2f feet", detection.pose.x*FEET_PER_METER));
         telemetry.addLine(String.format("Translation Y: %.2f feet", detection.pose.y*FEET_PER_METER));
@@ -235,5 +232,15 @@ public abstract class AutoSuperOpMode extends LinearOpMode {
         telemetry.addLine(String.format("Rotation Yaw: %.2f degrees", Math.toDegrees(detection.pose.yaw)));
         telemetry.addLine(String.format("Rotation Pitch: %.2f degrees", Math.toDegrees(detection.pose.pitch)));
         telemetry.addLine(String.format("Rotation Roll: %.2f degrees", Math.toDegrees(detection.pose.roll)));
+    }
+
+    // speedrun stuff
+
+    static int counter = 0;
+
+    void debugSplit(String splitName) {
+        double stamp = getRuntime();
+        Logger.getLogger("SPEEDRUN SPLITS").log(Level.INFO, splitName + " # " + counter + " @ " + stamp);
+        counter++;
     }
 }

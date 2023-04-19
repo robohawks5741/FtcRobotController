@@ -3,7 +3,6 @@ import org.firstinspires.ftc.teamcode.eventd.EventEmitter;
 
 // ""emitter""
 public final class ActionSource {
-
     public final EventEmitter<Object> emitter = new EventEmitter<>();
 
     public Object getValue() { return _value; }
