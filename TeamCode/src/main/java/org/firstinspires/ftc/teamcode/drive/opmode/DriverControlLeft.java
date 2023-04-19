@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 public class DriverControlLeft extends DriverControlSuperOpMode {
 
     @Override
-    void setHaloConstants() {
+    void setAbstractConstants() {
         haloConstantBack = -923;
         haloConstantLeft = -1385;
         haloConstantRight = -462;

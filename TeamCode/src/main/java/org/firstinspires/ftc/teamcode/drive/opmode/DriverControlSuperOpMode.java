@@ -23,43 +23,42 @@ import org.firstinspires.ftc.teamcode.drive.RobohawksMecanumDrive;
 @TeleOp(group = "drive")
 public abstract class DriverControlSuperOpMode extends OpMode {
 
-    protected int slideTarget = 0;//placeholder here, gets used in function LinearSlideToStop()
-    protected static int hopStop = 270;
+    /** @see DriverControlSuperOpMode#linearSlideToStop(SlidePosition) */
+    protected int slideTarget = 0;
+    // what do these do?
     protected static boolean off = false;
     protected static boolean turn = false;
     protected static boolean down1 = false;
-    protected static boolean manualSlide = false;
-    protected static boolean manualSusan = false;
+    // Whether the slide has been set manually or by a macro
+    protected static boolean useSlideManualControls = false;
+    // Whether the halo has been set manually or by a macro
+    protected static boolean useHaloManualControls = false;
     protected static Servo clawServo;
 
 
     // LinearSlide positions
     enum SlidePosition {
+        // The lowest possible position for the motor
         BOTTOM (0),
-        LOW (1150),
-        MID (1950),
-        TALL (2700),
-        MAX (2970),
+        // Minimum height required to rotate the HALO freely without colliding with the wheels/sides
         HOP (270),
-        INSERT (2500);
+        // Low pole cone deposit position
+        LOW (1150),
+        // Medium pole cone deposit position
+        MID (1950),
+        // I don't quite know what this is for
+        INSERT (2500),
+        // Tall pole cone deposit position
+        TALL (2700),
+        // Maximum (?) motor encoder tick
+        MAX (2970);
 
         final int height;
 
         SlidePosition(int i) { height = i; }
     }
 
-//    enum SusanPosition {
-//        FRONT (0),
-//        RIGHT (1150),
-//        BACK (1950),
-//        LEFT (1950);
-//
-//        int position;
-//
-//        SusanPosition(int i) { position = i; }
-//    }
-
-    protected static DcMotorEx linearSlide, lazySusan;
+    protected static DcMotorEx linearSlideMotor, haloMotor;
 
     protected RobohawksMecanumDrive drive;
 
@@ -67,17 +66,19 @@ public abstract class DriverControlSuperOpMode extends OpMode {
 
     int slideTolerance = 35;
     boolean slideActive = false;
+    // Minimum input value required to perform analog actions
     static double analogInputThreshold = 0.05;
 
+    // Move the linear slide
     public void linearSlideToStop(SlidePosition stop, int tolerance) {
-
-        // These if statements set the target location for the slide based on user input.
-        manualSlide = false;
+        // disable manual operation (this is the macro call)
+        useSlideManualControls = false;
+        // enable the slide (will be checked on next update)
         slideActive = true;
+        // set the motor tolerance
         slideTolerance = tolerance;
+        // set the precise slide target using the enum member
         slideTarget = stop.height;
-
-        // This is how the program knows if it needs to call the function in the next loop to complete the move.
     }
 
     /**
@@ -85,15 +86,16 @@ public abstract class DriverControlSuperOpMode extends OpMode {
      */
     public void linearSlideToStop(SlidePosition stop) { linearSlideToStop(stop, 35); }
 
+    // Updates the linear slide movement
     void linearSlideUpdate() {
         if (slideActive) {
-            int cpos = linearSlide.getCurrentPosition();
+            int cpos = linearSlideMotor.getCurrentPosition();
             int v = abs(slideTarget - cpos);
             if (v >= slideTolerance) {
-                linearSlide.setTargetPositionTolerance(slideTolerance); // This actually moves the motors.
-                linearSlide.setTargetPosition(slideTarget);
-                linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                linearSlide.setPower(.85);
+                linearSlideMotor.setTargetPositionTolerance(slideTolerance); // This actually moves the motors.
+                linearSlideMotor.setTargetPosition(slideTarget);
+                linearSlideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                linearSlideMotor.setPower(0.85);
             } else slideActive = false;
         }
     }
@@ -105,17 +107,20 @@ public abstract class DriverControlSuperOpMode extends OpMode {
         RIGHT
     }
 
+    /**
+     * @see DriverControlSuperOpMode#setAbstractConstants()
+     */
     int haloConstantFront = 0, haloConstantBack, haloConstantLeft, haloConstantRight;
 
     /**
-     * Virtual
+     * The only differences between the left and right driver control OpModes are a few constants- yet Java can't virtualize class members, only methods.
+     * <b>A</b> solution (not <b>THE</b> solution) is setting the variables (some HALO constants) at init & start time (done twice for redundancy) using an abstract method.
      */
-    abstract void setHaloConstants();
+    abstract void setAbstractConstants();
 
     void haloToPosition(HaloPosition targetPosition) {
 
         int desiredPosition;
-        // Sets target encoder position.
         switch (targetPosition) {
             case FRONT: desiredPosition = haloConstantFront; break;
             case BACK:  desiredPosition = haloConstantBack;  break;
@@ -126,44 +131,56 @@ public abstract class DriverControlSuperOpMode extends OpMode {
 
         // Apparently, "this works." These are *BITWISE* ANDs, not *LOGICAL* ANDs. I'm a bit scared to change this since I'm not sure what we were going for.
         // TODO: Rewrite this.
-        // NOTE: Operator precedence
+        // NOTE: Operator precedence: "+" > "-" > ">" > "&"
 
-        if(linearSlide.getCurrentPosition() <= 270 && !(lazySusan.getCurrentPosition() + 50 > desiredPosition & lazySusan.getCurrentPosition() - 50 < desiredPosition)) {
+        if(linearSlideMotor.getCurrentPosition() <= SlidePosition.HOP.height &&
+                !(
+                        (( haloMotor.getCurrentPosition() + 50) > desiredPosition)
+                        & (haloMotor.getCurrentPosition() - 50  < desiredPosition)
+                        // is this a tolerance check? below is an easily-readible version (if so)
+                        // abs(lazySusan.getCurrentPosition() - desiredPosition) < 50
+                )
+        ) {
             linearSlideToStop(SlidePosition.HOP, 30);
             down1 = true;
         }
 
-        lazySusan.setTargetPositionTolerance(35);
-        lazySusan.setTargetPosition(desiredPosition);
-        lazySusan.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        lazySusan.setPower(.5);
+        haloMotor.setTargetPositionTolerance(35);
+        haloMotor.setTargetPosition(desiredPosition);
+        haloMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        haloMotor.setPower(.5);
 
-        if (down1 && (lazySusan.getCurrentPosition() + 50 > desiredPosition & lazySusan.getCurrentPosition() - 50 < desiredPosition & linearSlide.getCurrentPosition() > 250)) {
+        if (down1 && (
+                ((haloMotor.getCurrentPosition() + 50) > desiredPosition)
+                & (haloMotor.getCurrentPosition() - 50 < desiredPosition)
+                & (linearSlideMotor.getCurrentPosition() > 250))
+        ) {
             linearSlideToStop(SlidePosition.BOTTOM, 20);
-            if (linearSlide.getCurrentPosition() < 25) down1 = false;
+            if (linearSlideMotor.getCurrentPosition() < 25) down1 = false;
         }
     }
 
     public void init() {
+        setAbstractConstants(); // virtualize variables
         // Declare the used non-drive motors.
-        lazySusan = hardwareMap.get(DcMotorEx.class, "lazySusan");
-        linearSlide = hardwareMap.get(DcMotorEx.class, "linearSlide");
+        haloMotor = hardwareMap.get(DcMotorEx.class, "lazySusan");
+        linearSlideMotor = hardwareMap.get(DcMotorEx.class, "linearSlide");
         clawServo = hardwareMap.get(Servo.class, "clawServo");
         drive = new RobohawksMecanumDrive(hardwareMap); //Instance of SampleMecanum drive to access methods in the file.
-        setHaloConstants(); // virtualize variables
     }
 
     @Override
     public void start() {
-        linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); //Start encoders at position 0.
-        lazySusan.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        setAbstractConstants(); // virtualize variables
+        linearSlideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); //Start encoders at position 0.
+        haloMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        lazySusan.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE); //Sets HALO to brake mode.
-        lazySusan.setDirection(DcMotorSimple.Direction.REVERSE);
+        haloMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE); //Sets HALO to brake mode.
+        haloMotor.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
     public void loop() {
-            if (linearSlide.getCurrentPosition() >= 1500) speed = .25;
+            if (linearSlideMotor.getCurrentPosition() >= 1500) speed = .25;
             // Change drive speed coefficient.
             else if (gamepad1.a) speed = .25;
             else if (gamepad1.b) speed = .5;
@@ -195,16 +212,16 @@ public abstract class DriverControlSuperOpMode extends OpMode {
             drive.setWeightedDrivePower(drivePower);
 
             if (gamepad2.left_trigger >= analogInputThreshold || gamepad2.right_trigger >= analogInputThreshold) {  // manual LinearSlide controls via triggers.
-                linearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                linearSlideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-                manualSlide = true; // Reports that slide is operating manually, not via a macro.
+                useSlideManualControls = true; // Reports that slide is operating manually, not via a macro.
 
 
-                linearSlide.setPower(((gamepad2.right_trigger >= gamepad2.left_trigger) ? gamepad2.right_trigger : -gamepad2.left_trigger));
-            } else if (manualSlide) { //Tests to see if its operating via a macro, doesn't interrupt macro if the test is positive.
+                linearSlideMotor.setPower(((gamepad2.right_trigger >= gamepad2.left_trigger) ? gamepad2.right_trigger : -gamepad2.left_trigger));
+            } else if (useSlideManualControls) { //Tests to see if its operating via a macro, doesn't interrupt macro if the test is positive.
 
-                linearSlide.setPower(0); //todo PROBLEM (might be resolved)
-                manualSlide = false;
+                linearSlideMotor.setPower(0); //todo PROBLEM (might be resolved)
+                useSlideManualControls = false;
 
             }
 
@@ -223,20 +240,20 @@ public abstract class DriverControlSuperOpMode extends OpMode {
             // Code for manual operation of HALO device, the big long line with lots of "? :" statements is to curve the stick input to a controllable amount.
 
             if (abs(gamepad2.left_stick_x) >= .05) {
-                lazySusan.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                haloMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-                manualSusan = true; // Reports that LazySusan is operating manually, and requires stopping.
+                useHaloManualControls = true; // Reports that LazySusan is operating manually, and requires stopping.
 
-                lazySusan.setPower(
+                haloMotor.setPower(
                     signum(gamepad2.left_stick_x) *
                     ((Math.pow(gamepad2.left_stick_x, 2) >= .25) ?
                         .25 :
                         Math.max(Math.pow(gamepad2.left_stick_x, 2), .05)
                     )
                 );
-            } else if (manualSusan) { // If Susan was moved manually, stop when no longer receiving input.
-                lazySusan.setPower(0);
-                manualSusan = false;
+            } else if (useHaloManualControls) { // If Susan was moved manually, stop when no longer receiving input.
+                haloMotor.setPower(0);
+                useHaloManualControls = false;
             }
 
             // Macros for LazySusan positions.
@@ -267,9 +284,9 @@ public abstract class DriverControlSuperOpMode extends OpMode {
 
             // Telemetry for HALO and linear slide positions
 
-            telemetry.addData("Current Slide Pos", linearSlide.getCurrentPosition());
+            telemetry.addData("Current Slide Pos", linearSlideMotor.getCurrentPosition());
             telemetry.addData("TargetSlidePos", slideTarget);
-            telemetry.addData("Susan Position", lazySusan.getCurrentPosition());
+            telemetry.addData("Susan Position", haloMotor.getCurrentPosition());
             telemetry.addData("Slide Macro Status", (slideActive ? "active" : "inactive"));
 
             telemetry.update();
