@@ -104,7 +104,7 @@ public abstract class AutoSuperOpMode extends LinearOpMode {
         linearSlide.setTargetPositionTolerance(tolerance);
         linearSlide.setTargetPosition(target);
         linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        linearSlide.setPower(.7);
+        linearSlide.setPower(1);
 
         //        (pos + tolerance) leq target
         //        (pos - tolerance) greq target

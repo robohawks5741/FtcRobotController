@@ -15,8 +15,8 @@ public class AutonomousRight extends AutoSuperOpMode {
         claw(.6);
         sleep(400);
 
-        susan(80);
-        sleep(100);
+        susan(100);
+        sleep(300);
 
         susan(0);
         sleep(200);
@@ -55,19 +55,20 @@ public class AutonomousRight extends AutoSuperOpMode {
         sleep(500);
 
         drive.followTrajectory(toPole);
-        linearSlideToStop(SlidePosition.TALL,30,0);
+        linearSlideToStop(SlidePosition.TALL,35,0);
         //sleep(1500);
 
         susan(-462);
-        sleep(950);
+        sleep(1500);
 
-        linearSlideToStop(SlidePosition.INSERT,30,0);
-        sleep(400);
+        //linearSlideToStop(SlidePosition.INSERT,30,0);
+        //sleep(400);
 
         claw(.25);
         sleep(750);
 
         susan(0);
+        sleep(250);
         linearSlideToStop(SlidePosition.BOTTOM,35,0);
         claw(.32);
 
