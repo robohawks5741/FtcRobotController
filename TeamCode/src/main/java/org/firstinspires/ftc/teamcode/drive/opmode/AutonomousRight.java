@@ -94,10 +94,10 @@ public class AutonomousRight extends AutoSuperOpMode {
         claw(.32);
 
         switch (numberOfTag) {
-            case 2: drive.followTrajectory(parkPosition1); break;
+            case 2: drive.followTrajectory(parkPosition2); break;
             case 3: drive.followTrajectory(parkPosition3); break;
             case 1:
-            default: drive.followTrajectory(parkPosition2); break;
+            default: drive.followTrajectory(parkPosition1); break;
         }
         debugSplit("followTrajectory");
         sleep(1000);
@@ -161,17 +161,17 @@ public class AutonomousRight extends AutoSuperOpMode {
                 .build();*/
 
 
-        parkPosition1 = drive.trajectoryBuilder(toPole.end())
-                .lineToLinearHeading(new Pose2d(48,24,Math.toRadians(270)))
-                .build();
+        parkPosition2 = drive.trajectoryBuilder(toPole.end())
+            .lineToLinearHeading(new Pose2d(48, 24, Math.toRadians(270)))
+            .build();
 
         parkPosition3 = drive.trajectoryBuilder(toPole.end())
-                .lineToLinearHeading(new Pose2d(48,-24,Math.toRadians(270)))
-                .build();
+            .lineToLinearHeading(new Pose2d(48, -24, Math.toRadians(270)))
+            .build();
 
-        parkPosition2 = drive.trajectoryBuilder(toPole.end())
-                .lineToLinearHeading(new Pose2d(48,0,Math.toRadians(270)))
-                .build();
+        parkPosition1 = drive.trajectoryBuilder(toPole.end())
+            .lineToLinearHeading(new Pose2d(48, 0, Math.toRadians(270)))
+            .build();
     }
 
 }

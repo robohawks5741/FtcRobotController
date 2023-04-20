@@ -92,10 +92,10 @@ public class AutonomousLeft extends AutoSuperOpMode {
         sleep(250);
 
         switch (numberOfTag) {
-            case 2: drive.followTrajectory(parkPosition1); break;
+            case 2: drive.followTrajectory(parkPosition2); break;
             case 3: drive.followTrajectory(parkPosition3); break;
             default:
-            case 1: drive.followTrajectory(parkPosition2); break;
+            case 1: drive.followTrajectory(parkPosition1); break;
         }
         debugSplit("followTrajectory");
         sleep(250);
@@ -153,7 +153,7 @@ public class AutonomousLeft extends AutoSuperOpMode {
                 )
                 .build();
 
-        parkPosition1 = drive.trajectoryBuilder(toPole.end())
+        parkPosition2 = drive.trajectoryBuilder(toPole.end())
                         .lineTo(new Vector2d(48, 24))
                         .build();
 
@@ -161,7 +161,7 @@ public class AutonomousLeft extends AutoSuperOpMode {
                         .lineTo(new Vector2d(48, -24))
                         .build();
 
-        parkPosition2 = drive.trajectoryBuilder(toPole.end())
+        parkPosition1 = drive.trajectoryBuilder(toPole.end())
                         .lineTo(new Vector2d(48, 0))
                         .build();
     }

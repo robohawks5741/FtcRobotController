@@ -62,8 +62,8 @@ public abstract class AutoSuperOpMode extends LinearOpMode {
 
     Trajectory toCones2 = null;
     Trajectory toPole2 = null;
-    Trajectory parkPosition1 = null;
     Trajectory parkPosition2 = null;
+    Trajectory parkPosition1 = null;
     Trajectory parkPosition3 = null;
     Trajectory returnus = null;
     protected boolean slide = false;
