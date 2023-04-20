@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.RobohawksMecanumDrive;
 
 @Autonomous
-public class AAutoRight extends AutoSuperOpMode {
+public class AddieAutoRight extends AutoSuperOpMode {
 
     protected void runAuto() {
         /* ************************************************************** *\
@@ -56,7 +56,7 @@ public class AAutoRight extends AutoSuperOpMode {
         debugSplit("slide");
         //sleep(700);
 
-        claw(ClawPosition.OPEN);
+        claw(ClawPosition.FULL_OPEN);
         debugSplit("claw");
         sleep(250);
 
@@ -90,7 +90,7 @@ public class AAutoRight extends AutoSuperOpMode {
         //linearSlideToStop(SlidePosition.INSERT,30,0);
         //sleep(400);
 
-        claw(ClawPosition.OPEN);
+        claw(ClawPosition.FULL_OPEN);
         debugSplit("claw");
         sleep(750);
 
@@ -99,7 +99,7 @@ public class AAutoRight extends AutoSuperOpMode {
         sleep(250);
         linearSlideToStop(SlidePosition.BOTTOM, 35, 0);
         debugSplit("slide");
-        claw(ClawPosition.FULL_OPEN);
+        claw(ClawPosition.OPEN);
 
         /* ************************************************************** *\
                                         Park

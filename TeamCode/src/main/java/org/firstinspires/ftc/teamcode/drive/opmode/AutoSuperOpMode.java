@@ -98,8 +98,8 @@ public abstract class AutoSuperOpMode extends LinearOpMode {
     }
 
     enum ClawPosition {
-        OPEN(0.25),
-        FULL_OPEN (0.32),
+        FULL_OPEN(0.25),
+        OPEN(0.32),
         CLOSED (0.6);
 
         final double pos;
