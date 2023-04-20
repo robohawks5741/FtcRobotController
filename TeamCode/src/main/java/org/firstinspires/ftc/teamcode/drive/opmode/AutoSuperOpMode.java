@@ -73,6 +73,7 @@ public abstract class AutoSuperOpMode extends LinearOpMode {
         BOTTOM (0),
         HOP (270),
         CONESTACK (360),
+        // To keep the bot stable
         AUTOMOVE (523),
         LOW (1150),
         MID (1950),
@@ -120,7 +121,11 @@ public abstract class AutoSuperOpMode extends LinearOpMode {
     }
 
     public void claw(ClawPosition pos){
-        clawServo.setPosition(pos.pos);
+        claw(pos.pos);
+    }
+    // Please use the enum macro instead!
+    public void claw(double pos){
+        clawServo.setPosition(pos);
     }
 
     public void linearSlideToStop(SlidePosition stop, int tolerance, int conesUp){
