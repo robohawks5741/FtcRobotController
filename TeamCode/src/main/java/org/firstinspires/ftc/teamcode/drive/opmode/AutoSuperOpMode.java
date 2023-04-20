@@ -71,33 +71,59 @@ public abstract class AutoSuperOpMode extends LinearOpMode {
     // LinearSlide positions
     enum SlidePosition {
         BOTTOM (0),
+        HOP (270),
+        CONESTACK (360),
+        AUTOMOVE (523),
         LOW (1150),
         MID (1950),
-        TALL (2700),
-        HOP (270),
-        AUTOMOVE (523),
-        CONESTACK (360),
-        INSERT (2250);
+        INSERT (2250),
+        TALL (2700);
 
         final int height;
 
         SlidePosition(int i) { height = i; }
     }
 
+    enum HaloPosition {
+        FRONT (0),
+        // placeholders
+        BACK (-1),
+        LEFT (-1),
+        RIGHT (-1);
+
+        final int height;
+
+        HaloPosition(int height) { this.height = height; }
+    }
+
+    enum ClawPosition {
+        OPEN(0.25),
+        FULL_OPEN (0.32),
+        CLOSED (0.6);
+
+        final double pos;
+
+        ClawPosition(double pos) { this.pos = pos; }
+    }
+
     protected int target = 0;
 
     public void susan(int pos){
+        susan(pos, 0.4);
+    }
+
+    public void susan(int pos, double pow){
         lazySusan.setTargetPositionTolerance(20);
         lazySusan.setTargetPosition(pos);
         lazySusan.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        lazySusan.setPower(.4);
+        lazySusan.setPower(pow);
     }
 
-    public void claw(double pos){
-        clawServo.setPosition(pos);
+    public void claw(ClawPosition pos){
+        clawServo.setPosition(pos.pos);
     }
 
-    public boolean linearSlideToStop(SlidePosition stop, int tolerance, int conesUp){
+    public void linearSlideToStop(SlidePosition stop, int tolerance, int conesUp){
 
         if (stop == SlidePosition.CONESTACK) {
             target = SlidePosition.CONESTACK.height - conesUp * 75;
@@ -111,7 +137,6 @@ public abstract class AutoSuperOpMode extends LinearOpMode {
         //        (pos + tolerance) leq target
         //        (pos - tolerance) greq target
         slide = ((linearSlide.getCurrentPosition() <= (target - tolerance)) || (linearSlide.getCurrentPosition() >= (target + tolerance)));
-        return slide;
     }
 
     protected abstract void runAuto() throws InterruptedException;

@@ -12,7 +12,7 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 public class AutonomousRight extends AutoSuperOpMode {
 
     protected void runAuto() {
-        claw(.6);
+        claw(ClawPosition.CLOSED);
         debugSplit("claw");
         sleep(400);
 
@@ -24,7 +24,7 @@ public class AutonomousRight extends AutoSuperOpMode {
         debugSplit("susan");
         sleep(200);
 
-        linearSlideToStop(SlidePosition.AUTOMOVE,30,0);
+        linearSlideToStop(SlidePosition.AUTOMOVE, 30, 0);
         debugSplit("slide");
         drive.followTrajectory(forwards);
         debugSplit("followTrajectory");
@@ -32,12 +32,12 @@ public class AutonomousRight extends AutoSuperOpMode {
 
         drive.followTrajectory(returnus);
         debugSplit("followTrajectory");
-        drive.turn(Math.toRadians(-84)); // TODO
+        drive.turn(Math.toRadians(-84)); // TODO: this should be -90deg
         debugSplit("turn");
-        linearSlideToStop(SlidePosition.TALL,35,0);
+        linearSlideToStop(SlidePosition.TALL, 35, 0);
         drive.followTrajectory(right);
         debugSplit("followTrajectory");
-        susan(-462);
+        susan(-462, 0.2);
         debugSplit("susan");
         //sleep(1400);
 
@@ -48,7 +48,7 @@ public class AutonomousRight extends AutoSuperOpMode {
         debugSplit("slide");
         //sleep(700);
 
-        claw(.25);
+        claw(ClawPosition.OPEN);
         debugSplit("claw");
         sleep(250);
 
@@ -59,13 +59,13 @@ public class AutonomousRight extends AutoSuperOpMode {
         debugSplit("slide");
         drive.followTrajectory(toCones);
         debugSplit("followTrajectory");
-        sleep(250);
+//        sleep(250);
 
-        claw(.6);
+        claw(ClawPosition.CLOSED);
         debugSplit("claw");
         sleep(500);
 
-        linearSlideToStop(SlidePosition.LOW,20,conesUp++);
+        linearSlideToStop(SlidePosition.LOW, 20, conesUp++);
         debugSplit("slide");
         sleep(500);
 
@@ -82,16 +82,20 @@ public class AutonomousRight extends AutoSuperOpMode {
         //linearSlideToStop(SlidePosition.INSERT,30,0);
         //sleep(400);
 
-        claw(.25);
+        claw(ClawPosition.OPEN);
         debugSplit("claw");
         sleep(750);
 
         susan(0);
         debugSplit("susan");
         sleep(250);
-        linearSlideToStop(SlidePosition.BOTTOM,35,0);
+        linearSlideToStop(SlidePosition.BOTTOM, 35, 0);
         debugSplit("slide");
-        claw(.32);
+        claw(ClawPosition.FULL_OPEN);
+
+        /* ************************************************************** *\
+                                        Park
+        \* ************************************************************** */
 
         switch (numberOfTag) {
             case 2: drive.followTrajectory(parkPosition2); break;
@@ -99,6 +103,7 @@ public class AutonomousRight extends AutoSuperOpMode {
             case 1:
             default: drive.followTrajectory(parkPosition1); break;
         }
+
         debugSplit("followTrajectory");
         sleep(1000);
     }
