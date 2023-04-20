@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.AprilTagDetectionPipeline;
+import org.firstinspires.ftc.teamcode.DcMotorExSplit;
 import org.firstinspires.ftc.teamcode.drive.RobohawksMecanumDrive;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -22,7 +23,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /* TODO: Replace old stuff with the wrapped stuff
- * [] Halo (lazySuasan) -> HD
+ * [] Halo (lazySusan) -> HD
  * [] Linear Slide (linearSlide) -> LSD
  */
 
@@ -32,7 +33,8 @@ public abstract class AutoSuperOpMode extends LinearOpMode {
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
     RobohawksMecanumDrive drive = null;
     protected Servo clawServo;
-    protected DcMotorEx linearSlide, lazySusan;
+    protected DcMotorEx lazySusan;
+    protected DcMotorExSplit linearSlide;
 
     static final double FEET_PER_METER = 3.28084;
 
@@ -71,33 +73,64 @@ public abstract class AutoSuperOpMode extends LinearOpMode {
     // LinearSlide positions
     enum SlidePosition {
         BOTTOM (0),
+        HOP (270),
+        CONESTACK (360),
+        // To keep the bot stable
+        AUTOMOVE (523),
         LOW (1150),
         MID (1950),
-        TALL (2700),
-        HOP (270),
-        AUTOMOVE (523),
-        CONESTACK (360),
-        INSERT (2250);
+        INSERT (2250),
+        TALL (2700);
 
         final int height;
 
         SlidePosition(int i) { height = i; }
     }
 
+    enum HaloPosition {
+        FRONT (0),
+        // placeholders
+        BACK (-1),
+        LEFT (-1),
+        RIGHT (-1);
+
+        final int height;
+
+        HaloPosition(int height) { this.height = height; }
+    }
+
+    enum ClawPosition {
+        FULL_OPEN(0.25),
+        OPEN(0.32),
+        CLOSED (0.6);
+
+        final double pos;
+
+        ClawPosition(double pos) { this.pos = pos; }
+    }
+
     protected int target = 0;
 
     public void susan(int pos){
+        susan(pos, 0.4);
+    }
+
+    public void susan(int pos, double pow){
         lazySusan.setTargetPositionTolerance(20);
         lazySusan.setTargetPosition(pos);
         lazySusan.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        lazySusan.setPower(.4);
+        lazySusan.setPower(pow);
     }
 
+    public void claw(ClawPosition pos){
+        claw(pos.pos);
+    }
+    // Please use the enum macro instead!
     public void claw(double pos){
         clawServo.setPosition(pos);
     }
 
-    public boolean linearSlideToStop(SlidePosition stop, int tolerance, int conesUp){
+    public void linearSlideToStop(SlidePosition stop, int tolerance, int conesUp){
 
         if (stop == SlidePosition.CONESTACK) {
             target = SlidePosition.CONESTACK.height - conesUp * 75;
@@ -111,7 +144,6 @@ public abstract class AutoSuperOpMode extends LinearOpMode {
         //        (pos + tolerance) leq target
         //        (pos - tolerance) greq target
         slide = ((linearSlide.getCurrentPosition() <= (target - tolerance)) || (linearSlide.getCurrentPosition() >= (target + tolerance)));
-        return slide;
     }
 
     protected abstract void runAuto() throws InterruptedException;
@@ -124,11 +156,12 @@ public abstract class AutoSuperOpMode extends LinearOpMode {
         drive = new RobohawksMecanumDrive(hardwareMap);
 
         lazySusan = hardwareMap.get(DcMotorEx.class,"lazySusan");
-        linearSlide = hardwareMap.get(DcMotorEx.class, "linearSlide");
+        linearSlide = new DcMotorExSplit(
+            hardwareMap.get(DcMotorEx.class, "linearSlide"),
+            hardwareMap.get(DcMotorEx.class, "leftEncoder")
+        );
         lazySusan.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         clawServo = hardwareMap.get(Servo.class, "clawServo");
-
-        RobohawksMecanumDrive drive = new RobohawksMecanumDrive(hardwareMap);
 
         linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); //Start encoders at position 0.
         lazySusan.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

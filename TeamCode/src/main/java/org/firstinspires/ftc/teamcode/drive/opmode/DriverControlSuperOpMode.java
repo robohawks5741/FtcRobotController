@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.DcMotorExSplit;
 import org.firstinspires.ftc.teamcode.drive.RobohawksMecanumDrive;
 
 /**
@@ -59,7 +60,8 @@ public abstract class DriverControlSuperOpMode extends OpMode {
         SlidePositionMacro(int i) { height = i; }
     }
 
-    protected static DcMotorEx linearSlideMotor, haloMotor;
+    protected DcMotorEx haloMotor;
+    protected DcMotorExSplit linearSlideMotor;
 
     protected RobohawksMecanumDrive drive;
 
@@ -163,7 +165,10 @@ public abstract class DriverControlSuperOpMode extends OpMode {
         setAbstractConstants(); // virtualize variables
         // Declare the used non-drive motors.
         haloMotor = hardwareMap.get(DcMotorEx.class, "lazySusan");
-        linearSlideMotor = hardwareMap.get(DcMotorEx.class, "linearSlide");
+        linearSlideMotor = new DcMotorExSplit(
+                hardwareMap.get(DcMotorEx.class, "linearSlide"),
+                hardwareMap.get(DcMotorEx.class, "leftEncoder")
+        );
         clawServo = hardwareMap.get(Servo.class, "clawServo");
         drive = new RobohawksMecanumDrive(hardwareMap); //Instance of SampleMecanum drive to access methods in the file.
     }
@@ -215,7 +220,7 @@ public abstract class DriverControlSuperOpMode extends OpMode {
 
                 useSlideManualControls = true; // Reports that slide is operating manually, not via a macro.
 
-                linearSlideMotor.setPower(((gamepad2.right_trigger >= gamepad2.left_trigger) ? gamepad2.right_trigger : -gamepad2.left_trigger));
+                linearSlideMotor.setPower(Math.max(-1, Math.min(1, ((gamepad2.right_trigger >= gamepad2.left_trigger) ? gamepad2.right_trigger : -gamepad2.left_trigger))));
             } else if (useSlideManualControls) { // Tests to see if its operating via a macro, doesn't interrupt macro if the test is positive.
                  linearSlideMotor.setPower(0); // todo PROBLEM (might be resolved)
                  useSlideManualControls = false;

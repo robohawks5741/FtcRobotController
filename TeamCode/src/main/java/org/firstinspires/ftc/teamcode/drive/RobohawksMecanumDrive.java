@@ -17,10 +17,8 @@ import com.acmerobotics.roadrunner.trajectory.constraints.MinVelocityConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
-import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.hardware.lynx.LynxModule;
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -88,7 +86,7 @@ public class RobohawksMecanumDrive extends MecanumDrive {
 
     private TrajectoryFollower follower;
 
-    private DcMotorEx motorRearLeft, motorRearRight, motorFrontRight, motorLinearSlide, motorEncoderLeft, motorEncoderRight, motorEncoderFront;
+    private DcMotorEx motorRearLeft, motorRearRight, motorFrontRight, /*motorLinearSlide,*/ motorEncoderLeft, motorEncoderRight, motorEncoderFront;
     private Servo servoClaw;
     final List<DcMotorEx> motors;
     private IMU imu;
@@ -143,18 +141,17 @@ public class RobohawksMecanumDrive extends MecanumDrive {
         // BNO055IMUUtil.remapZAxis(imu, AxisDirection.NEG_Y);
 
         // TODO: set the hardware map names to match the variable names
-        motorRearLeft = hardwareMap.get(DcMotorEx.class, "leftRear");
-        motorRearRight = hardwareMap.get(DcMotorEx.class, "rightRear");
+        motorRearLeft   = hardwareMap.get(DcMotorEx.class, "leftRear");
+        motorRearRight  = hardwareMap.get(DcMotorEx.class, "rightRear");
         motorFrontRight = hardwareMap.get(DcMotorEx.class, "rightFront");
 
-        motorLinearSlide = hardwareMap.get(DcMotorEx.class, "linearSlide");
-        motorEncoderLeft =  hardwareMap.get(DcMotorEx.class, "leftEncoder");
+        motorEncoderLeft  = hardwareMap.get(DcMotorEx.class, "leftEncoder");
         motorEncoderRight = hardwareMap.get(DcMotorEx.class, "rightEncoder");
-        motorEncoderFront = hardwareMap.get(DcMotorEx.class,"frontEncoder");
+        motorEncoderFront = hardwareMap.get(DcMotorEx.class, "frontEncoder");
 
         servoClaw = hardwareMap.get(Servo.class, "clawServo");
 
-        motors = Arrays.asList(motorRearLeft, motorRearRight, motorFrontRight, motorLinearSlide, motorEncoderLeft, motorEncoderRight, motorEncoderFront);
+        motors = Arrays.asList(motorRearLeft, motorRearRight, motorFrontRight, /* motorLinearSlide, */ motorEncoderLeft, motorEncoderRight, motorEncoderFront);
 
 
         // added linear slide to these.
@@ -336,24 +333,6 @@ public class RobohawksMecanumDrive extends MecanumDrive {
         motorRearLeft.setPower(v1);
         motorRearRight.setPower(v2);
         motorFrontRight.setPower(v3);
-    }
-
-    public int LinearSlidePos(){
-        //Lpos = linearSlide.getCurrentPosition();
-        //ctr = ctr+4;
-        //return linearSlide.getCurrentPosition();  This does not return an accurate reading but rather seemingly arbitrary numbers.
-        //I believe the physical encoder is not working or the connection is messed up.
-
-        return motorLinearSlide.getCurrentPosition();
-        //testing this to see if a different encoder will work in place of the the LinearSlide Motor.
-
-        //couldn't get telemetry to work in this file, must be OpMode only.
-        //ctr = ctr +2;
-
-    }
-
-    public void LinearSlideResetEnc(){
-        motorLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     public void moveTestServo(double pos){
