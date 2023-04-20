@@ -9,7 +9,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 
 @Autonomous
-public class AutonomousRight extends AutoSuperOpMode {
+public class parkAuto extends AutoSuperOpMode {
 
     protected void runAuto() {
         claw(.6);
@@ -22,7 +22,7 @@ public class AutonomousRight extends AutoSuperOpMode {
 
         susan(0);
         debugSplit("susan");
-        sleep(200);
+        sleep(200); /*
 
         linearSlideToStop(SlidePosition.AUTOMOVE,30,0);
         debugSplit("slide");
@@ -131,6 +131,11 @@ public class AutonomousRight extends AutoSuperOpMode {
         debugSplit("slide");
         claw(.32);
 
+ */
+        sleep(15000);
+
+        drive.followTrajectory(forwards);
+
         switch (numberOfTag) {
             case 2: drive.followTrajectory(parkPosition2); break;
             case 3: drive.followTrajectory(parkPosition3); break;
@@ -144,7 +149,7 @@ public class AutonomousRight extends AutoSuperOpMode {
     protected void setTrajectories() {
         forwards = drive.trajectoryBuilder(new Pose2d())
 
-                .lineTo( new Vector2d(55,0),
+                .lineTo( new Vector2d(49,0),
                         RobohawksMecanumDrive.getVelocityConstraint(55, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         RobohawksMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
@@ -200,16 +205,16 @@ public class AutonomousRight extends AutoSuperOpMode {
 
 
         parkPosition2 = drive.trajectoryBuilder(toPole.end())
-            .lineToLinearHeading(new Pose2d(48, 24, Math.toRadians(270)))
-            .build();
+                .lineToLinearHeading(new Pose2d(48, 24, Math.toRadians(270)))
+                .build();
 
         parkPosition3 = drive.trajectoryBuilder(toPole.end())
-            .lineToLinearHeading(new Pose2d(48, -24, Math.toRadians(270)))
-            .build();
+                .lineToLinearHeading(new Pose2d(48, -24, Math.toRadians(270)))
+                .build();
 
         parkPosition1 = drive.trajectoryBuilder(toPole.end())
-            .lineToLinearHeading(new Pose2d(48, 0, Math.toRadians(270)))
-            .build();
+                .lineToLinearHeading(new Pose2d(48, 0, Math.toRadians(270)))
+                .build();
     }
 
 }
