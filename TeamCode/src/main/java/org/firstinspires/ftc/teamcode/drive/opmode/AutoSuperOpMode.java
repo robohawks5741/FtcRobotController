@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.AprilTagDetectionPipeline;
+import org.firstinspires.ftc.teamcode.DcMotorExSplit;
 import org.firstinspires.ftc.teamcode.drive.RobohawksMecanumDrive;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -22,7 +23,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /* TODO: Replace old stuff with the wrapped stuff
- * [] Halo (lazySuasan) -> HD
+ * [] Halo (lazySusan) -> HD
  * [] Linear Slide (linearSlide) -> LSD
  */
 
@@ -32,7 +33,8 @@ public abstract class AutoSuperOpMode extends LinearOpMode {
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
     RobohawksMecanumDrive drive = null;
     protected Servo clawServo;
-    protected DcMotorEx linearSlide, lazySusan;
+    protected DcMotorEx lazySusan;
+    protected DcMotorExSplit linearSlide;
 
     static final double FEET_PER_METER = 3.28084;
 
@@ -154,11 +156,12 @@ public abstract class AutoSuperOpMode extends LinearOpMode {
         drive = new RobohawksMecanumDrive(hardwareMap);
 
         lazySusan = hardwareMap.get(DcMotorEx.class,"lazySusan");
-        linearSlide = hardwareMap.get(DcMotorEx.class, "linearSlide");
+        linearSlide = new DcMotorExSplit(
+            hardwareMap.get(DcMotorEx.class, "linearSlide"),
+            hardwareMap.get(DcMotorEx.class, "leftEncoder")
+        );
         lazySusan.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         clawServo = hardwareMap.get(Servo.class, "clawServo");
-
-        RobohawksMecanumDrive drive = new RobohawksMecanumDrive(hardwareMap);
 
         linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); //Start encoders at position 0.
         lazySusan.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
