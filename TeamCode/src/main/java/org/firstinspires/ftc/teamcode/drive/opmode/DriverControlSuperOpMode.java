@@ -61,7 +61,7 @@ public abstract class DriverControlSuperOpMode extends OpMode {
     }
 
     protected DcMotorEx haloMotor;
-    protected DcMotorExSplit linearSlideMotor;
+    protected DcMotorEx linearSlideMotor;
 
     protected RobohawksMecanumDrive drive;
 
@@ -165,10 +165,7 @@ public abstract class DriverControlSuperOpMode extends OpMode {
         setAbstractConstants(); // virtualize variables
         // Declare the used non-drive motors.
         haloMotor = hardwareMap.get(DcMotorEx.class, "lazySusan");
-        linearSlideMotor = new DcMotorExSplit(
-                hardwareMap.get(DcMotorEx.class, "linearSlide"),
-                hardwareMap.get(DcMotorEx.class, "linearSlide2")
-        );
+        linearSlideMotor = hardwareMap.get(DcMotorEx.class, "linearSlide");
         clawServo = hardwareMap.get(Servo.class, "clawServo");
         drive = new RobohawksMecanumDrive(hardwareMap); //Instance of SampleMecanum drive to access methods in the file.
     }

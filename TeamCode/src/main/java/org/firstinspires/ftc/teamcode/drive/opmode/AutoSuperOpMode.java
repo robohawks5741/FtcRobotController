@@ -34,7 +34,7 @@ public abstract class AutoSuperOpMode extends LinearOpMode {
     RobohawksMecanumDrive drive = null;
     protected Servo clawServo;
     protected DcMotorEx lazySusan;
-    protected DcMotorExSplit linearSlide;
+    protected DcMotorEx linearSlide;
 
     static final double FEET_PER_METER = 3.28084;
 
@@ -155,11 +155,8 @@ public abstract class AutoSuperOpMode extends LinearOpMode {
         counter = 0;
         drive = new RobohawksMecanumDrive(hardwareMap);
 
-        lazySusan = hardwareMap.get(DcMotorEx.class,"lazySusan");
-        linearSlide = new DcMotorExSplit(
-            hardwareMap.get(DcMotorEx.class, "linearSlide"),
-            hardwareMap.get(DcMotorEx.class, "linearSlide2")
-        );
+        lazySusan   = hardwareMap.get(DcMotorEx.class,"lazySusan");
+        linearSlide = hardwareMap.get(DcMotorEx.class, "linearSlide");
         lazySusan.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         clawServo = hardwareMap.get(Servo.class, "clawServo");
 
