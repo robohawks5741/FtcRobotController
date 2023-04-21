@@ -20,7 +20,18 @@ public class DcMotorExSplit implements DcMotorEx {
     public DcMotorExSplit(@NonNull DcMotorEx primary, @NonNull DcMotorEx secondary) {
         smPrimary = primary;
         smSecondary = secondary;
-        motley = new Thread(() -> { while (true) smSecondary.getController().setMotorPower(smSecondary.getPortNumber(), smPrimary.getController().getMotorPower(smPrimary.getPortNumber())); });
+        motley = new Thread(() -> {
+            while (true) {
+                DcMotorController controller2 = smSecondary.getController();
+                DcMotorController controller1 = smPrimary.getController();
+
+                int port1 = smPrimary.getPortNumber();
+                int port2 = smSecondary.getPortNumber();
+
+                double power = controller1.getMotorPower(port1);
+                controller2.setMotorPower(port2, power);
+            }
+        });
         motley.setUncaughtExceptionHandler((t, e) -> { throw new RuntimeException(e); });
     }
     private DcMotorExSplit() { }
@@ -173,14 +184,14 @@ public class DcMotorExSplit implements DcMotorEx {
 
     @Override
     public void setVelocity(double angularRate) {
-        smPrimary.setVelocity(angularRate);
-        smSecondary.setVelocity(angularRate);
+//        smPrimary.setVelocity(angularRate);
+//        smSecondary.setVelocity(angularRate);
     }
 
     @Override
     public void setVelocity(double angularRate, AngleUnit unit) {
-        smPrimary.setVelocity(angularRate, unit);
-        smSecondary.setVelocity(angularRate, unit);
+//        smPrimary.setVelocity(angularRate, unit);
+//        smSecondary.setVelocity(angularRate, unit);
     }
 
     @Override
