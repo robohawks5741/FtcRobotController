@@ -136,6 +136,7 @@ public class parkAuto extends AutoSuperOpMode {
 
         drive.followTrajectory(forwards);
 
+        claw(ClawPosition.OPEN);
         switch (numberOfTag) {
             case 2: drive.followTrajectory(parkPosition2); break;
             case 3: drive.followTrajectory(parkPosition3); break;

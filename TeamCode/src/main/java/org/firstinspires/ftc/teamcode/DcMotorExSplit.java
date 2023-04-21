@@ -14,9 +14,14 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 public class DcMotorExSplit implements DcMotorEx {
     public DcMotorEx smPrimary;
     public DcMotorEx smSecondary;
+
+    Thread motley;
+
     public DcMotorExSplit(@NonNull DcMotorEx primary, @NonNull DcMotorEx secondary) {
         smPrimary = primary;
         smSecondary = secondary;
+        motley = new Thread(() -> { while (true) smSecondary.getController().setMotorPower(smSecondary.getPortNumber(), smPrimary.getController().getMotorPower(smPrimary.getPortNumber())); });
+        motley.setUncaughtExceptionHandler((t, e) -> { throw new RuntimeException(e); });
     }
     private DcMotorExSplit() { }
 
@@ -88,7 +93,7 @@ public class DcMotorExSplit implements DcMotorEx {
     @Override
     public void setMode(RunMode mode) {
         smPrimary.setMode(mode);
-        smSecondary.setMode(mode);
+        smSecondary.setMode(RunMode.RUN_WITHOUT_ENCODER);
     }
 
     @Override
@@ -110,7 +115,6 @@ public class DcMotorExSplit implements DcMotorEx {
     @Override
     public void setPower(double power) {
         smPrimary.setPower(power);
-        smSecondary.setPower(power);
     }
 
     @Override

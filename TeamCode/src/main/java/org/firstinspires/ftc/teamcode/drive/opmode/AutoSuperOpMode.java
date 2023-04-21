@@ -158,7 +158,7 @@ public abstract class AutoSuperOpMode extends LinearOpMode {
         lazySusan = hardwareMap.get(DcMotorEx.class,"lazySusan");
         linearSlide = new DcMotorExSplit(
             hardwareMap.get(DcMotorEx.class, "linearSlide"),
-            hardwareMap.get(DcMotorEx.class, "leftEncoder")
+            hardwareMap.get(DcMotorEx.class, "linearSlide2")
         );
         lazySusan.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         clawServo = hardwareMap.get(Servo.class, "clawServo");
@@ -188,7 +188,7 @@ public abstract class AutoSuperOpMode extends LinearOpMode {
 
         telemetry.setMsTransmissionInterval(50);
 
-        //Init loop!
+        // Init loop!
 
         while (!isStarted() && !isStopRequested()) {
             ArrayList<AprilTagDetection> currentDetections = aprilTagDetectionPipeline.getLatestDetections();

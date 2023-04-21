@@ -145,7 +145,7 @@ public class RobohawksMecanumDrive extends MecanumDrive {
         motorRearRight  = hardwareMap.get(DcMotorEx.class, "rightRear");
         motorFrontRight = hardwareMap.get(DcMotorEx.class, "rightFront");
 
-        motorEncoderLeft  = hardwareMap.get(DcMotorEx.class, "leftEncoder");
+        motorEncoderLeft  = hardwareMap.get(DcMotorEx.class, "linearSlide2");
         motorEncoderRight = hardwareMap.get(DcMotorEx.class, "rightEncoder");
         motorEncoderFront = hardwareMap.get(DcMotorEx.class, "frontEncoder");
 

@@ -167,7 +167,7 @@ public abstract class DriverControlSuperOpMode extends OpMode {
         haloMotor = hardwareMap.get(DcMotorEx.class, "lazySusan");
         linearSlideMotor = new DcMotorExSplit(
                 hardwareMap.get(DcMotorEx.class, "linearSlide"),
-                hardwareMap.get(DcMotorEx.class, "leftEncoder")
+                hardwareMap.get(DcMotorEx.class, "linearSlide2")
         );
         clawServo = hardwareMap.get(Servo.class, "clawServo");
         drive = new RobohawksMecanumDrive(hardwareMap); //Instance of SampleMecanum drive to access methods in the file.

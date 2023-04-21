@@ -24,7 +24,7 @@ public class AutonomousRight extends AutoSuperOpMode {
         debugSplit("susan");
         sleep(200);
 
-        linearSlideToStop(SlidePosition.AUTOMOVE,30,0);
+        linearSlideToStop(SlidePosition.AUTOMOVE, 30, 0);
         debugSplit("slide");
         drive.followTrajectory(forwards);
         debugSplit("followTrajectory");
@@ -34,7 +34,7 @@ public class AutonomousRight extends AutoSuperOpMode {
         debugSplit("followTrajectory");
         drive.turn(Math.toRadians(-84)); // TODO
         debugSplit("turn");
-        linearSlideToStop(SlidePosition.TALL,35,0);
+        linearSlideToStop(SlidePosition.TALL, 35, 0);
         drive.followTrajectory(right);
         debugSplit("followTrajectory");
         susan(-462);
@@ -65,13 +65,13 @@ public class AutonomousRight extends AutoSuperOpMode {
         debugSplit("claw");
         sleep(400);
 
-        linearSlideToStop(SlidePosition.LOW,20,conesUp++);
+        linearSlideToStop(SlidePosition.LOW, 20, conesUp++);
         debugSplit("slide");
         sleep(500);
 
         drive.followTrajectory(toPole);
         debugSplit("followTrajectory");
-        linearSlideToStop(SlidePosition.TALL,35,0);
+        linearSlideToStop(SlidePosition.TALL, 35, 0);
         debugSplit("slide");
         //sleep(1500);
 
