@@ -22,7 +22,7 @@ public final class Gamepadyn {
     }
 
     public static void opmodeStart() {
-        if (currentOpmode != null) throw new NullPointerException("opmodeStart was run without calling opmodeInit");
+        if (currentOpmode == null) throw new NullPointerException("opmodeStart was run without calling opmodeInit");
         isRunning = true;
         inputThread = new Thread(() -> {
             while (isRunning) Gamepadyn.inputThreadLoop();
@@ -62,14 +62,14 @@ public final class Gamepadyn {
     @Contract(pure = true)
     public static Gamepad getGamepad(int index) { return gamepads[index]; }
 
-    private static final Thread.UncaughtExceptionHandler _threadExceptionHandler = (Thread t, Throwable e) -> { inputThread = null; };
+    private static final Thread.UncaughtExceptionHandler _threadExceptionHandler = (Thread t, Throwable e) -> inputThread = null;
 
     private static void inputThreadLoop() {
 
         // TODO: fill this in
         for (Gamepad gp : gamepads) {
             if (!gp.hasConfiguration()) continue;
-            for (Map.Entry<RawGamepadInput, MappingAction> entry : gp.mapping.entrySet()) {
+            for (Map.Entry<RawGamepadInput, MappingAction> entry : gp.mapping) {
                 if (entry == null) continue;
                 RawGamepadInput key = entry.getKey();
                 switch (key.inputType) {
@@ -91,7 +91,13 @@ public final class Gamepadyn {
                             case TRIGGER: {
                                 // TODO: test this
                                 boolean current = RawGamepadInput.getDigitalValueFromGamepad(gp.ftcGamepad, key);
-                                boolean last = (boolean) gp.stateCache.get(key);
+                                boolean last;
+                                try {
+                                    //noinspection ConstantConditions
+                                    last = (boolean) gp.stateCache.get(key);
+                                } catch (Exception exception) {
+                                    throw new RuntimeException(exception);
+                                }
                                 if (current != last) {
                                     gp.action(value.action).internalValue = current;
                                     gp.action(value.action).emitter.emit(current);

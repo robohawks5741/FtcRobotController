@@ -31,16 +31,6 @@ We use Roadrunner, which has a few packages in the teamcode module.
    └─── util
 ```
 
-### EventD
-
-EventD is a tiny package I threw together to allow for a more familiar event-driven architecture in Java.
-It's used by both Gamepadyn and LSD.
-
-```
-───┐ org.firstinspires.ftc.teamcode
-   └─── eventd
-```
-
 ### Gamepadyn
 
 EventD is a tiny package I threw together to allow for a more familiar event-driven architecture in Java.

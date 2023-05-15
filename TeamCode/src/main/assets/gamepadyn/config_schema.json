@@ -13,20 +13,20 @@
             "description": "The per-input action mappings",
             "type": "object",
             "properties": {
-                "fd": {
-                    "description": "Face Button Down (`A` w/ XBox layout)",
+                "fu": {
+                    "description": "Face Button Up (`Y` w/ XBox layout)",
                     "$ref": "#/$defs/DigitalInput"
                 },
-                "fr": {
-                    "description": "Face Button Right (`B` w/ XBox layout)",
+                "fd": {
+                    "description": "Face Button Down (`A` w/ XBox layout)",
                     "$ref": "#/$defs/DigitalInput"
                 },
                 "fl": {
                     "description": "Face Button Left (`X` w/ XBox layout)",
                     "$ref": "#/$defs/DigitalInput"
                 },
-                "fu": {
-                    "description": "Face Button Up (`Y` w/ XBox layout)",
+                "fr": {
+                    "description": "Face Button Right (`B` w/ XBox layout)",
                     "$ref": "#/$defs/DigitalInput"
                 },
                 "du": {
