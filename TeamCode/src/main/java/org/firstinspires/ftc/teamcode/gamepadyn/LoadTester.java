@@ -1,18 +1,11 @@
 package org.firstinspires.ftc.teamcode.gamepadyn;
 
-import android.content.Context;
-
-import androidx.annotation.Nullable;
-import androidx.annotation.RawRes;
-
 import com.qualcomm.ftccommon.SoundPlayer;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.robotcore.external.function.Consumer;
 import org.firstinspires.ftc.teamcode.R;
-import org.firstinspires.ftc.teamcode.gamepadyn.user.UserActions;
+import org.firstinspires.ftc.teamcode.gamepadyn.user.UserAction;
 
 import java.util.logging.Logger;
 
@@ -34,7 +27,7 @@ public class LoadTester extends OpMode {
     public void start() {
         Gamepadyn.opmodeStart();
         assert Gamepadyn.getGamepad(0) != null;
-        Gamepadyn.getGamepad(0).action(UserActions.DEBUG_DIGITAL1).emitter.on((ev) -> SoundPlayer.getInstance().startPlaying(
+        Gamepadyn.getGamepad(0).action(UserAction.DEBUG_DIGITAL1).emitter.on((ev) -> SoundPlayer.getInstance().startPlaying(
             hardwareMap.appContext,
             ((boolean)ev ? R.raw.debug_press : R.raw.debug_release),
             new SoundPlayer.PlaySoundParams(),

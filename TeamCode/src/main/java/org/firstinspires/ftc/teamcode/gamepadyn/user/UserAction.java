@@ -9,7 +9,7 @@ import static org.firstinspires.ftc.teamcode.gamepadyn.InputType.*;
  * <br><br>
  * This enum defines the possible actions in your codebase and their parameters/types.
  */
-public enum UserActions {
+public enum UserAction {
     // Change these to fit your needs
     DEBUG_DIGITAL1          (DIGITAL),
     DEBUG_DIGITAL2          (DIGITAL),
@@ -30,13 +30,13 @@ public enum UserActions {
     // DON'T CHANGE ANYTHING BELOW HERE!
     public final InputType type;
     public final int axes;
-    UserActions(InputType type) {
+    UserAction(InputType type) {
         if (type == ANALOG) throw new IllegalArgumentException("Analog actions cannot have 0 axes!");
         this.type = type;
         this.axes = 0;
     }
 
-    UserActions(InputType type, int axes) {
+    UserAction(InputType type, int axes) {
         if (axes < 0) throw new IllegalArgumentException("Axes cannot be negative!");
         if (type == DIGITAL && axes != 0) throw new IllegalArgumentException("Digital inputs cannot be multi-dimensional!");
         this.type = type;

@@ -5,8 +5,7 @@ import android.util.Pair;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.checkerframework.common.value.qual.IntVal;
-import org.firstinspires.ftc.teamcode.gamepadyn.user.UserActions;
+import org.firstinspires.ftc.teamcode.gamepadyn.user.UserAction;
 
 import java.util.Arrays;
 
@@ -51,7 +50,7 @@ public final class MappingActionAnalog extends MappingAction {
 //    One to One Axis settings
 
     // The action with the SAME AMOUNT OF AXIS to map onto.
-    public UserActions action;
+    public UserAction action;
     // Multiplies the values of the input axes by each element.
     public Float[] inputScale;
 
@@ -60,7 +59,7 @@ public final class MappingActionAnalog extends MappingAction {
     public static final class AxisMap {
         final float axisScale;
         // Pair of the action and the axis of that action.
-        final Pair<UserActions, Integer> target;
+        final Pair<UserAction, Integer> target;
         final AnalogMode mode;
 
         @NonNull
@@ -72,7 +71,7 @@ public final class MappingActionAnalog extends MappingAction {
             );
         }
 
-        AxisMap(@Nullable Float axisScale, @NonNull Pair<UserActions, Integer> target, AnalogMode mode) {
+        AxisMap(@Nullable Float axisScale, @NonNull Pair<UserAction, Integer> target, AnalogMode mode) {
             this.axisScale = (axisScale == null) ? 1 : axisScale;
             this.target = target;
             this.mode = mode;
@@ -122,7 +121,7 @@ public final class MappingActionAnalog extends MappingAction {
      * @param action The action.
      */
     public MappingActionAnalog(int axes, @Nullable Float[] inputScale,
-                               UserActions action
+                               UserAction action
    ) throws Exception {
         this(axes, Mode.ONE_TO_ONE_AXES, inputScale);
         this.action = action;

@@ -26,17 +26,5 @@ public class ResourceChecker extends LinearOpMode {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-//        try {
-//            InputStream ins = ctx.getAssets().open(resId);
-////            InputStream ins = hardwareMap.appContext.getResources().raw(resId);
-//            int len = ins.available();
-//            byte[] buf = new byte[len];
-//            int alen = ins.read(buf);
-//            String s = new String(buf);
-//            telemetry.addData("ResourceChecker", s);
-//            ins.close();
-//        } catch (Resources.NotFoundException | IOException e) {
-//            throw new RuntimeException(e);
-//        }
     }
 }

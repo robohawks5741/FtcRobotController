@@ -1,4 +1,4 @@
 package org.firstinspires.ftc.teamcode.gamepadyn;
 
 // Parent class for Analog and Digital actions.
-class MappingAction { public enum Mode {} }
+abstract class MappingAction { public enum Mode {} }

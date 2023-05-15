@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.gamepadyn;
 
 // ""emitter""
-public final class ActionSource {
+public final class Action {
     public final EventEmitter<Object> emitter = new EventEmitter<>();
     public Object getValue() { return internalValue; }
 
@@ -9,7 +9,7 @@ public final class ActionSource {
     Object internalValue = null;
     public final InputType type;
 
-    public ActionSource(InputType t) {
+    public Action(InputType t) {
         type = t;
 //        Map<UserActions, ActionSource>
 
