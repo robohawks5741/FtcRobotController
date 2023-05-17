@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.tests;
 
-import android.util.Pair;
-
 import com.qualcomm.ftccommon.SoundPlayer;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -85,8 +83,8 @@ public class IdealOpMode extends OpMode {
 
                 // *** cache state ***
 
-                stateA = opMode.gamepad1.a;
-                stateB = opMode.gamepad1.b;
+                stateA = updateA;
+                stateB = updateB;
 
             }
         }
@@ -103,7 +101,7 @@ public class IdealOpMode extends OpMode {
         phWorker = new Thread(routine);
         phWorker.setUncaughtExceptionHandler(IdealOpMode::phWorkerExceptionHandler);
 
-        // this would be done using JSON configs
+        // this would be done using JSON configs, which makes this dynamic
         routine.bindInput(Button.BUTTON_A, DigitalAction.DEBUG);
 
         routine.bindAction(DigitalAction.DEBUG, (value) -> {

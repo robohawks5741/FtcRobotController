@@ -9,8 +9,6 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import org.firstinspires.ftc.teamcode.gamepadyn.user.UserAction;
 import org.jetbrains.annotations.Contract;
 
-import java.util.Map;
-
 // Singleton class, private constructor
 @SuppressWarnings("rawtypes")
 public final class Gamepadyn {
@@ -28,7 +26,7 @@ public final class Gamepadyn {
         inputThread = new Thread(() -> {
             while (isRunning) Gamepadyn.inputThreadLoop();
         });
-        inputThread.setUncaughtExceptionHandler(_threadExceptionHandler);
+        inputThread.setUncaughtExceptionHandler(threadExceptionHandler);
     }
 
     public static void opmodeStart(OpMode op) {
@@ -63,61 +61,62 @@ public final class Gamepadyn {
     @Contract(pure = true)
     public static Gamepad getGamepad(int index) { return gamepads[index]; }
 
-    private static final Thread.UncaughtExceptionHandler _threadExceptionHandler = (Thread t, Throwable e) -> inputThread = null;
+    // TODO: this is bad
+    private static final Thread.UncaughtExceptionHandler threadExceptionHandler = (Thread t, Throwable e) -> inputThread = null;
 
     private static void inputThreadLoop() {
 
-        // TODO: fill this in
-        for (Gamepad gp : gamepads) {
-            if (!gp.hasConfiguration()) continue;
-            for (Map.Entry<RawInput, MappingAction> entry : gp.mapping) {
-                if (entry == null) continue;
-                RawInput key = entry.getKey();
-                switch (key.inputType) {
-                    case ANALOG: {
-                        MappingActionAnalog value = (MappingActionAnalog) entry.getValue();
-                        switch (value.mode) {
-                            case ONE_TO_ONE_AXES: {
-                                // TODO
-                            }
-                            case SPLIT_AXES: {
-                                // TODO
-                            }
-                        }
-                        break;
-                    }
-                    case DIGITAL: {
-                        MappingActionDigital value = (MappingActionDigital) entry.getValue();
-                        switch (value.mode) {
-                            case TRIGGER: {
-                                // TODO: test this
-                                boolean current = RawInput.getDigitalValueFromGamepad(gp.ftcGamepad, key);
-                                boolean last;
-                                try {
-                                    //noinspection ConstantConditions
-                                    last = (boolean) gp.stateCache.get(key);
-                                } catch (Exception exception) {
-                                    throw new RuntimeException(exception);
-                                }
-                                if (current != last) {
-                                    gp.action(value.action).internalValue = current;
-                                    gp.action(value.action).emitter.emit(current);
-                                }
-                                break;
-                            }
-                            case ANALOG_MAP: {
-                                // TODO
-                            }
-                            case ANALOG_OFFSET: {
-                                // TODO
-                            }
-                        }
-                        break;
-                    }
-                }
-            }
-            gp.updateCache();
-        }
+//        // TODO: fill this in
+//        for (Gamepad gp : gamepads) {
+//            if (!gp.hasConfiguration()) continue;
+//            for (Map.Entry<RawInput, MappingAction> entry : gp.mapping) {
+//                if (entry == null) continue;
+//                RawInput key = entry.getKey();
+//                switch (key.inputType) {
+//                    case ANALOG: {
+//                        MappingActionAnalog value = (MappingActionAnalog) entry.getValue();
+//                        switch (value.mode) {
+//                            case ONE_TO_ONE_AXES: {
+//                                // TODO
+//                            }
+//                            case SPLIT_AXES: {
+//                                // TODO
+//                            }
+//                        }
+//                        break;
+//                    }
+//                    case DIGITAL: {
+//                        MappingActionDigital value = (MappingActionDigital) entry.getValue();
+//                        switch (value.mode) {
+//                            case TRIGGER: {
+//                                // TODO: test this
+//                                boolean current = RawInput.getDigitalValueFromGamepad(gp.ftcGamepad, key);
+//                                boolean last;
+//                                try {
+//                                    //noinspection ConstantConditions
+//                                    last = (boolean) gp.stateCache.get(key);
+//                                } catch (Exception exception) {
+//                                    throw new RuntimeException(exception);
+//                                }
+//                                if (current != last) {
+//                                    gp.action(value.action).internalValue = current;
+//                                    gp.action(value.action).emitter.emit(current);
+//                                }
+//                                break;
+//                            }
+//                            case ANALOG_MAP: {
+//                                // TODO
+//                            }
+//                            case ANALOG_OFFSET: {
+//                                // TODO
+//                            }
+//                        }
+//                        break;
+//                    }
+//                }
+//            }
+//            gp.updateCache();
+//        }
 
     }
 
