@@ -52,7 +52,7 @@ public class ThreadDebug extends OpMode {
     public void stop() {
         t = null;
         this.telemetry.addData("!!! THREAD DEBUG OPMODE !!!", "stop() called!");
-        Gamepadyn.cleanup();
+        Gamepadyn.opmodeStop();
     }
 
     public static class TelemThread implements Runnable {

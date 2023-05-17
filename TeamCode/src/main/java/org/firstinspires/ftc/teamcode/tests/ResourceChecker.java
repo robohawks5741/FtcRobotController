@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.gamepadyn;
+package org.firstinspires.ftc.teamcode.tests;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 @TeleOp
 public class ResourceChecker extends LinearOpMode {
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void runOpMode() {
         final String resId = "lower";
         Context ctx = hardwareMap.appContext;
         try {

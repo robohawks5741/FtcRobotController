@@ -40,7 +40,7 @@ public final class Gamepadyn {
     }
 
 
-    public static void cleanup() {
+    public static void opmodeStop() {
         isRunning = false;
         inputThread.interrupt();
         currentOpmode = null;
@@ -70,9 +70,9 @@ public final class Gamepadyn {
         // TODO: fill this in
         for (Gamepad gp : gamepads) {
             if (!gp.hasConfiguration()) continue;
-            for (Map.Entry<Gamepad.RawInput, MappingAction> entry : gp.mapping) {
+            for (Map.Entry<RawInput, MappingAction> entry : gp.mapping) {
                 if (entry == null) continue;
-                Gamepad.RawInput key = entry.getKey();
+                RawInput key = entry.getKey();
                 switch (key.inputType) {
                     case ANALOG: {
                         MappingActionAnalog value = (MappingActionAnalog) entry.getValue();
@@ -91,7 +91,7 @@ public final class Gamepadyn {
                         switch (value.mode) {
                             case TRIGGER: {
                                 // TODO: test this
-                                boolean current = Gamepad.RawInput.getDigitalValueFromGamepad(gp.ftcGamepad, key);
+                                boolean current = RawInput.getDigitalValueFromGamepad(gp.ftcGamepad, key);
                                 boolean last;
                                 try {
                                     //noinspection ConstantConditions

@@ -1,10 +1,11 @@
-package org.firstinspires.ftc.teamcode.gamepadyn;
+package org.firstinspires.ftc.teamcode.tests;
 
 import com.qualcomm.ftccommon.SoundPlayer;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.R;
+import org.firstinspires.ftc.teamcode.gamepadyn.Gamepadyn;
 import org.firstinspires.ftc.teamcode.gamepadyn.user.UserAction;
 
 import java.util.logging.Logger;
@@ -18,7 +19,7 @@ public class LoadTester extends OpMode {
         Gamepadyn.opmodeInit(this);
         // Gamepadyn.getGamepad(0)
         try {
-            Gamepadyn.getGamepad(0).loadConfigurationResource(this, "gamepadyn/debug.json");
+            Gamepadyn.getGamepad(0).loadConfigurationResource("gamepadyn/debug.json");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -47,7 +48,7 @@ public class LoadTester extends OpMode {
 
     @Override
     public void stop() {
-        Gamepadyn.cleanup();
+        Gamepadyn.opmodeStop();
         Logger.getLogger("Gamepadyn").info("Stopping");
     }
 
