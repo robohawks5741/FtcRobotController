@@ -140,7 +140,7 @@ public class ConceptVuforiaFieldNavigationWebcam extends LinearOpMode {
         targets = this.vuforia.loadTrackablesFromAsset("PowerPlay");
 
         // For convenience, gather together all the trackable objects in one easily-iterable collection */
-        List<VuforiaTrackable> allTrackables = new ArrayList<VuforiaTrackable>(targets);
+        List<VuforiaTrackable> allTrackables = new ArrayList<>(targets);
 
         /**
          * In order for localization to work, we need to tell the system where each target is on the field, and

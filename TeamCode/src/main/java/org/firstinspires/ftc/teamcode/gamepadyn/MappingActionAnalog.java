@@ -42,7 +42,7 @@ public final class MappingActionAnalog extends MappingAction {
         POLAR_MAXIMUM (1);
 
         AxisPolarity(int value) { }
-    };
+    }
 
     public final int axes;
     public final MappingActionAnalog.Mode mode;

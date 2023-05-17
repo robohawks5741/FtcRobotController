@@ -7,7 +7,7 @@ import java.util.ArrayList;
 public class Mapping {
     public String description;
 
-    ArrayList<> maps;
+//    ArrayList<> maps;
 
     public Mapping(@NonNull IntermediateMapping im) {
         description = im.description;
