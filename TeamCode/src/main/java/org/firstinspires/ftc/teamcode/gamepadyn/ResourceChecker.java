@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.gamepadyn;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -14,14 +14,6 @@ import java.util.logging.Logger;
 
 @TeleOp
 public class ResourceChecker extends LinearOpMode {
-    /**
-     * Override this method and place your code here.
-     * <p>
-     * Please do not swallow the InterruptedException, as it is used in cases
-     * where the op mode needs to be terminated early.
-     *
-     * @throws InterruptedException
-     */
     @Override
     public void runOpMode() throws InterruptedException {
         final String resId = "lower";
@@ -34,17 +26,5 @@ public class ResourceChecker extends LinearOpMode {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-//        try {
-//            InputStream ins = ctx.getAssets().open(resId);
-////            InputStream ins = hardwareMap.appContext.getResources().raw(resId);
-//            int len = ins.available();
-//            byte[] buf = new byte[len];
-//            int alen = ins.read(buf);
-//            String s = new String(buf);
-//            telemetry.addData("ResourceChecker", s);
-//            ins.close();
-//        } catch (Resources.NotFoundException | IOException e) {
-//            throw new RuntimeException(e);
-//        }
     }
 }

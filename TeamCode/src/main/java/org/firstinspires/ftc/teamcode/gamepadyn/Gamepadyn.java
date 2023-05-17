@@ -6,7 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import org.firstinspires.ftc.teamcode.gamepadyn.user.UserActions;
+import org.firstinspires.ftc.teamcode.gamepadyn.user.UserAction;
 import org.jetbrains.annotations.Contract;
 
 import java.util.Map;
@@ -14,6 +14,7 @@ import java.util.Map;
 // Singleton class, private constructor
 @SuppressWarnings("rawtypes")
 public final class Gamepadyn {
+
     public static void opmodeInit(@NonNull OpMode op) {
 //        inputThread = null;
         currentOpmode = op;
@@ -22,7 +23,7 @@ public final class Gamepadyn {
     }
 
     public static void opmodeStart() {
-        if (currentOpmode != null) throw new NullPointerException("opmodeStart was run without calling opmodeInit");
+        if (currentOpmode == null) throw new NullPointerException("opmodeStart was run without calling opmodeInit");
         isRunning = true;
         inputThread = new Thread(() -> {
             while (isRunning) Gamepadyn.inputThreadLoop();
@@ -48,7 +49,7 @@ public final class Gamepadyn {
 
     @NonNull
     @Contract(pure = true)
-    public static ActionSource getGamepadAction(int index, @NonNull UserActions ua) {
+    public static Action getGamepadAction(int index, @NonNull UserAction ua) {
         if (index < 0 || index > 1) throw new ArrayIndexOutOfBoundsException();
         return gamepads[index].action(ua);
     }
@@ -62,16 +63,16 @@ public final class Gamepadyn {
     @Contract(pure = true)
     public static Gamepad getGamepad(int index) { return gamepads[index]; }
 
-    private static final Thread.UncaughtExceptionHandler _threadExceptionHandler = (Thread t, Throwable e) -> { inputThread = null; };
+    private static final Thread.UncaughtExceptionHandler _threadExceptionHandler = (Thread t, Throwable e) -> inputThread = null;
 
     private static void inputThreadLoop() {
 
         // TODO: fill this in
         for (Gamepad gp : gamepads) {
             if (!gp.hasConfiguration()) continue;
-            for (Map.Entry<RawGamepadInput, MappingAction> entry : gp.mapping.entrySet()) {
+            for (Map.Entry<Gamepad.RawInput, MappingAction> entry : gp.mapping) {
                 if (entry == null) continue;
-                RawGamepadInput key = entry.getKey();
+                Gamepad.RawInput key = entry.getKey();
                 switch (key.inputType) {
                     case ANALOG: {
                         MappingActionAnalog value = (MappingActionAnalog) entry.getValue();
@@ -90,8 +91,14 @@ public final class Gamepadyn {
                         switch (value.mode) {
                             case TRIGGER: {
                                 // TODO: test this
-                                boolean current = RawGamepadInput.getDigitalValueFromGamepad(gp.ftcGamepad, key);
-                                boolean last = (boolean) gp.stateCache.get(key);
+                                boolean current = Gamepad.RawInput.getDigitalValueFromGamepad(gp.ftcGamepad, key);
+                                boolean last;
+                                try {
+                                    //noinspection ConstantConditions
+                                    last = (boolean) gp.stateCache.get(key);
+                                } catch (Exception exception) {
+                                    throw new RuntimeException(exception);
+                                }
                                 if (current != last) {
                                     gp.action(value.action).internalValue = current;
                                     gp.action(value.action).emitter.emit(current);
@@ -130,5 +137,7 @@ public final class Gamepadyn {
         Log.wtf("Gamepadyn", "Singleton constructor called!");
         throw new IllegalAccessException("Singleton constructor called!");
     }
+
+
 
 }

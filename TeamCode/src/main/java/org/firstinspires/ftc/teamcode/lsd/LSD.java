@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
-import org.firstinspires.ftc.teamcode.eventd.EventEmitter;
+import org.firstinspires.ftc.teamcode.gamepadyn.EventEmitter;
 
 // Linear Slide Driver
 public class LSD {

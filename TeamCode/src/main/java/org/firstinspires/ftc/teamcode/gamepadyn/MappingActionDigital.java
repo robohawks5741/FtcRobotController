@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.gamepadyn;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.firstinspires.ftc.teamcode.gamepadyn.user.UserActions;
+import org.firstinspires.ftc.teamcode.gamepadyn.user.UserAction;
 
 // Configuration "Parameter"
 public final class MappingActionDigital extends MappingAction {
@@ -18,7 +18,7 @@ public final class MappingActionDigital extends MappingAction {
     }
 
     public final MappingActionDigital.Mode mode;
-    public final UserActions action;
+    public final UserAction action;
 
 //    Shared settings
 
@@ -48,7 +48,7 @@ public final class MappingActionDigital extends MappingAction {
         );
     }
 
-    MappingActionDigital(MappingActionDigital.Mode mode, UserActions action, float depressedValue, @Nullable Float releasedValue, int axis) throws Exception {
+    MappingActionDigital(MappingActionDigital.Mode mode, UserAction action, float depressedValue, @Nullable Float releasedValue, int axis) throws Exception {
         if (mode != MappingActionDigital.Mode.ANALOG_MAP) throw new Exception("Mismatched mode, expected ANALOG_MAP!");
         this.mode = mode;
         this.action = action;
@@ -57,7 +57,7 @@ public final class MappingActionDigital extends MappingAction {
         this.axis = axis;
     }
 
-    MappingActionDigital(MappingActionDigital.Mode mode, UserActions action, float offsetRate, int axis) throws Exception {
+    MappingActionDigital(MappingActionDigital.Mode mode, UserAction action, float offsetRate, int axis) throws Exception {
         if (mode != MappingActionDigital.Mode.ANALOG_OFFSET) throw new Exception("Mismatched mode, expected ANALOG_OFFSET!");
         this.mode = mode;
         this.action = action;
@@ -65,7 +65,7 @@ public final class MappingActionDigital extends MappingAction {
         this.axis = axis;
     }
 
-    MappingActionDigital(MappingActionDigital.Mode mode, UserActions action) throws Exception {
+    MappingActionDigital(MappingActionDigital.Mode mode, UserAction action) throws Exception {
         if (mode != MappingActionDigital.Mode.TRIGGER) throw new Exception("Mismatched mode, expected TRIGGER!");
         this.mode = mode;
         this.action = action;

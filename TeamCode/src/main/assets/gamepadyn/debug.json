@@ -1,0 +1,18 @@
+{
+    "$schema": "config_schema.json",
+    "description": "Debug Configuration",
+    "maps": {
+        "fd": {
+            "mode": "TRIGGER",
+            "action": "DEBUG_DIGITAL1"
+        },
+        "fr": {
+            "mode": "TRIGGER",
+            "action": "DEBUG_DIGITAL2"
+        },
+        "sl": {
+            "mode": "ONE_TO_ONE_AXES",
+            "action": "DEBUG_ANALOG1"
+        }
+    }
+}

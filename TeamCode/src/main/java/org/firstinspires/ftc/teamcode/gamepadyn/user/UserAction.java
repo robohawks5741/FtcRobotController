@@ -9,32 +9,34 @@ import static org.firstinspires.ftc.teamcode.gamepadyn.InputType.*;
  * <br><br>
  * This enum defines the possible actions in your codebase and their parameters/types.
  */
-public enum UserActions {
+public enum UserAction {
     // Change these to fit your needs
-    DEBUG               (DIGITAL),
-    LINEAR_SLIDE        (ANALOG, 1),
-    LINEAR_SLIDE_BOTTOM (DIGITAL),
-    LINEAR_SLIDE_LOW    (DIGITAL),
-    LINEAR_SLIDE_MIDDLE (DIGITAL),
-    LINEAR_SLIDE_HIGH   (DIGITAL),
-    LINEAR_SLIDE_TOP    (DIGITAL),
-    MOTOR_SPEED_HALF    (DIGITAL),
-    MOTOR_SPEED_FULL    (DIGITAL),
-    CLAW                (ANALOG, 1),
-    HALO                (ANALOG, 1),
-    MOVEMENT            (ANALOG, 2),
-    ROTATION            (ANALOG, 1);
+    DEBUG_DIGITAL1          (DIGITAL),
+    DEBUG_DIGITAL2          (DIGITAL),
+    DEBUG_ANALOG1           (DIGITAL);
+//    LINEAR_SLIDE        (ANALOG, 1),
+//    LINEAR_SLIDE_BOTTOM (DIGITAL),
+//    LINEAR_SLIDE_LOW    (DIGITAL),
+//    LINEAR_SLIDE_MIDDLE (DIGITAL),
+//    LINEAR_SLIDE_HIGH   (DIGITAL),
+//    LINEAR_SLIDE_TOP    (DIGITAL),
+//    MOTOR_SPEED_HALF    (DIGITAL),
+//    MOTOR_SPEED_FULL    (DIGITAL),
+//    CLAW                (ANALOG, 1),
+//    HALO                (ANALOG, 1),
+//    MOVEMENT            (ANALOG, 2),
+//    ROTATION            (ANALOG, 1);
 
     // DON'T CHANGE ANYTHING BELOW HERE!
     public final InputType type;
     public final int axes;
-    UserActions(InputType type) {
+    UserAction(InputType type) {
         if (type == ANALOG) throw new IllegalArgumentException("Analog actions cannot have 0 axes!");
         this.type = type;
         this.axes = 0;
     }
 
-    UserActions(InputType type, int axes) {
+    UserAction(InputType type, int axes) {
         if (axes < 0) throw new IllegalArgumentException("Axes cannot be negative!");
         if (type == DIGITAL && axes != 0) throw new IllegalArgumentException("Digital inputs cannot be multi-dimensional!");
         this.type = type;
